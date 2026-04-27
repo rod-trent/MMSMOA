@@ -177,10 +177,10 @@ Speaker · Trainer<br/>
 
 | Topic | Link |
 |-------|------|
-| Microsoft Sentinel documentation | [aka.ms/sentinel-docs](https://aka.ms/sentinel-docs) |
-| MCP Server for Security Copilot | [aka.ms/security-copilot](https://aka.ms/security-copilot) |
-| Microsoft Purview documentation | [aka.ms/purview-docs](https://aka.ms/purview-docs) |
-| Microsoft 365 Copilot documentation | [aka.ms/m365-copilot-docs](https://aka.ms/m365-copilot-docs) |
+| Microsoft Sentinel documentation | [aka.ms/sentineldocs](https://aka.ms/sentineldocs) |
+| MCP Server for Security Copilot | [aka.ms/securitycopilot](https://aka.ms/securitycopilot) |
+| Microsoft Purview documentation | [aka.ms/purviewdocs](https://aka.ms/purviewdocs) |
+| Microsoft 365 Copilot documentation | [aka.ms/m365copilotdocs](https://aka.ms/m365copilotdocs) |
 | Model Context Protocol (MCP) specification | [modelcontextprotocol.io](https://modelcontextprotocol.io) |
 
 ---
