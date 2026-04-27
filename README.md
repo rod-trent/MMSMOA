@@ -157,7 +157,7 @@ Connect-IPPSSession   # or Connect-ExchangeOnline
 <tr>
 <td align="center" width="200">
 <strong>Rod Trent</strong><br/>
-Principal Program Manager, Microsoft Security<br/>
+Sendior Product Manager, Microsoft Security<br/>
 Author · Speaker · Security Community Lead<br/>
 <a href="https://twitter.com/rodtrent">@rodtrent</a> · <a href="https://linkedin.com/in/rodtrent">LinkedIn</a>
 </td>
