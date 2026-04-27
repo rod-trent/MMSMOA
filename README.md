@@ -80,11 +80,14 @@ Each demo folder includes an MP4 walkthrough with narration. Videos are also emb
 ```
 📁 MMSMOA/
 ├── README.md                                   ← You are here
-├── SlideDecks/Agentic Threat Hunting - MMS MOA 2026.pptx  ← Session 1 slide deck (44 slides)
-├── SlideDecksGoverning GenAI - MMS MOA 2026.pptx         ← Session 2 slide deck (49 slides)
-├── MMS MOA 2026 - Demo Inventory.docx          ← Full demo reference table
+│
+└── SlideDecks
+    ├── Agentic Threat Hunting - MMS MOA 2026.pptx  ← Session 1 slide deck (44 slides)
+    └── Governing GenAI - MMS MOA 2026.pptx         ← Session 2 slide deck (49 slides)
+│
 │
 └── demos/
+    ├── MMS MOA 2026 - Demo Inventory.docx          ← Full demo reference table
     ├── agentic-threat-hunting/
     │   ├── 01-mcp-server/
     │   │   ├── sentinel_mcp_server.py          ← MCP server implementation
