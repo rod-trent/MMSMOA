@@ -1,0 +1,9 @@
+mcp>=1.0.0
+azure-identity>=1.15.0
+azure-monitor-query>=1.2.0
+azure-mgmt-securityinsight>=2.0.0
+azure-mgmt-loganalytics>=13.0.0
+httpx>=0.27.0
+python-dotenv>=1.0.0
+uvicorn>=0.30.0        # for SSE transport
+starlette>=0.41.0      # for SSE transport
