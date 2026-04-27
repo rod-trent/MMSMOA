@@ -157,15 +157,16 @@ Connect-IPPSSession   # or Connect-ExchangeOnline
 <tr>
 <td align="center" width="200">
 <strong>Rod Trent</strong><br/>
-Sendior Product Manager, Microsoft Security<br/>
+Senior Product Manager, Microsoft Security<br/>
+Security MVP Program Lead<br/>
 Author · Speaker · Security Community Lead<br/>
-<a href="https://twitter.com/rodtrent">@rodtrent</a> · <a href="https://linkedin.com/in/rodtrent">LinkedIn</a>
+<a href="https://x.com/rodtrent">@rodtrent</a> · <a href="https://linkedin.com/in/rodtrent">LinkedIn</a>
 </td>
 <td align="center" width="200">
 <strong>Sergey Chubarov</strong><br/>
 Microsoft MVP · Cloud Security Architect<br/>
 Speaker · Trainer<br/>
-<a href="https://twitter.com/SergeyTheMVP">@SergeyTheMVP</a> · <a href="https://linkedin.com/in/schubarov">LinkedIn</a>
+<a href="https://x.com/SergeyTheMVP">@SergeyTheMVP</a> · <a href="https://linkedin.com/in/schubarov">LinkedIn</a>
 </td>
 </tr>
 </table>
