@@ -80,8 +80,8 @@ Each demo folder includes an MP4 walkthrough with narration. Videos are also emb
 ```
 📁 MMSMOA/
 ├── README.md                                   ← You are here
-├── Agentic Threat Hunting - MMS MOA 2026.pptx  ← Session 1 slide deck (44 slides)
-├── Governing GenAI - MMS MOA 2026.pptx         ← Session 2 slide deck (49 slides)
+├── SlideDecks/Agentic Threat Hunting - MMS MOA 2026.pptx  ← Session 1 slide deck (44 slides)
+├── SlideDecksGoverning GenAI - MMS MOA 2026.pptx         ← Session 2 slide deck (49 slides)
 ├── MMS MOA 2026 - Demo Inventory.docx          ← Full demo reference table
 │
 └── demos/
