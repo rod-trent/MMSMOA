@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Threat Hunt Report — INC-2847</title>
+<style>
+  :root {
+    --bg: #0d1117; --surface: #161b22; --border: #30363d;
+    --text: #c9d1d9; --text-muted: #8b949e;
+    --blue: #58a6ff; --green: #3fb950; --yellow: #d29922;
+    --red: #f85149; --purple: #a371f7; --cyan: #79c0ff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', -apple-system, sans-serif; background: var(--bg); color: var(--text); padding: 40px; line-height: 1.6; }
+  .container { max-width: 1100px; margin: 0 auto; }
+  h1 { color: var(--blue); font-size: 28px; margin-bottom: 8px; }
+  h2 { color: var(--cyan); font-size: 20px; margin: 32px 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  .meta { color: var(--text-muted); margin-bottom: 24px; }
+  .verdict-box { background: #1c0a0a; border: 2px solid var(--red); border-radius: 8px; padding: 20px; margin: 24px 0; }
+  .verdict-box h3 { color: var(--red); font-size: 18px; }
+  .verdict-box .confidence { color: var(--yellow); margin-top: 4px; }
+
+  .entity-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+  .entity-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px; }
+  .entity-card.risk-critical { border-color: var(--red); }
+  .entity-card.risk-high { border-color: var(--yellow); }
+  .entity-card.risk-medium { border-color: var(--yellow); }
+  .entity-card.risk-low { border-color: var(--green); }
+  .entity-icon { font-size: 20px; margin-right: 4px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+  th { background: var(--surface); color: var(--text-muted); padding: 10px 12px; text-align: left; font-size: 13px; text-transform: uppercase; }
+  td { padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 14px; }
+  tr.critical td { color: var(--red); font-weight: 600; }
+  .edge-label { color: var(--purple); font-style: italic; }
+  .phase-badge { background: var(--surface); padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; color: var(--yellow); }
+
+  .mitre-section { display: flex; flex-wrap: wrap; gap: 8px; }
+  .mitre-badge { background: #1c1229; border: 1px solid var(--purple); color: var(--purple); padding: 4px 10px; border-radius: 4px; font-size: 13px; }
+
+  .ueba-item { background: var(--surface); border-radius: 6px; padding: 10px 14px; margin: 8px 0; border-left: 4px solid var(--yellow); }
+  .ueba-item.score-critical { border-left-color: var(--red); }
+  .ueba-item .score { font-weight: 700; color: var(--red); margin-right: 8px; }
+
+  ul { list-style: none; padding: 0; }
+  li { padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .action-immediate { color: var(--red); }
+  .action-urgent { color: var(--yellow); }
+  .action-follow-up { color: var(--cyan); }
+
+  .footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>🔍 Autonomous Threat Hunt Report</h1>
+<p class="meta">
+  <strong>Incident:</strong> INC-2847 — Suspicious Sign-in Activity - Multiple Failed Attempts Followed by Success<br>
+  <strong>Severity:</strong> High<br>
+  <strong>Generated:</strong> 2026-05-05 01:30:17 UTC<br>
+  <strong>Investigation Duration:</strong> 31.6 seconds
+</p>
+
+<div class="verdict-box">
+  <h3>🚨 CONFIRMED COMPROMISE — TRUE POSITIVE</h3>
+  <div class="confidence">HIGH (5 independent corroborating signals)</div>
+</div>
+
+<h2>Entity Relationship Graph</h2>
+<div class="entity-grid"><div class='entity-card risk-critical'><span class='entity-icon'>👤</span><strong>jsmith@contoso.com</strong><br><small>Pivot Entity — CRITICAL</small></div><div class='entity-card risk-medium'><span class='entity-icon'>👤</span><strong>agarcia@contoso.com</strong><br><small>Spray Target — MEDIUM</small></div><div class='entity-card risk-low'><span class='entity-icon'>👤</span><strong>mwilliams@contoso.com</strong><br><small>Spray Target — LOW</small></div><div class='entity-card risk-critical'><span class='entity-icon'>🌐</span><strong>185.220.101.45</strong><br><small>Tor Exit Node (NL) — CRITICAL</small></div><div class='entity-card risk-critical'><span class='entity-icon'>🔑</span><strong>GraphExplorer-Sync</strong><br><small>Malicious OAuth App — CRITICAL</small></div><div class='entity-card risk-critical'><span class='entity-icon'>👑</span><strong>Global Administrator</strong><br><small>Escalation Target — CRITICAL</small></div></div>
+
+<h3 style="color: var(--cyan); margin-top: 20px;">Graph Edges</h3>
+<table>
+<tr><th>Source</th><th>Relationship</th><th>Target</th></tr>
+<tr><td>185.220.101.45</td><td class='edge-label'>password spray → success</td><td>jsmith@contoso.com</td></tr><tr><td>185.220.101.45</td><td class='edge-label'>password spray → failed</td><td>agarcia@contoso.com</td></tr><tr><td>185.220.101.45</td><td class='edge-label'>password spray → failed</td><td>mwilliams@contoso.com</td></tr><tr><td>jsmith@contoso.com</td><td class='edge-label'>registered OAuth app</td><td>GraphExplorer-Sync</td></tr><tr><td>GraphExplorer-Sync</td><td class='edge-label'>granted permission</td><td>Mail.Read</td></tr><tr><td>GraphExplorer-Sync</td><td class='edge-label'>granted permission</td><td>Files.ReadWrite.All</td></tr><tr><td>jsmith@contoso.com</td><td class='edge-label'>added to role</td><td>Global Administrator</td></tr><tr><td>GraphExplorer-Sync</td><td class='edge-label'>exfiltrated 47 MB</td><td>External OneDrive</td></tr>
+</table>
+
+<h2>Attack Timeline</h2>
+<table>
+<tr><th>Time (UTC)</th><th>Phase</th><th>Event</th></tr>
+<tr class=''><td>01:47:33</td><td><span class='phase-badge'>RECON</span></td><td>Password spray begins — 67 attempts across 3 accounts from Tor IP</td></tr><tr class='critical'><td>01:59:12</td><td><span class='phase-badge'>INITIAL ACCESS</span></td><td>✗ BREACH: jsmith@contoso.com compromised via password spray</td></tr><tr class=''><td>02:00:44</td><td><span class='phase-badge'>INITIAL ACCESS</span></td><td>UEBA: First logon from Netherlands — InvestigationPriority 9/10</td></tr><tr class=''><td>02:02:44</td><td><span class='phase-badge'>PERSISTENCE</span></td><td>Account profile modified (alternate email added for persistence)</td></tr><tr class='critical'><td>02:03:18</td><td><span class='phase-badge'>PERSISTENCE</span></td><td>✗ Malicious OAuth app 'GraphExplorer-Sync' registered with admin consent</td></tr><tr class=''><td>02:04:55</td><td><span class='phase-badge'>PERSISTENCE</span></td><td>Attacker added as Service Principal owner — persistent API access</td></tr><tr class='critical'><td>02:07:33</td><td><span class='phase-badge'>COLLECTION</span></td><td>✗ Mass download: 847 files from SharePoint (14x peer average)</td></tr><tr class=''><td>02:11:02</td><td><span class='phase-badge'>COLLECTION</span></td><td>OAuth app accessing Exchange mailbox via Graph API</td></tr><tr class='critical'><td>02:14:19</td><td><span class='phase-badge'>PRIVILEGE ESCALATION</span></td><td>✗✗ jsmith added to Global Administrator role</td></tr><tr class='critical'><td>02:19:07</td><td><span class='phase-badge'>EXFILTRATION</span></td><td>✗ 47 MB uploaded to external OneDrive via OAuth app token</td></tr>
+</table>
+
+<h2>MITRE ATT&CK Coverage</h2>
+<div class="mitre-section"><span class='mitre-badge'>T1110.003 — Password Spraying</span><span class='mitre-badge'>T1078     — Valid Accounts</span><span class='mitre-badge'>T1098     — Account Manipulation</span><span class='mitre-badge'>T1137     — Office Application Startup (OAuth Persistence)</span><span class='mitre-badge'>T1098.001 — Additional Cloud Credentials</span><span class='mitre-badge'>T1213.002 — SharePoint Collection</span><span class='mitre-badge'>T1114.002 — Remote Email Collection</span><span class='mitre-badge'>T1078.004 — Cloud Accounts (Privilege Escalation)</span><span class='mitre-badge'>T1567.002 — Exfiltration to Cloud Storage</span></div>
+
+<h2>UEBA Risk Profile</h2>
+<div class='ueba-item score-critical'><span class='score'>9/10</span> First logon from this country in 90 days</div><div class='ueba-item score-high'><span class='score'>8/10</span> Downloaded 14x more files than peer average</div><div class='ueba-item score-critical'><span class='score'>10/10</span> First OAuth app registration for this user</div><div class='ueba-item score-critical'><span class='score'>10/10</span> Role assignment to Global Admin â€” extremely rare</div>
+
+<h2>Recommended Response Actions</h2>
+<ul><li class='action-immediate'><strong>[IMMEDIATE]</strong> Revoke all active sessions for jsmith@contoso.com</li><li class='action-immediate'><strong>[IMMEDIATE]</strong> Remove jsmith from Global Administrator role</li><li class='action-immediate'><strong>[IMMEDIATE]</strong> Revoke and delete OAuth app 'GraphExplorer-Sync'</li><li class='action-immediate'><strong>[IMMEDIATE]</strong> Block IP 185.220.101.45 at Conditional Access + firewall</li><li class='action-urgent'><strong>[URGENT]</strong> Audit 847 downloaded files — identify sensitive data exposure</li><li class='action-urgent'><strong>[URGENT]</strong> Investigate 47 MB external upload destination and content</li><li class='action-urgent'><strong>[URGENT]</strong> Force password reset for jsmith, agarcia, mwilliams</li><li class='action-urgent'><strong>[URGENT]</strong> Check if OAuth app token was used for additional lateral movement</li><li class='action-follow-up'><strong>[FOLLOW-UP]</strong> Enable Conditional Access: block Tor/anonymous proxy access</li><li class='action-follow-up'><strong>[FOLLOW-UP]</strong> Restrict OAuth app consent to admin-approved apps only</li><li class='action-follow-up'><strong>[FOLLOW-UP]</strong> Enable Privileged Identity Management for all admin roles</li><li class='action-follow-up'><strong>[FOLLOW-UP]</strong> Deploy token protection / continuous access evaluation</li></ul>
+
+<div class="footer">
+  <p>Generated by <strong>Sentinel Threat Hunter Agent</strong> — Agentic Threat Hunting with Microsoft Sentinel<br>
+  MMS MOA 2026 | Powered by MCP + Azure OpenAI</p>
+</div>
+
+</div>
+</body>
+</html>

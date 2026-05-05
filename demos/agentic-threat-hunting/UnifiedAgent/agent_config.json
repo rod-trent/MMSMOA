@@ -1,0 +1,168 @@
+{
+  "mcpServers": {
+    "sentinel": {
+      "command": "python",
+      "args": ["../01-mcp-server/sentinel_mcp_server.py"],
+      "env": {
+        "AZURE_TENANT_ID": "${AZURE_TENANT_ID}",
+        "AZURE_CLIENT_ID": "${AZURE_CLIENT_ID}",
+        "AZURE_CLIENT_SECRET": "${AZURE_CLIENT_SECRET}",
+        "SENTINEL_WORKSPACE_ID": "${SENTINEL_WORKSPACE_ID}",
+        "SENTINEL_SUBSCRIPTION_ID": "${SENTINEL_SUBSCRIPTION_ID}",
+        "SENTINEL_RESOURCE_GROUP": "${SENTINEL_RESOURCE_GROUP}",
+        "SENTINEL_WORKSPACE_NAME": "${SENTINEL_WORKSPACE_NAME}",
+        "KQL_TABLE_ALLOWLIST": "SigninLogs,SecurityAlert,SecurityIncident,IdentityLogonEvents,AuditLogs,BehaviorAnalytics,UserPeerAnalytics,CommonSecurityLog",
+        "MCP_TRANSPORT": "stdio"
+      }
+    }
+  },
+  "agent": {
+    "name": "Sentinel Threat Hunter",
+    "description": "Autonomous threat hunting agent that investigates Microsoft Sentinel incidents using MCP tools, correlates evidence across multiple data sources, maps findings to MITRE ATT&CK, and generates investigation reports with response recommendations.",
+    "version": "1.0.0",
+    "systemPrompt": "You are an expert SOC analyst and threat hunter. You have access to Microsoft Sentinel via MCP tools. When given an incident or a natural language prompt about a potential threat, you autonomously investigate by:\n\n1. Pulling incident details to understand scope and attached entities\n2. Checking sign-in failure patterns to detect credential attacks\n3. Building entity timelines to trace post-compromise activity\n4. Analyzing UEBA behavioral anomalies for risk scoring\n5. Constructing an investigation graph mapping entities and relationships\n6. Mapping all observed techniques to the MITRE ATT&CK framework\n7. Determining a verdict (true positive / false positive) with confidence level\n8. Recommending prioritized response actions\n\nAlways explain your reasoning before each tool call. Correlate findings across multiple data sources. Provide a clear, actionable verdict. Escalate to CISO if privilege escalation or active exfiltration is detected.",
+    "tools": [
+      {
+        "name": "run_kql_query",
+        "description": "Execute a read-only KQL query against the Sentinel Log Analytics workspace. Returns up to 200 rows.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "Valid KQL query. Must be read-only (no set/drop/delete/export)."
+            },
+            "timespan_hours": {
+              "type": "integer",
+              "description": "How far back to look in hours (default 24, max 720).",
+              "default": 24
+            }
+          },
+          "required": ["query"]
+        }
+      },
+      {
+        "name": "get_failed_signins",
+        "description": "Detect brute-force or password spray attacks by finding accounts with repeated sign-in failures from SigninLogs.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "lookback_hours": {
+              "type": "integer",
+              "description": "Time window to search (default 1 hour).",
+              "default": 1
+            },
+            "min_failures": {
+              "type": "integer",
+              "description": "Minimum failed attempts to report (default 5).",
+              "default": 5
+            },
+            "upn_filter": {
+              "type": "string",
+              "description": "Optional: filter to a specific user UPN."
+            }
+          }
+        }
+      },
+      {
+        "name": "get_incident_details",
+        "description": "Retrieve full details of a Microsoft Sentinel incident including title, severity, status, tactics, and all attached entities.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "incident_id": {
+              "type": "string",
+              "description": "The Sentinel incident ID (GUID or numeric ARM ID)."
+            }
+          },
+          "required": ["incident_id"]
+        }
+      },
+      {
+        "name": "search_entities",
+        "description": "Search for an entity (user account, IP address, or host) across multiple Sentinel log tables and build a cross-source timeline of events.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "entity_value": {
+              "type": "string",
+              "description": "The entity to search for (UPN, IP address, hostname)."
+            },
+            "entity_type": {
+              "type": "string",
+              "enum": ["account", "ip", "host"],
+              "description": "Type of entity.",
+              "default": "account"
+            },
+            "lookback_hours": {
+              "type": "integer",
+              "description": "How far back to search (default 24 hours).",
+              "default": 24
+            }
+          },
+          "required": ["entity_value"]
+        }
+      },
+      {
+        "name": "get_ueba_insights",
+        "description": "Retrieve UEBA risk insights for a user: anomalous behavior, investigation priority score, peer comparison, and device anomalies.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "user_upn": {
+              "type": "string",
+              "description": "The user's UPN (email address)."
+            },
+            "lookback_days": {
+              "type": "integer",
+              "description": "Days of UEBA history to retrieve (default 7).",
+              "default": 7
+            }
+          },
+          "required": ["user_upn"]
+        }
+      }
+    ],
+    "investigationPlan": [
+      {
+        "step": 1,
+        "action": "get_incident_details",
+        "purpose": "Understand incident scope, severity, and attached entities"
+      },
+      {
+        "step": 2,
+        "action": "get_failed_signins",
+        "purpose": "Detect credential attack patterns (brute-force, password spray)"
+      },
+      {
+        "step": 3,
+        "action": "search_entities",
+        "purpose": "Build cross-table timeline for the pivot entity"
+      },
+      {
+        "step": 4,
+        "action": "get_ueba_insights",
+        "purpose": "Assess behavioral anomalies and risk scoring"
+      },
+      {
+        "step": 5,
+        "action": "reasoning",
+        "purpose": "Construct entity graph and map MITRE ATT&CK techniques"
+      },
+      {
+        "step": 6,
+        "action": "reasoning",
+        "purpose": "Synthesize verdict, confidence, and response recommendations"
+      }
+    ],
+    "outputFormat": {
+      "verdict": "TRUE_POSITIVE | FALSE_POSITIVE | INCONCLUSIVE",
+      "confidence": "HIGH | MEDIUM | LOW",
+      "mitreTechniques": ["T1110.003", "T1078", "..."],
+      "entities": [{"name": "...", "type": "...", "risk": "..."}],
+      "attackTimeline": [{"time": "...", "phase": "...", "event": "..."}],
+      "recommendedActions": [{"priority": "IMMEDIATE|URGENT|FOLLOW-UP", "action": "..."}],
+      "cisoEscalation": true
+    }
+  }
+}
