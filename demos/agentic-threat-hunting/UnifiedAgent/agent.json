@@ -1,0 +1,31 @@
+{
+  "exportedBy": "AI Agent Platform",
+  "version": "1.3.0",
+  "exportedAt": "2026-05-04T20:43:00.000Z",
+  "agents": [
+    {
+      "id": "a7f3c1e2-9d84-4b1f-a6e0-8c2d5f7e9b04",
+      "name": "Sentinel Threat Hunter",
+      "description": "Autonomous threat hunting agent that investigates Microsoft Sentinel incidents, correlates evidence across sign-in logs, UEBA, and entity timelines, maps findings to MITRE ATT&CK, and generates HTML investigation reports with prioritized response actions.",
+      "type": "script",
+      "enabled": true,
+      "schedule": "*/15 * * * *",
+      "provider": "",
+      "model": "",
+      "temperature": 0,
+      "systemPrompt": "",
+      "userPrompt": "",
+      "command": "python",
+      "scriptPath": "C:\\Users\\rotrent\\OneDrive - Microsoft\\Desktop\\MMS MOA 2026\\Sessions\\demos\\agentic-threat-hunting\\Unified Agent\\sentinel_threat_hunter_agent.py",
+      "args": ["--replay"],
+      "timeoutMs": 120000,
+      "chainTo": [],
+      "chainCondition": "success",
+      "group": "Security Operations",
+      "mcpUrl": "",
+      "onCompleteWebhookEnabled": false,
+      "onCompleteWebhookUrl": "",
+      "createdAt": "2026-05-04T20:43:00.000Z"
+    }
+  ]
+}
