@@ -91,10 +91,10 @@ body::after {
   pointer-events: none;
   background:
     linear-gradient(to bottom,
-      rgba(1,18,48,.92) 0%,
-      rgba(1,18,48,.80) 26%,
-      rgba(1,18,48,.72) 58%,
-      rgba(1,18,48,.88) 100%);
+      rgba(1,18,48,.82) 0%,
+      rgba(1,18,48,.62) 26%,
+      rgba(1,18,48,.50) 58%,
+      rgba(1,18,48,.76) 100%);
 }
 
 @media (max-width: 620px) {
@@ -207,7 +207,7 @@ body::after {
 }
 
 .card {
-  background: rgba(27, 42, 94, .74);
+  background: rgba(24, 38, 88, .82);
   -webkit-backdrop-filter: blur(7px); backdrop-filter: blur(7px);
   border: 1px solid var(--line);
   border-radius: 13px; padding: 19px 19px 16px;
