@@ -114,6 +114,9 @@ prevent blind trust.
 
 ---
 
+Full breakdown of every demo across both events:
+**[demos/DEMO-INVENTORY.md](demos/DEMO-INVENTORY.md)**
+
 ### Quick start
 
 ```bash
@@ -279,6 +282,7 @@ MMSMOA/
 │   └── public/                         ← deployed as-is; py/ + transcripts/ generated
 │
 └── demos/
+    ├── DEMO-INVENTORY.md               ← every demo, all four sessions
     ├── empowering-soc-teams/           ← MMS Midway 2026, offline
     │   ├── 01-mcp-connection/
     │   ├── 02-natural-language-triage/

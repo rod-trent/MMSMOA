@@ -2,6 +2,9 @@
 
 Demo code for Rod Trent's MMS sessions. Two events, four sessions.
 
+**[DEMO-INVENTORY.md](DEMO-INVENTORY.md)** lists every demo with its slide,
+its file, and what it does.
+
 ---
 
 ## MMS 2026 Midway Edition — San Diego, 25–28 October 2026
