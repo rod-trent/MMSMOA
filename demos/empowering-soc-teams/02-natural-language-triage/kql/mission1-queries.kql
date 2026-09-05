@@ -1,0 +1,215 @@
+// ============================================================================
+// Mission 1 - the queries Claude produces, and the ones you run to check it
+//
+// Session:    Empowering SOC Teams
+// Conference: MMS 2026 Midway Edition - San Diego, October 25-28 2026
+//
+// You do not type these on stage. The model writes them. They are here for
+// two reasons:
+//
+//   1. Slide 15 step 3 says "review the KQL". You cannot review what you
+//      cannot read, so read these before the session and know what correct
+//      looks like.
+//   2. If MCP auth fails on stage, paste these into the Sentinel portal and
+//      narrate what Claude would have done. That is the documented fallback.
+//
+// Every query is read-only. Nothing here modifies an incident.
+// ============================================================================
+
+
+// ----------------------------------------------------------------------------
+// 1. Unassigned incidents in the last 24 hours, Medium and above
+//    Claude's first move. The equivalent of list_incidents().
+// ----------------------------------------------------------------------------
+SecurityIncident
+| where TimeGenerated > ago(24h)
+| where Status != "Closed"
+| where Severity in ("Medium", "High")
+| where isempty(Owner.assignedTo)
+| project IncidentNumber, Title, Severity, Status, CreatedTime, AlertIds
+| order by CreatedTime asc
+
+
+// ----------------------------------------------------------------------------
+// 2. Location changes per account - the raw impossible-travel signal
+//
+//    Note what this query does NOT do: it does not decide anything. A VPN
+//    egress and a compromised session look identical here. That is exactly
+//    why the model pivots to UEBA next instead of answering.
+// ----------------------------------------------------------------------------
+let window = 24h;
+SigninLogs
+| where TimeGenerated > ago(window)
+| where ResultType == 0                       // successful sign-ins only
+| project TimeGenerated, UserPrincipalName, IPAddress, Location,
+          City = tostring(LocationDetails.city),
+          ASN = tostring(AutonomousSystemNumber),
+          AppDisplayName, RiskLevelDuringSignIn
+| sort by UserPrincipalName asc, TimeGenerated asc
+| extend PrevLocation = prev(Location),
+         PrevCity     = prev(City),
+         PrevASN      = prev(ASN),
+         PrevTime     = prev(TimeGenerated),
+         PrevUser     = prev(UserPrincipalName)
+| where PrevUser == UserPrincipalName          // stay within one account
+| where PrevLocation != Location
+| extend MinutesBetween = datetime_diff('minute', TimeGenerated, PrevTime)
+| where MinutesBetween <= 60
+| project UserPrincipalName, PrevCity, PrevLocation, PrevASN,
+          City, Location, ASN, MinutesBetween, RiskLevelDuringSignIn
+| order by MinutesBetween asc
+
+
+// ----------------------------------------------------------------------------
+// 3. New MFA method registered
+//    The second condition from the analyst's question.
+// ----------------------------------------------------------------------------
+AuditLogs
+| where TimeGenerated > ago(24h)
+| where OperationName has_any (
+    "User registered security info",
+    "User registered all required security info",
+    "Admin registered security info"
+  )
+| extend Actor = tostring(InitiatedBy.user.userPrincipalName)
+| extend Method = tostring(AdditionalDetails[0].value)
+| project TimeGenerated, Actor, OperationName, Method, Result
+
+
+// ----------------------------------------------------------------------------
+// 4. The correlation - both conditions on the same account, in order
+//
+//    This is the query the analyst's plain-language question actually maps to.
+//    Worth showing the room: it is 25 lines and three joins, and nobody typed
+//    it. That is the demo.
+// ----------------------------------------------------------------------------
+let window = 24h;
+let travel =
+    SigninLogs
+    | where TimeGenerated > ago(window) and ResultType == 0
+    | sort by UserPrincipalName asc, TimeGenerated asc
+    | extend PrevLocation = prev(Location), PrevTime = prev(TimeGenerated),
+             PrevUser = prev(UserPrincipalName)
+    | where PrevUser == UserPrincipalName and PrevLocation != Location
+    | where datetime_diff('minute', TimeGenerated, PrevTime) <= 60
+    | project UserPrincipalName, TravelTime = TimeGenerated,
+              FromLocation = PrevLocation, ToLocation = Location,
+              ToASN = tostring(AutonomousSystemNumber);
+let mfa =
+    AuditLogs
+    | where TimeGenerated > ago(window)
+    | where OperationName has "registered security info"
+    | extend UserPrincipalName = tostring(InitiatedBy.user.userPrincipalName)
+    | project UserPrincipalName, MfaTime = TimeGenerated, MfaOperation = OperationName;
+travel
+| join kind=inner mfa on UserPrincipalName
+| where MfaTime between (TravelTime .. (TravelTime + 2h))
+| extend MinutesAfterTravel = datetime_diff('minute', MfaTime, TravelTime)
+| project UserPrincipalName, FromLocation, ToLocation, ToASN,
+          TravelTime, MfaTime, MinutesAfterTravel
+| order by MinutesAfterTravel asc
+
+
+// ----------------------------------------------------------------------------
+// 5. The UEBA baseline check - what turns a signal into a verdict
+//
+//    Run this for BOTH accounts the previous query returns. The one whose
+//    destination country is already in its baseline is your false positive.
+// ----------------------------------------------------------------------------
+let target = "j.doe@contoso.com";
+BehaviorAnalytics
+| where TimeGenerated > ago(24h)
+| where UserPrincipalName =~ target
+| project TimeGenerated, UserPrincipalName, ActionType,
+          InvestigationPriority,
+          FirstTimeUserConnectedFromCountry =
+              tostring(ActivityInsights.FirstTimeUserConnectedFromCountry),
+          FirstTimeUserConnectedViaISP =
+              tostring(ActivityInsights.FirstTimeUserConnectedViaISP),
+          FirstTimeUserUsedApp =
+              tostring(ActivityInsights.FirstTimeUserUsedApp),
+          UncommonUserAgent = tostring(ActivityInsights.UncommonUserAgent)
+| where InvestigationPriority > 0
+| order by InvestigationPriority desc
+
+
+// ----------------------------------------------------------------------------
+// 6. OAuth consent to an unverified publisher
+//    The thing the analyst did not ask about, which the model found anyway.
+// ----------------------------------------------------------------------------
+AuditLogs
+| where TimeGenerated > ago(24h)
+| where OperationName == "Consent to application"
+| extend Actor       = tostring(InitiatedBy.user.userPrincipalName),
+         AppName     = tostring(TargetResources[0].displayName),
+         AppId       = tostring(TargetResources[0].id),
+         Permissions = tostring(TargetResources[0].modifiedProperties[4].newValue)
+| where Permissions has_any ("offline_access", "Mail.Read", "Files.Read.All",
+                             "Mail.ReadWrite", "Files.ReadWrite.All")
+| project TimeGenerated, Actor, AppName, AppId, Permissions, Result
+| order by TimeGenerated desc
+
+
+// ----------------------------------------------------------------------------
+// 7. Did the consented app actually use its grant?
+//    Consent is a risk. Consent followed by bulk mail reads is an incident.
+// ----------------------------------------------------------------------------
+let suspect_app = "Contoso Doc Sync";
+CloudAppEvents
+| where Timestamp > ago(24h)
+| where Application has suspect_app
+| where ActionType in ("MailItemsAccessed", "FileDownloaded", "FileSyncDownloadedFull")
+| summarize ObjectCount = sum(toint(RawEventData.OperationCount)),
+            Actions     = make_set(ActionType),
+            FirstSeen   = min(Timestamp),
+            LastSeen    = max(Timestamp)
+        by AccountDisplayName, IPAddress
+| order by ObjectCount desc
+
+
+// ----------------------------------------------------------------------------
+// 8. Asset context - what makes this a High instead of a Medium
+// ----------------------------------------------------------------------------
+let target = "j.doe@contoso.com";
+IdentityInfo
+| where AccountUPN =~ target
+| summarize arg_max(TimeGenerated, *) by AccountUPN
+| project AccountUPN, AccountDisplayName, Department, JobTitle,
+          Manager, AssignedRoles, GroupMembership, RiskLevel
+
+
+// ----------------------------------------------------------------------------
+// 9. The benign check (slide 20 / Mission 1 step 6)
+//
+//    Before you call it malicious, prove the boring explanation is wrong.
+//    If your organisation keeps known egress ranges in a watchlist, this is
+//    the query that kills most impossible-travel false positives outright.
+// ----------------------------------------------------------------------------
+let known_egress = _GetWatchlist('KnownEgressRanges') | project ASN = toint(ASN);
+SigninLogs
+| where TimeGenerated > ago(24h)
+| where ResultType == 0
+| extend ASN = toint(AutonomousSystemNumber)
+| join kind=leftanti known_egress on ASN     // drop anything we own
+| where RiskLevelDuringSignIn in ("medium", "high")
+| project TimeGenerated, UserPrincipalName, Location, ASN, IPAddress,
+          RiskLevelDuringSignIn, RiskEventTypes
+| order by TimeGenerated desc
+
+
+// ----------------------------------------------------------------------------
+// 10. The audit trail - what the compliance people in the room want to see
+//
+//     Every MCP tool call lands here, attributed to the analyst who ran it.
+//     Close the demo on this query.
+// ----------------------------------------------------------------------------
+AuditLogs
+| where TimeGenerated > ago(4h)
+| where LoggedByService == "Microsoft Sentinel"
+       or Category == "ResourceManagement"
+| extend Actor = tostring(InitiatedBy.user.userPrincipalName)
+| where isnotempty(Actor)
+| project TimeGenerated, Actor, OperationName, Result,
+          CorrelationId, ResultReason
+| order by TimeGenerated desc
+| take 50

@@ -1,0 +1,53 @@
+# Keeps the MMS 2026 Midway Edition demos honest.
+#
+# These are stage material. A demo that broke three weeks ago and nobody
+# noticed is worse than no demo. Everything here runs offline - no tenant,
+# no Azure, no secrets - so it can run on every push.
+
+name: demo tests
+
+on:
+  push:
+    paths:
+      - 'demos/empowering-soc-teams/**'
+      - 'demos/modern-threat-detection/**'
+      - 'run-all-tests.py'
+      - '.github/workflows/demo-tests.yml'
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    # Weekly, so drift is caught before the conference rather than during it.
+    - cron: '0 13 * * 1'
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # Windows is in the matrix on purpose: most of the MMS audience runs it,
+        # and this repo has previously shipped files that could not be checked
+        # out on a case-insensitive filesystem.
+        os: [ubuntu-latest, windows-latest]
+        python-version: ['3.10', '3.12']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Run every demo self-test
+        run: python run-all-tests.py
+
+      - name: Check for case-colliding filenames
+        shell: bash
+        run: |
+          dupes=$(git ls-files | tr 'A-Z' 'a-z' | sort | uniq -d)
+          if [ -n "$dupes" ]; then
+            echo "Paths differing only by case cannot be checked out on Windows or macOS:"
+            echo "$dupes"
+            exit 1
+          fi
+          echo "No case collisions."

@@ -1,0 +1,9 @@
+# Demos for "Empowering SOC Teams" - MMS 2026 Midway Edition
+#   pip install -r requirements.txt
+#
+# Only the MCP server needs a dependency. Everything else - the walkthrough,
+# the triage agent, the injection harness - runs on the standard library, on
+# purpose: an attendee should be able to clone this and run it on a locked-down
+# corporate laptop without asking anyone for permission.
+
+mcp>=1.2.0        # only needed to serve replay_mcp_server.py to an MCP client

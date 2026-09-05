@@ -1,0 +1,42 @@
+{
+  "_comment": [
+    "Claude Desktop MCP configuration for Mission 1 (MMS Midway 2026).",
+    "Copy to %APPDATA%\\Claude\\claude_desktop_config.json on Windows,",
+    "or ~/Library/Application Support/Claude/claude_desktop_config.json on macOS.",
+    "",
+    "The hosted Sentinel MCP server is a remote HTTP server with OAuth. In",
+    "Claude Desktop and claude.ai you normally add it through Settings >",
+    "Connectors > Add custom connector rather than this file; the entries below",
+    "are for Claude Code and for clients that read a config file directly.",
+    "",
+    "Auth is interactive: on first use the client opens the Entra consent",
+    "screen, you sign in as the demo analyst, and the token is scoped to that",
+    "user. Every tool call is then evaluated against that user's RBAC.",
+    "",
+    "Do not put a client secret in this file. The app registration created by",
+    "Register-SentinelMcpApp.ps1 is a public client and does not have one."
+  ],
+
+  "mcpServers": {
+    "sentinel-data-exploration": {
+      "type": "http",
+      "url": "https://sentinel.microsoft.com/mcp/data-exploration",
+      "_use": "Mission 1 - natural-language investigation over the data lake"
+    },
+
+    "sentinel-triage": {
+      "type": "http",
+      "url": "https://sentinel.microsoft.com/mcp/triage",
+      "_use": "Mission 2 / Demo 3 - Defender incidents, alerts, evidence, entities, advanced hunting"
+    },
+
+    "sentinel-local-replay": {
+      "_use": "Offline fallback. Serves the same tool names from sample data so the walkthrough runs with no tenant and no network.",
+      "command": "python",
+      "args": ["../02-natural-language-triage/replay_mcp_server.py"],
+      "env": {
+        "REPLAY_DATA": "../02-natural-language-triage/sample_tenant.json"
+      }
+    }
+  }
+}

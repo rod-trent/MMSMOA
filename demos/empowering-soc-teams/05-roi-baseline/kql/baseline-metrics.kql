@@ -1,0 +1,197 @@
+// ============================================================================
+// The four baseline metrics - slide 21
+//
+// Session:    Empowering SOC Teams
+// Conference: MMS 2026 Midway Edition - San Diego, October 25-28 2026
+//
+// Run these for 30 days BEFORE your first agent goes live. Slide 21's
+// demand is simple: you cannot claim ROI without a baseline, and a number
+// you produced after the fact is a number nobody believes.
+//
+// Pin them to a workbook and let them run. Measure-SocRoi.ps1 wraps the
+// same queries with the ROI model on top.
+// ============================================================================
+
+
+// ----------------------------------------------------------------------------
+// METRIC 1 - Mean time to triage
+// Alert created -> first disposition.
+// Industry baseline on slide 21: ~56 minutes elapse before anyone acts.
+//
+// Watch p90, not the mean. The mean is dragged down by the alerts someone
+// happened to be looking at. p90 is what your queue actually feels like.
+// ----------------------------------------------------------------------------
+SecurityIncident
+| where TimeGenerated > ago(30d)
+| summarize arg_max(TimeGenerated, *) by IncidentNumber
+| where isnotempty(FirstModifiedTime)
+| extend MinutesToTriage = datetime_diff('minute', FirstModifiedTime, CreatedTime)
+| where MinutesToTriage between (0 .. 10080)     // drop clock skew and stale reopens
+| summarize
+    Incidents   = count(),
+    MeanMinutes = round(avg(MinutesToTriage), 1),
+    P50         = round(percentile(MinutesToTriage, 50), 1),
+    P90         = round(percentile(MinutesToTriage, 90), 1),
+    P99         = round(percentile(MinutesToTriage, 99), 1)
+  by Severity
+| order by Severity asc
+
+
+// ----------------------------------------------------------------------------
+// METRIC 1b - The same thing as a trend, so you can show the delta later
+// ----------------------------------------------------------------------------
+SecurityIncident
+| where TimeGenerated > ago(90d)
+| summarize arg_max(TimeGenerated, *) by IncidentNumber
+| where isnotempty(FirstModifiedTime)
+| extend MinutesToTriage = datetime_diff('minute', FirstModifiedTime, CreatedTime)
+| where MinutesToTriage between (0 .. 10080)
+| summarize P50 = percentile(MinutesToTriage, 50),
+            P90 = percentile(MinutesToTriage, 90)
+        by bin(TimeGenerated, 1d)
+| render timechart
+
+
+// ----------------------------------------------------------------------------
+// METRIC 2 - Uninvestigated alert rate
+// The share of alerts that no analyst ever opened.
+// Industry baseline on slide 21: 42%.
+//
+// This is the number that makes the room uncomfortable, and it is the one
+// agents improve fastest, because an agent has no queue.
+// ----------------------------------------------------------------------------
+let window = 30d;
+SecurityAlert
+| where TimeGenerated > ago(window)
+| join kind=leftouter (
+    SecurityIncident
+    | where TimeGenerated > ago(window)
+    | mv-expand AlertId = AlertIds to typeof(string)
+    | where isnotempty(tostring(Owner.assignedTo)) or Status != "New"
+    | distinct AlertId
+  ) on $left.SystemAlertId == $right.AlertId
+| summarize
+    TotalAlerts = count(),
+    Touched     = countif(isnotempty(AlertId)),
+    Untouched   = countif(isempty(AlertId))
+  by AlertSeverity
+| extend UninvestigatedPct = round(100.0 * Untouched / TotalAlerts, 1)
+| order by AlertSeverity asc
+
+
+// ----------------------------------------------------------------------------
+// METRIC 3 - Auto-disposition accuracy
+// Verdicts a human confirmed, with no later reopen.
+// Slide 21 gate: >95% before you widen the agent's scope.
+//
+// Reads the run records the agent writes (Demo 3). Before an agent exists,
+// this returns nothing, and that is the correct answer.
+// ----------------------------------------------------------------------------
+SOCAgentRuns_CL
+| where TimeGenerated > ago(30d)
+| extend Decision     = tostring(human_decision_outcome_s),
+         Disposition  = tostring(disposition_s),
+         Edited       = isnotempty(tostring(edited_disposition_s)),
+         Incident     = toint(incident_d)
+// An approval that the analyst had to edit is not a correct verdict.
+| summarize
+    Runs             = count(),
+    ApprovedClean    = countif(Decision == "approved" and not(Edited)),
+    ApprovedEdited   = countif(Decision == "approved" and Edited),
+    Rejected         = countif(Decision == "rejected")
+  by Disposition
+| extend AccuracyPct = round(100.0 * ApprovedClean / Runs, 1)
+| extend Gate = iff(AccuracyPct >= 95.0, "clear to widen scope", "tune before widening")
+| order by Runs desc
+
+
+// ----------------------------------------------------------------------------
+// METRIC 3b - Reopens, which are the accuracy number's honest correction
+//
+// An incident the agent closed and a human reopened within 7 days was not
+// a correct disposition, no matter what the approval said.
+// ----------------------------------------------------------------------------
+let agent_closed =
+    SOCAgentRuns_CL
+    | where TimeGenerated > ago(30d)
+    | where tostring(disposition_s) startswith "Close"
+    | where tostring(human_decision_outcome_s) == "approved"
+    | project Incident = toint(incident_d), ClosedAt = TimeGenerated;
+SecurityIncident
+| where TimeGenerated > ago(30d)
+| where Status != "Closed"
+| join kind=inner agent_closed on $left.IncidentNumber == $right.Incident
+| where TimeGenerated > ClosedAt and TimeGenerated < ClosedAt + 7d
+| summarize Reopened = dcount(IncidentNumber)
+
+
+// ----------------------------------------------------------------------------
+// METRIC 4 - Analyst hours reclaimed
+// Time moved out of triage. Slide 21 target: 10 hrs/week into hunting.
+//
+// MinutesSavedPerAlert must be YOUR measured handling time for the class,
+// not a vendor's. Measure it during the 30-day baseline.
+// ----------------------------------------------------------------------------
+let MinutesSavedPerAlert = 17.6;   // measured, not assumed
+SOCAgentRuns_CL
+| where TimeGenerated > ago(30d)
+| where tostring(human_decision_outcome_s) == "approved"
+| summarize AutoTriaged = count() by bin(TimeGenerated, 7d)
+| extend HoursReclaimed = round(AutoTriaged * MinutesSavedPerAlert / 60.0, 1)
+| order by TimeGenerated asc
+
+
+// ----------------------------------------------------------------------------
+// WHERE TO START - slide 22 says one high-volume, low-risk class
+//
+// Opportunity = volume, discounted by how often the class is genuinely High.
+// You want the boring, noisy, well-understood class. Not the scary one.
+// ----------------------------------------------------------------------------
+SecurityAlert
+| where TimeGenerated > ago(30d)
+| summarize
+    Volume       = count(),
+    HighSeverity = countif(AlertSeverity == "High"),
+    DistinctUsers = dcount(tostring(Entities))
+  by AlertName
+| where Volume >= 20
+| extend HighPct = round(100.0 * HighSeverity / Volume, 1)
+| extend OpportunityScore = round(Volume * (1 - (HighPct / 100.0)), 0)
+| top 15 by OpportunityScore desc
+| project AlertName, Volume, HighPct, OpportunityScore
+
+
+// ----------------------------------------------------------------------------
+// GOVERNANCE - who approved what
+//
+// The query an auditor asks for. Have the answer ready before they ask.
+// ----------------------------------------------------------------------------
+SOCAgentRuns_CL
+| where TimeGenerated > ago(90d)
+| project TimeGenerated,
+          Incident    = toint(incident_d),
+          Agent       = tostring(agent_identity_s),
+          Disposition = tostring(disposition_s),
+          Confidence  = todouble(confidence_d),
+          Decision    = tostring(human_decision_outcome_s),
+          ApprovedBy  = tostring(human_decision_by_s),
+          Comment     = tostring(human_decision_comment_s),
+          Replans     = toint(replans_d)
+| order by TimeGenerated desc
+
+
+// ----------------------------------------------------------------------------
+// SAFETY - prompt-injection attempts the agent saw in retrieved data
+//
+// If this is ever non-empty, one of your data sources is carrying content
+// aimed at your model. Find out which, and who can write to it.
+// ----------------------------------------------------------------------------
+SOCAgentRuns_CL
+| where TimeGenerated > ago(90d)
+| mv-expand SecurityEvent = todynamic(security_events_s)
+| where tostring(SecurityEvent.type) == "prompt_injection_attempt"
+| project TimeGenerated,
+          Incident = toint(incident_d),
+          Source   = tostring(SecurityEvent.source),
+          Detail   = tostring(SecurityEvent.detail)
+| order by TimeGenerated desc

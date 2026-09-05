@@ -1,0 +1,69 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "workspaceName": {
+      "type": "string"
+    },
+    "ruleGuid": {
+      "type": "string",
+      "defaultValue": "[newGuid()]"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+      "name": "[concat(parameters('workspaceName'), '/Microsoft.SecurityInsights/', parameters('ruleGuid'))]",
+      "apiVersion": "2023-02-01",
+      "kind": "Scheduled",
+      "properties": {
+        "displayName": "Low-and-slow OAuth consent to an unverified publisher",
+        "description": "Detects a single unverified application collecting user-initiated OAuth consent grants with sensitive scopes across multiple users over an extended period. Threshold rules measured per-day do not see this: the campaign that prompted this rule averaged under one grant/day for a week.\n\nTuning: raise min_grants or shorten lookback if your environment has high organic app adoption. Backtest over 90 days before enabling.",
+        "severity": "Medium",
+        "enabled": true,
+        "query": "let lookback = 14d;\nlet min_grants = 3;\nlet approved_publishers = dynamic([\"Microsoft\", \"Adobe\", \"Atlassian\", \"ServiceNow\"]);\nAuditLogs\n| where TimeGenerated > ago(lookback)\n| where OperationName == \"Consent to application\"\n| where Result == \"success\"\n| extend AppDisplayName   = tostring(TargetResources[0].displayName),\n         AppId            = tostring(TargetResources[0].id),\n         Actor            = tostring(InitiatedBy.user.userPrincipalName),\n         ConsentType      = tostring(TargetResources[0].modifiedProperties[0].newValue),\n         Permissions      = tostring(TargetResources[0].modifiedProperties[4].newValue)\n// User-initiated only. An admin rollout is a different thing and has a CAB record.\n| where ConsentType !has \"AllPrincipals\"\n| where not(AppDisplayName has_any (approved_publishers))\n// Sensitive scopes only, or every Teams install becomes an alert.\n| where Permissions has_any (\"offline_access\", \"Mail.Read\", \"Mail.ReadWrite\",\n                             \"Files.Read.All\", \"Files.ReadWrite.All\")\n| summarize\n    GrantCount   = dcount(Actor),\n    Users        = make_set(Actor, 20),\n    FirstGrant   = min(TimeGenerated),\n    LastGrant    = max(TimeGenerated),\n    Permissions  = make_set(Permissions, 5)\n  by AppDisplayName, AppId\n| where GrantCount >= min_grants\n| extend CampaignDays = datetime_diff('day', LastGrant, FirstGrant)\n// The whole point: catch the slow ones the daily thresholds miss.\n| extend GrantsPerDay = round(todouble(GrantCount) / max_of(CampaignDays, 1), 2)\n| project AppDisplayName, AppId, GrantCount, CampaignDays, GrantsPerDay,\n          Users, Permissions, FirstGrant, LastGrant",
+        "queryFrequency": "PT6H",
+        "queryPeriod": "P14D",
+        "triggerOperator": "GreaterThan",
+        "triggerThreshold": 0,
+        "suppressionDuration": "PT12H",
+        "suppressionEnabled": true,
+        "tactics": [
+          "Persistence",
+          "CredentialAccess"
+        ],
+        "techniques": [
+          "T1098.003",
+          "T1550.001"
+        ],
+        "entityMappings": [
+          {
+            "entityType": "CloudApplication",
+            "fieldMappings": [
+              {
+                "identifier": "AppId",
+                "columnName": "AppId"
+              },
+              {
+                "identifier": "Name",
+                "columnName": "AppDisplayName"
+              }
+            ]
+          }
+        ],
+        "incidentConfiguration": {
+          "createIncident": true,
+          "groupingConfiguration": {
+            "enabled": true,
+            "reopenClosedIncident": false,
+            "lookbackDuration": "P7D",
+            "matchingMethod": "Selected",
+            "groupByEntities": [
+              "CloudApplication"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,176 @@
+// ============================================================================
+// Mission 1 - service accounts used interactively
+//
+// Session:    Using AI for Modern Threat Detection
+// Conference: MMS 2026 Midway Edition - San Diego, October 25-28 2026
+//
+// The model writes these. You read them. That is rule 1 of the slide 12
+// template and it is the first validation checkpoint.
+//
+// Also your fallback: if MCP auth dies on stage, paste these into Advanced
+// Hunting or the Sentinel portal and narrate what Claude would have done.
+// ============================================================================
+
+
+// ----------------------------------------------------------------------------
+// 1. The hypothesis, as a query
+//
+//    "Service accounts should never sign in interactively."
+//
+//    Read the WOULD-MISS list in the comment before you trust an empty result.
+//    An empty result here does not mean 'no compromise'.
+// ----------------------------------------------------------------------------
+//
+//    WOULD MISS:
+//      - service accounts not following the svc-* naming convention
+//        (a convention is not a control)
+//      - failed interactive attempts - ResultType != 0 is a signal too
+//      - service principals, which are in AADServicePrincipalSignInLogs
+//      - anything outside the window
+//
+let window = 7d;
+let service_accounts =
+    IdentityInfo
+    | where TimeGenerated > ago(30d)
+    | summarize arg_max(TimeGenerated, *) by AccountUPN
+    | where AccountUPN startswith "svc-"
+        or AccountDisplayName has_any ("service account", "svc account")
+    | distinct AccountUPN;
+SigninLogs
+| where TimeGenerated > ago(window)
+| where UserPrincipalName in (service_accounts)
+| where ResultType == 0
+// SigninLogs is the interactive table; the explicit filter documents intent.
+| project TimeGenerated, UserPrincipalName, IPAddress,
+          ASN = tostring(AutonomousSystemNumber),
+          Location, City = tostring(LocationDetails.city),
+          AppDisplayName, UserAgent,
+          RiskLevelDuringSignIn,
+          DeviceId = tostring(DeviceDetail.deviceId),
+          IsCompliant = tostring(DeviceDetail.isCompliant)
+| order by TimeGenerated desc
+
+
+// ----------------------------------------------------------------------------
+// 2. The baseline check - is this new for THIS account?
+//
+//    Run this for every hit from query 1. This is what separates the real
+//    finding from the documented break-glass procedure, and it is the step
+//    that stops the hunt generating work instead of removing it.
+// ----------------------------------------------------------------------------
+let targets = dynamic(["svc-datasync@contoso.com", "svc-reporting@contoso.com"]);
+BehaviorAnalytics
+| where TimeGenerated > ago(7d)
+| where UserPrincipalName in~ (targets)
+| where InvestigationPriority > 0
+| extend Insights = bag_keys(ActivityInsights)
+| project TimeGenerated, UserPrincipalName, ActivityType,
+          InvestigationPriority,
+          FirstTimeCountry = tostring(ActivityInsights.FirstTimeUserConnectedFromCountry),
+          FirstTimeISP     = tostring(ActivityInsights.FirstTimeUserConnectedViaISP),
+          FirstTimeApp     = tostring(ActivityInsights.FirstTimeUserUsedApp),
+          UncommonAgent    = tostring(ActivityInsights.UncommonUserAgent),
+          Insights
+| order by InvestigationPriority desc
+
+
+// ----------------------------------------------------------------------------
+// 3. The benign check, part 1 - is the source ASN ours?
+//
+//    Keep known egress in a watchlist. This one query kills more false
+//    positives than any detection you will write this year.
+// ----------------------------------------------------------------------------
+let known_egress = _GetWatchlist('KnownEgressRanges') | project ASN = toint(ASN);
+SigninLogs
+| where TimeGenerated > ago(7d)
+| where UserPrincipalName startswith "svc-"
+| where ResultType == 0
+| extend ASN = toint(AutonomousSystemNumber)
+| join kind=leftanti known_egress on ASN
+| project TimeGenerated, UserPrincipalName, IPAddress, ASN, Location, AppDisplayName
+| order by TimeGenerated desc
+//
+// No watchlist yet? Inline it, and then go build the watchlist:
+//   let known_egress = datatable(ASN:int)[8075, 10796];
+
+
+// ----------------------------------------------------------------------------
+// 4. The benign check, part 2 - approved jump host?
+// ----------------------------------------------------------------------------
+let jump_hosts = dynamic(["JUMP-CONTOSO-01", "JUMP-CONTOSO-02"]);
+SigninLogs
+| where TimeGenerated > ago(7d)
+| where UserPrincipalName startswith "svc-"
+| extend DeviceId = tostring(DeviceDetail.deviceId),
+         IsCompliant = tobool(DeviceDetail.isCompliant)
+| extend FromJumpHost = DeviceId in (jump_hosts)
+| project TimeGenerated, UserPrincipalName, DeviceId, IsCompliant, FromJumpHost,
+          ASN = tostring(AutonomousSystemNumber)
+| where not(FromJumpHost)
+
+
+// ----------------------------------------------------------------------------
+// 5. The pivot - what did the identity touch in the next 60 minutes?
+//
+//    This is the query that turns a suspicious sign-in into a story you can
+//    tell IR. Watch the sequence, not the individual calls.
+// ----------------------------------------------------------------------------
+let target   = "svc-datasync@contoso.com";
+let pivot_at = datetime(2026-10-26T21:47:52Z);
+MicrosoftGraphActivityLogs
+| where TimeGenerated between (pivot_at .. (pivot_at + 60m))
+| where UserPrincipalName =~ target
+| extend Endpoint = tostring(split(RequestUri, "/v1.0/")[1])
+| project TimeGenerated, RequestMethod, Endpoint,
+          ResponseStatusCode, ResponseSizeBytes
+| order by TimeGenerated asc
+//
+// /users -> /groups -> /directoryRoles -> /applications is directory
+// enumeration. The /directoryRoles call is the one that matters: a data sync
+// service has no reason to ask who the administrators are.
+
+
+// ----------------------------------------------------------------------------
+// 6. The second pivot - on the infrastructure, not the account
+//
+//    The move that turns one compromised account into a campaign. Always
+//    pivot on the IP or ASN once, even when the account story is complete.
+// ----------------------------------------------------------------------------
+let bad_ip = "45.129.14.201";
+union isfuzzy=true
+    (SigninLogs
+     | where TimeGenerated > ago(30d) and IPAddress == bad_ip
+     | project TimeGenerated, Source = "SigninLogs",
+               Account = UserPrincipalName, Detail = AppDisplayName),
+    (CloudAppEvents
+     | where Timestamp > ago(30d) and IPAddress == bad_ip
+     | project TimeGenerated = Timestamp, Source = "CloudAppEvents",
+               Account = AccountDisplayName, Detail = strcat(ActionType, " via ", Application)),
+    (AADNonInteractiveUserSignInLogs
+     | where TimeGenerated > ago(30d) and IPAddress == bad_ip
+     | project TimeGenerated, Source = "NonInteractive",
+               Account = UserPrincipalName, Detail = AppDisplayName)
+| summarize Events = count(), FirstSeen = min(TimeGenerated), LastSeen = max(TimeGenerated),
+            Sources = make_set(Source), Details = make_set(Detail, 5)
+        by Account
+| order by FirstSeen asc
+
+
+// ----------------------------------------------------------------------------
+// 7. Seed known bad - the validation step people forget
+//
+//    Before you trust silence from a hunt, prove the hunt can find something.
+//    Create a test service account, sign in interactively from an ASN you do
+//    not own, and confirm query 1 returns it.
+//
+//    If it cannot find your test, distrust its silence.
+// ----------------------------------------------------------------------------
+let test_account = "svc-hunttest@contoso.com";
+SigninLogs
+| where TimeGenerated > ago(1d)
+| where UserPrincipalName =~ test_account
+| project TimeGenerated, UserPrincipalName, IPAddress,
+          ASN = tostring(AutonomousSystemNumber), AppDisplayName
+| order by TimeGenerated desc
+//
+// Empty result = your hunt is blind, not your estate clean.
