@@ -1,5 +1,10 @@
 # MMS Session Materials — Rod Trent
 
+[![Live demos](https://img.shields.io/badge/live%20demos-mms--midway--demos.vercel.app-297FD5?style=for-the-badge&logo=vercel&logoColor=white)](https://mms-midway-demos.vercel.app)
+[![MMS 2026](https://img.shields.io/badge/MMS%202026-Midway%20Edition-F2B134?style=for-the-badge)](https://mmsmoa.com/mms2026midway)
+[![Runs offline](https://img.shields.io/badge/demos-run%20offline-5AD18F?style=for-the-badge)](demos/DEMO-INVENTORY.md)
+[![demo tests](https://github.com/rod-trent/MMSMOA/actions/workflows/demo-tests.yml/badge.svg)](https://github.com/rod-trent/MMSMOA/actions/workflows/demo-tests.yml)
+
 Slide decks, demo code, and walkthroughs from Rod Trent's sessions at the
 Midwest Management Summit.
 
