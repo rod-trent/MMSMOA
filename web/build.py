@@ -248,6 +248,40 @@ DEMOS_MANIFEST: list[dict] = [
     },
 ]
 
+
+# ---------------------------------------------------------------------------
+# Deck links
+# ---------------------------------------------------------------------------
+#
+# The decks are not copied into the site: they are 15MB, .vercelignore keeps
+# SlideDecks/ out of the deploy, and a second copy would drift. Instead the
+# cards link the committed files on GitHub three ways:
+#
+#   view      Office's own web viewer, which renders a .pptx in the browser
+#   download  GitHub's raw endpoint
+#   open      the ms-powerpoint: URI, which hands it to desktop PowerPoint
+#
+# Verified: the raw URL 200s, and the viewer renders the deck to "SLIDE 1 OF 25".
+
+import urllib.parse
+
+REPO_RAW = "https://raw.githubusercontent.com/rod-trent/MMSMOA/main/SlideDecks/"
+REPO_DL = "https://github.com/rod-trent/MMSMOA/raw/main/SlideDecks/"
+OFFICE_VIEWER = "https://view.officeapps.live.com/op/view.aspx?src="
+
+
+def deck_links(filename: str) -> dict:
+    quoted = urllib.parse.quote(filename)
+    raw = REPO_RAW + quoted
+    return {
+        "file": filename,
+        "view": OFFICE_VIEWER + urllib.parse.quote(raw, safe=""),
+        "download": REPO_DL + quoted,
+        # PowerPoint's protocol handler wants the plain URL after "ofe|u|".
+        "powerpoint": "ms-powerpoint:ofe|u|" + raw,
+    }
+
+
 SESSIONS = {
     "soc": {
         "id": "soc",
@@ -256,6 +290,7 @@ SESSIONS = {
         "slot": "Monday 26 October · 3:00pm PDT · Seaport H",
         "presenters": "Rod Trent · Ken Goossens",
         "accent": "#297FD5",
+        "deck": deck_links("Empowering SOC Teams - MMS Midway 2026.pptx"),
     },
     "hunt": {
         "id": "hunt",
@@ -264,6 +299,7 @@ SESSIONS = {
         "slot": "Tuesday 27 October · 10:00am PDT · Seaport G",
         "presenters": "Rod Trent · Chris Sires",
         "accent": "#F2B134",
+        "deck": deck_links("Using AI for Modern Threat Detection - MMS Midway 2026.pptx"),
     },
 }
 

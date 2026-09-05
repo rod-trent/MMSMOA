@@ -14,7 +14,13 @@
       "subtitle": "How Claude, Copilot, ChatGPT, MCP Servers, and Agents Drive Efficiency",
       "slot": "Monday 26 October \u00b7 3:00pm PDT \u00b7 Seaport H",
       "presenters": "Rod Trent \u00b7 Ken Goossens",
-      "accent": "#297FD5"
+      "accent": "#297FD5",
+      "deck": {
+        "file": "Empowering SOC Teams - MMS Midway 2026.pptx",
+        "view": "https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fraw.githubusercontent.com%2Frod-trent%2FMMSMOA%2Fmain%2FSlideDecks%2FEmpowering%2520SOC%2520Teams%2520-%2520MMS%2520Midway%25202026.pptx",
+        "download": "https://github.com/rod-trent/MMSMOA/raw/main/SlideDecks/Empowering%20SOC%20Teams%20-%20MMS%20Midway%202026.pptx",
+        "powerpoint": "ms-powerpoint:ofe|u|https://raw.githubusercontent.com/rod-trent/MMSMOA/main/SlideDecks/Empowering%20SOC%20Teams%20-%20MMS%20Midway%202026.pptx"
+      }
     },
     {
       "id": "hunt",
@@ -22,7 +28,13 @@
       "subtitle": "Hunt what SIEM rules miss",
       "slot": "Tuesday 27 October \u00b7 10:00am PDT \u00b7 Seaport G",
       "presenters": "Rod Trent \u00b7 Chris Sires",
-      "accent": "#F2B134"
+      "accent": "#F2B134",
+      "deck": {
+        "file": "Using AI for Modern Threat Detection - MMS Midway 2026.pptx",
+        "view": "https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fraw.githubusercontent.com%2Frod-trent%2FMMSMOA%2Fmain%2FSlideDecks%2FUsing%2520AI%2520for%2520Modern%2520Threat%2520Detection%2520-%2520MMS%2520Midway%25202026.pptx",
+        "download": "https://github.com/rod-trent/MMSMOA/raw/main/SlideDecks/Using%20AI%20for%20Modern%20Threat%20Detection%20-%20MMS%20Midway%202026.pptx",
+        "powerpoint": "ms-powerpoint:ofe|u|https://raw.githubusercontent.com/rod-trent/MMSMOA/main/SlideDecks/Using%20AI%20for%20Modern%20Threat%20Detection%20-%20MMS%20Midway%202026.pptx"
+      }
     }
   ],
   "pyAssets": [

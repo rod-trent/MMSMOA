@@ -201,6 +201,21 @@ body::after {
   margin: 9px 0 0; font-size: 13px; color: var(--ink-faint); font-family: var(--mono);
 }
 
+/* Slide-deck links under each session heading. */
+.deck {
+  display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+  margin: 14px 0 0;
+}
+.deck-label {
+  font-family: var(--mono); font-size: 11.5px; letter-spacing: .04em;
+  text-transform: uppercase; color: var(--accent);
+}
+.deck a.btn { text-decoration: none; }
+.deck-file {
+  font-family: var(--mono); font-size: 11.5px; color: var(--ink-faint);
+}
+@media (max-width: 760px) { .deck-file { display: none; } }
+
 .grid {
   display: grid; gap: 16px;
   grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));

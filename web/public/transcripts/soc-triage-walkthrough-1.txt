@@ -1,6 +1,6 @@
 {
   "mission": "Mission 1 - natural-language investigation",
-  "generated_utc": "2026-09-05T21:38:23+00:00",
+  "generated_utc": "2026-09-05T21:55:30+00:00",
   "tenant": "CONTOSO-PROD",
   "analyst_identity": "analyst@contoso.com",
   "analyst_role": "Security Reader",

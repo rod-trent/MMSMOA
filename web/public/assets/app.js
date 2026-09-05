@@ -173,6 +173,7 @@
           '<h2>' + esc(s.title) + '</h2>' +
           '<p class="sub">' + esc(s.subtitle) + '</p>' +
           '<p class="meta">' + esc(s.slot) + '  ·  ' + esc(s.presenters) + '</p>' +
+          deckBar(s) +
         '</div><div class="grid"></div>';
       var grid = sec.querySelector('.grid');
       demos.forEach(function (d) { grid.appendChild(card(d, s)); });
@@ -205,6 +206,24 @@
       p.set('s', id);
       history.replaceState(null, '', location.pathname + '?' + p.toString());
     }
+  }
+
+  /* The session's slide deck, three ways: rendered in the browser by Office's
+   * own viewer, downloaded, or handed to desktop PowerPoint via its protocol
+   * handler. All three point at the committed file on GitHub rather than a
+   * copy in this site, so they cannot drift from the deck in the repo. */
+  function deckBar(s) {
+    if (!s.deck) return '';
+    return '<div class="deck">' +
+      '<span class="deck-label">Slide deck</span>' +
+      '<a class="btn btn-sm btn-ghost" target="_blank" rel="noopener" href="' +
+        esc(s.deck.view) + '">Open in browser</a>' +
+      '<a class="btn btn-sm btn-ghost" href="' + esc(s.deck.download) + '">Download</a>' +
+      '<a class="btn btn-sm btn-ghost" href="' + esc(s.deck.powerpoint) +
+        '" title="Opens in desktop PowerPoint. Windows with Office installed.">' +
+        'Open in PowerPoint</a>' +
+      '<span class="deck-file">' + esc(s.deck.file) + '</span>' +
+    '</div>';
   }
 
   function card(d, session) {
