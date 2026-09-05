@@ -275,7 +275,12 @@ VOLATILE = [
 
 
 def normalise(raw: bytes) -> bytes:
-    """Mask timestamps so --check compares content, not clocks."""
+    """Mask timestamps and line endings so --check compares content.
+
+    Line endings vary with the developer's git checkout; timestamps vary with
+    the clock. Neither is drift.
+    """
+    raw = raw.replace(b"\r\n", b"\n")
     try:
         text = raw.decode("utf-8")
     except UnicodeDecodeError:
@@ -420,14 +425,18 @@ def build(out: Path) -> dict:
             shutil.rmtree(d)
         d.mkdir(parents=True)
 
-    # 1. Copy the demo sources.
+    # 1. Copy the demo sources, normalising line endings to LF.
+    #
+    # Not cosmetic: git checks demos/ out as CRLF on Windows and LF on Linux, so
+    # a byte-for-byte copy would make the build output depend on the developer's
+    # checkout settings and --check would report drift that is not there.
     for rel in PY_ASSETS:
         src = DEMOS / rel
         if not src.exists():
             raise SystemExit(f"missing demo asset: {rel}")
         dst = py_dir / rel
         dst.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(src, dst)
+        dst.write_bytes(src.read_bytes().replace(b"\r\n", b"\n"))
 
     # 2. Bake every variant.
     baked = 0
@@ -496,12 +505,12 @@ def main() -> int:
             a_files = {p.relative_to(a) for p in a.rglob("*") if p.is_file()}
             b_files = {p.relative_to(b) for p in b.rglob("*") if p.is_file()}
             for missing in sorted(b_files - a_files):
-                drift.append(f"{sub}/{missing} missing")
+                drift.append(f"{sub}/{missing.as_posix()} missing")
             for extra in sorted(a_files - b_files):
-                drift.append(f"{sub}/{extra} is stale")
+                drift.append(f"{sub}/{extra.as_posix()} is stale")
             for common in sorted(a_files & b_files):
                 if normalise((a / common).read_bytes()) != normalise((b / common).read_bytes()):
-                    drift.append(f"{sub}/{common} differs")
+                    drift.append(f"{sub}/{common.as_posix()} differs")
 
     if drift:
         print("\n  web/public is out of date. The site would not match the demos:\n")
