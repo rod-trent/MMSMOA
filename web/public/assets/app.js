@@ -19,6 +19,8 @@
     manifest: null,
     pyodide: null,
     engine: 'loading',   // loading | live | fallback
+    ready: null,         // resolves when the engine is decided
+    session: null,       // which session tab is showing
     demo: null,
     variantIndex: 0,
     player: null
@@ -71,12 +73,13 @@
         'Forced with ?mode=fallback. This is what a failed Python load looks like.');
       document.getElementById('footnote').textContent =
         'Fallback forced with ?mode=fallback — playing transcripts baked from the same code at build time.';
+      state.ready = Promise.resolve();
       return;
     }
 
     setEngine('loading', 'loading Python…', 'Downloading the Python runtime');
 
-    loadScript(PYODIDE_URL)
+    state.ready = loadScript(PYODIDE_URL)
       .then(function () { return loadPyodide({ indexURL: PYODIDE_URL.replace('pyodide.js', '') }); })
       .then(function (py) {
         state.pyodide = py;
@@ -129,29 +132,31 @@
    * Rendering
    * ------------------------------------------------------------------ */
 
+  /* The two sessions are tabs, not stacked sections: one is visible at a time,
+   * so what is on the projector is only ever the session being presented. */
   function render(m) {
     var nav = document.getElementById('sessionnav');
     var host = document.getElementById('sessions');
     nav.innerHTML = '';
     host.innerHTML = '';
+    nav.setAttribute('role', 'tablist');
 
-    m.sessions.forEach(function (s, i) {
+    m.sessions.forEach(function (s) {
       var b = document.createElement('button');
       b.textContent = s.title;
       b.dataset.s = s.id;
-      b.setAttribute('aria-current', i === 0 ? 'true' : 'false');
-      b.addEventListener('click', function () {
-        document.getElementById('sess-' + s.id).scrollIntoView({ behavior: 'smooth', block: 'start' });
-        nav.querySelectorAll('button').forEach(function (x) {
-          x.setAttribute('aria-current', String(x === b));
-        });
-      });
+      b.id = 'tab-' + s.id;
+      b.setAttribute('role', 'tab');
+      b.setAttribute('aria-controls', 'sess-' + s.id);
+      b.addEventListener('click', function () { showSession(s.id); });
       nav.appendChild(b);
 
       var demos = m.demos.filter(function (d) { return d.session === s.id; });
       var sec = document.createElement('section');
       sec.className = 'session';
       sec.id = 'sess-' + s.id;
+      sec.setAttribute('role', 'tabpanel');
+      sec.setAttribute('aria-labelledby', 'tab-' + s.id);
       sec.style.setProperty('--accent', s.accent);
       sec.innerHTML =
         '<div class="session-head">' +
@@ -163,6 +168,33 @@
       demos.forEach(function (d) { grid.appendChild(card(d, s)); });
       host.appendChild(sec);
     });
+
+    // ?s=<session> survives a reload, so the tab you are on is the tab you
+    // come back to.
+    var wanted = new URLSearchParams(location.search).get('s');
+    var valid = m.sessions.some(function (s) { return s.id === wanted; });
+    showSession(valid ? wanted : m.sessions[0].id, true);
+  }
+
+  function showSession(id, skipUrl) {
+    state.session = id;
+
+    document.getElementById('sessionnav').querySelectorAll('button').forEach(function (b) {
+      var on = b.dataset.s === id;
+      b.setAttribute('aria-current', String(on));
+      b.setAttribute('aria-selected', String(on));
+      b.tabIndex = on ? 0 : -1;
+    });
+
+    document.getElementById('sessions').querySelectorAll('.session').forEach(function (sec) {
+      sec.hidden = sec.id !== 'sess-' + id;
+    });
+
+    if (!skipUrl) {
+      var p = new URLSearchParams(location.search);
+      p.set('s', id);
+      history.replaceState(null, '', location.pathname + '?' + p.toString());
+    }
   }
 
   function card(d, session) {
@@ -221,6 +253,7 @@
     var d = m.demos.find(function (x) { return x.id === id; });
     if (!d) return;
     var session = m.sessions.find(function (s) { return s.id === d.session; });
+    showSession(d.session, true);
     var v = parseInt(params.get('v') || '', 10);
     openRunner(d, session, isNaN(v) ? null : v);
   }
@@ -228,6 +261,7 @@
   function syncUrl() {
     if (!state.demo) return;
     var p = new URLSearchParams(location.search);
+    p.set('s', state.demo.session);
     p.set('demo', state.demo.id);
     if (state.demo.kind === 'run') p.set('v', String(state.variantIndex));
     else p.delete('v');
@@ -315,21 +349,36 @@
     var name = d.script.split('/').pop();
     cmdEl.textContent = 'python ' + name + (variant.args.length ? ' ' + variant.args.map(q).join(' ') : '');
 
-    if (state.engine === 'live') {
+    var token = ++runToken;
+
+    status.textContent = state.engine === 'loading'
+      ? 'waiting for Python…'
+      : 'running…';
+
+    // Wait for the engine to be decided. A deep link opens before Pyodide has
+    // finished loading, and without this it would always fall back.
+    Promise.resolve(state.ready).catch(function () {}).then(function () {
+      if (token !== runToken) return;          // a different variant was clicked
+
+      if (state.engine !== 'live') {
+        return fetchTranscript(variant.transcript).then(function (text) {
+          if (token === runToken) play(text, 'recorded');
+        });
+      }
+
       status.textContent = 'running…';
-      setTimeout(function () {
-        runPython(d.script, variant.args)
-          .then(function (text) { play(text, 'live'); })
-          .catch(function (err) {
-            console.warn('run failed, falling back:', err);
-            fetchTranscript(variant.transcript).then(function (t) { play(t, 'recorded'); });
+      return runPython(d.script, variant.args)
+        .then(function (text) { if (token === runToken) play(text, 'live'); })
+        .catch(function (err) {
+          console.warn('run failed, falling back:', err);
+          return fetchTranscript(variant.transcript).then(function (t) {
+            if (token === runToken) play(t, 'recorded');
           });
-      }, 10);
-    } else {
-      status.textContent = 'loading…';
-      fetchTranscript(variant.transcript).then(function (text) { play(text, 'recorded'); });
-    }
+        });
+    });
   }
+
+  var runToken = 0;
 
   function q(s) { return /[\s]/.test(s) ? '"' + s + '"' : s; }
 

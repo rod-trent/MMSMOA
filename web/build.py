@@ -247,7 +247,7 @@ SESSIONS = {
         "subtitle": "How Claude, Copilot, ChatGPT, MCP Servers, and Agents Drive Efficiency",
         "slot": "Monday 26 October · 3:00pm PDT · Seaport H",
         "presenters": "Rod Trent · Ken Goossens",
-        "accent": "#4da3ff",
+        "accent": "#297FD5",
     },
     "hunt": {
         "id": "hunt",
@@ -255,7 +255,7 @@ SESSIONS = {
         "subtitle": "Hunt what SIEM rules miss",
         "slot": "Tuesday 27 October · 10:00am PDT · Seaport G",
         "presenters": "Rod Trent · Chris Sires",
-        "accent": "#ffb347",
+        "accent": "#F2B134",
     },
 }
 

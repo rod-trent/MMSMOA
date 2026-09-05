@@ -16,3 +16,11 @@ mission1-record.json
 # OS
 .DS_Store
 Thumbs.db
+
+# Vercel CLI link + OIDC token (never commit)
+.vercel/
+.env*.local
+.env
+
+.vercel
+.env*

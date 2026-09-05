@@ -14,7 +14,7 @@
       "subtitle": "How Claude, Copilot, ChatGPT, MCP Servers, and Agents Drive Efficiency",
       "slot": "Monday 26 October \u00b7 3:00pm PDT \u00b7 Seaport H",
       "presenters": "Rod Trent \u00b7 Ken Goossens",
-      "accent": "#4da3ff"
+      "accent": "#297FD5"
     },
     {
       "id": "hunt",
@@ -22,7 +22,7 @@
       "subtitle": "Hunt what SIEM rules miss",
       "slot": "Tuesday 27 October \u00b7 10:00am PDT \u00b7 Seaport G",
       "presenters": "Rod Trent \u00b7 Chris Sires",
-      "accent": "#ffb347"
+      "accent": "#F2B134"
     }
   ],
   "pyAssets": [

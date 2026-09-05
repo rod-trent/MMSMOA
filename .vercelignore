@@ -1,0 +1,11 @@
+# Only web/public is served. Everything else is repo material and does not
+# need uploading on every deploy - the slide decks and demo videos alone are
+# ~18MB.
+demos/
+SlideDecks/
+.github/
+web/build.py
+web/README.md
+*.md
+LICENSE
+run-all-tests.py

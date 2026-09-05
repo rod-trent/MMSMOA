@@ -1,22 +1,35 @@
 /* MMS 2026 Midway - live demo site
-   Dark by default: this is projected in a dim room next to a dark deck. */
+ *
+ * Palette, type and motifs are lifted from the session decks' own theme so the
+ * browser tab reads as part of the same talk when it sits beside the slides:
+ *
+ *   #011230  slide-master background        #297FD5  MMS blue (theme accent3)
+ *   #1B2A5E  panel navy                     #F2B134  gold accent
+ *   #24387A  raised navy                    #C9D6F0  body text
+ *   #242852  theme dk2                      #ACCBF9  dim text (theme lt2)
+ *
+ * Type is Calibri, as in the decks, with a system fallback stack.
+ * The "flight deck" stripe under the header is a nod to the Midway edition
+ * and the decks' Pilot / RIO framing.
+ */
 
 :root {
-  --bg:        #0a0f1c;
-  --bg-2:      #0f1626;
-  --panel:     #131c30;
-  --panel-2:   #182238;
-  --line:      #24304b;
-  --ink:       #e8edf7;
-  --ink-dim:   #93a1bd;
-  --ink-faint: #64718e;
-  --soc:       #4da3ff;
-  --hunt:      #ffb347;
-  --ok:        #4ade80;
-  --warn:      #fbbf24;
-  --bad:       #f87171;
-  --mono: ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas, monospace;
-  --sans: ui-sans-serif, system-ui, "Segoe UI", Inter, Roboto, sans-serif;
+  --bg:        #011230;
+  --bg-2:      #0a1a3d;
+  --panel:     #1B2A5E;
+  --panel-2:   #24387A;
+  --line:      #2c4180;
+  --ink:       #FFFFFF;
+  --ink-dim:   #C9D6F0;
+  --ink-faint: #8fa5d4;
+  --soc:       #297FD5;
+  --hunt:      #F2B134;
+  --ok:        #5AD18F;
+  --warn:      #F2B134;
+  --bad:       #FF7A7A;
+  --mono: "Cascadia Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --sans: Calibri, "Segoe UI", ui-sans-serif, system-ui, Roboto, sans-serif;
+  --display: "Calibri Light", Calibri, "Segoe UI Light", var(--sans);
 }
 
 * { box-sizing: border-box; }
@@ -26,9 +39,10 @@ html { color-scheme: dark; }
 body {
   margin: 0;
   background:
-    radial-gradient(1100px 500px at 15% -10%, #16243f 0%, transparent 60%),
-    radial-gradient(900px 420px at 90% 0%, #1b2036 0%, transparent 55%),
+    radial-gradient(1200px 540px at 12% -12%, #17306b 0%, transparent 62%),
+    radial-gradient(900px 420px at 92% -4%, #0f2559 0%, transparent 58%),
     var(--bg);
+  background-attachment: fixed;
   color: var(--ink);
   font-family: var(--sans);
   font-size: 16px;
@@ -45,9 +59,18 @@ a:hover { color: #7cc0ff; }
 
 .top {
   border-bottom: 1px solid var(--line);
-  background: rgba(10, 15, 28, .78);
+  background: rgba(1, 18, 48, .86);
   backdrop-filter: blur(10px);
   position: sticky; top: 0; z-index: 40;
+}
+/* Flight-deck centreline: a dashed runway stripe under the header.
+   Midway edition, and the decks' Pilot / RIO conceit. */
+.top::after {
+  content: ""; display: block; height: 3px;
+  background:
+    repeating-linear-gradient(90deg,
+      var(--hunt) 0 30px, rgba(242,177,52,.12) 30px 70px);
+  opacity: .8;
 }
 .top .wrap {
   display: flex; align-items: center; justify-content: space-between;
@@ -55,11 +78,12 @@ a:hover { color: #7cc0ff; }
 }
 .brand { display: flex; align-items: center; gap: 14px; }
 .mark {
-  font-weight: 800; letter-spacing: .06em; font-size: 15px;
-  color: var(--bg); background: var(--soc);
-  padding: 5px 9px; border-radius: 7px;
+  font-weight: 700; letter-spacing: .10em; font-size: 15px;
+  color: #fff; background: var(--soc);
+  padding: 6px 11px; border-radius: 6px;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.14) inset;
 }
-.brand h1 { margin: 0; font-size: 19px; letter-spacing: -.01em; }
+.brand h1 { margin: 0; font-size: 20px; letter-spacing: .005em; font-family: var(--display); font-weight: 700; }
 .event { margin: 1px 0 0; font-size: 12.5px; color: var(--ink-faint); }
 .topright { display: flex; align-items: center; gap: 12px; }
 
@@ -95,7 +119,11 @@ a:hover { color: #7cc0ff; }
 
 /* ---------- session nav ---------- */
 
-.sessionnav { display: flex; gap: 10px; flex-wrap: wrap; margin: 26px 0 6px; }
+.sessionnav {
+  display: flex; gap: 10px; flex-wrap: wrap;
+  margin: 26px 0 6px; padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
 .sessionnav button {
   font: inherit; font-size: 13.5px; cursor: pointer;
   background: var(--panel); color: var(--ink-dim);
@@ -108,9 +136,18 @@ a:hover { color: #7cc0ff; }
 
 /* ---------- sessions ---------- */
 
-.session { padding: 30px 0 8px; scroll-margin-top: 80px; }
-.session-head { border-left: 3px solid var(--accent); padding-left: 16px; margin-bottom: 22px; }
-.session-head h2 { margin: 0; font-size: 25px; letter-spacing: -.02em; }
+/* Tab panels: exactly one session is on screen at a time. */
+.session { padding: 30px 0 8px; }
+.session[hidden] { display: none; }
+.session-head {
+  border-left: 4px solid var(--accent); padding-left: 17px; margin-bottom: 24px;
+  position: relative;
+}
+.session-head::before {
+  content: ""; position: absolute; left: -4px; top: 0; width: 4px; height: 26px;
+  background: #fff; opacity: .85;
+}
+.session-head h2 { margin: 0; font-size: 26px; letter-spacing: 0; font-family: var(--display); font-weight: 700; }
 .session-head .sub { margin: 4px 0 0; color: var(--ink-dim); font-size: 15px; }
 .session-head .meta {
   margin: 9px 0 0; font-size: 13px; color: var(--ink-faint); font-family: var(--mono);
@@ -128,7 +165,7 @@ a:hover { color: #7cc0ff; }
   transition: border-color .14s, transform .14s, background .14s;
 }
 .card:hover { border-color: var(--accent); transform: translateY(-2px); }
-.card h3 { margin: 0; font-size: 17.5px; letter-spacing: -.01em; }
+.card h3 { margin: 0; font-size: 18px; letter-spacing: 0; font-family: var(--display); font-weight: 700; }
 .card .slide { font-family: var(--mono); font-size: 11.5px; color: var(--accent); letter-spacing: .02em; }
 .card .blurb { margin: 0; font-size: 14px; color: var(--ink-dim); flex: 1; }
 .card .note {
@@ -198,8 +235,8 @@ a:hover { color: #7cc0ff; }
 
 .term {
   margin: 0; padding: 20px 22px; overflow: auto; flex: 1; min-height: 340px;
-  background: #070b14; font-family: var(--mono); font-size: 13px; line-height: 1.5;
-  white-space: pre-wrap; word-break: break-word; color: #cfd8ea;
+  background: #00091c; font-family: var(--mono); font-size: 13px; line-height: 1.5;
+  white-space: pre-wrap; word-break: break-word; color: var(--ink-dim);
 }
 .term:focus { outline: none; }
 .term .cursor {
