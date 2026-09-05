@@ -225,23 +225,33 @@ The two agent demos — Autonomous Threat Hunter and Governance Autopilot — ha
 recording. Both run offline in replay mode, so the terminal transcript is the
 walkthrough.
 
-### MMS 2026 Midway Edition — recordings pending
+### MMS 2026 Midway Edition — 4 recordings
 
-Not yet recorded. Both decks call for a recorded backup on every mission slide
-(14 and 17 in *Empowering SOC Teams*; 14 and 16 in *Modern Threat Detection*),
-so four are needed before the conference:
+The recorded backups both decks call for on every mission slide. Rendered from
+the demo scripts themselves by [`record-demos.py`](record-demos.py), so they
+show the same output the code produces — not a re-enactment.
 
-| Needed | Mission | Capture from |
-|--------|---------|--------------|
-| `demo-08-mcp-connection-voiced.mp4` | SOC Mission 1 — wire the model and investigate | Live Claude + Sentinel MCP, or `triage_walkthrough.py --step` |
-| `demo-09-triage-agent-voiced.mp4` | SOC Mission 2 — auto-triage with the approval gate | `soc_triage_agent.py --incident 48213`, then `--incident 48201 --reject` |
-| `demo-10-hypothesis-hunt-voiced.mp4` | Hunt Mission 1 — hypothesis to evidence | `hunt_service_accounts.py --step` |
-| `demo-11-anomaly-to-detection-voiced.mp4` | Hunt Mission 2 — anomalies to a detection rule | `anomaly_to_detection.py --step` |
+| Video | Mission | Length |
+|-------|---------|--------|
+| [`demo-08-mission1-triage.mp4`](demos/empowering-soc-teams/02-natural-language-triage/demo-08-mission1-triage.mp4) | SOC Mission 1 — hypothesis to evidence in plain language | 0:31 |
+| [`demo-09-triage-agent-hitl.mp4`](demos/empowering-soc-teams/03-triage-agent-hitl/demo-09-triage-agent-hitl.mp4) | SOC Mission 2 — the clean run **and** the rejection re-plan | 1:26 |
+| [`demo-10-hypothesis-hunt.mp4`](demos/modern-threat-detection/02-hypothesis-hunt/demo-10-hypothesis-hunt.mp4) | Hunt Mission 1 — including the decoy being dismissed | 0:52 |
+| [`demo-11-anomaly-to-detection.mp4`](demos/modern-threat-detection/03-anomaly-to-detection/demo-11-anomaly-to-detection.mp4) | Hunt Mission 2 — anomalies to a validated detection rule | 0:53 |
 
-Because every Midway demo runs offline and deterministically, a recording made
-from the replay scripts matches what the live version does — which is the point
-of the `--step` flag. Record those first; capture the live tenant version later
-if the tenant cooperates.
+> **These are silent.** The MOA videos above are named `-voiced` because someone
+> narrated them; these are screen recordings with no audio, and are named
+> accordingly. Don't introduce one as the other.
+
+They pause on the same beats the live demo does — every stage note, and before
+each stage — so if a live mission dies you can talk over the recording with the
+rhythm you had planned.
+
+To re-record after changing a demo:
+
+```bash
+python web/build.py        # re-bake the transcripts
+python record-demos.py     # re-render all four
+```
 
 ---
 
