@@ -43,6 +43,8 @@ body {
     radial-gradient(900px 420px at 92% -4%, #0f2559 0%, transparent 58%),
     var(--bg);
   background-attachment: fixed;
+  position: relative;
+  overflow-x: hidden;
   color: var(--ink);
   font-family: var(--sans);
   font-size: 16px;
@@ -54,6 +56,39 @@ body {
 
 a { color: var(--soc); }
 a:hover { color: #7cc0ff; }
+
+/* Carrier watermark.
+ *
+ * Drawn (assets/carrier.svg) rather than photographed: nothing to license, a
+ * few KB instead of megabytes, and it stays crisp on a projector.
+ *
+ * Anchored to the hero band under the header rather than the bottom of the
+ * viewport. Down there the cards covered everything but the waterline and it
+ * read as a smudge; up here the right-hand side is empty, so the island and
+ * mast - the parts that make it a carrier - are actually visible. It fades out
+ * to the left so it never fights the intro text.
+ */
+body::before {
+  content: "";
+  position: absolute;
+  top: 78px; left: 0; right: 0;
+  height: 340px;
+  z-index: 0;
+  pointer-events: none;
+  background: url("carrier.svg") no-repeat right 2% bottom;
+  background-size: auto 300px;
+  opacity: .17;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 42%, #000 100%);
+          mask-image: linear-gradient(to right, transparent 0%, #000 42%, #000 100%);
+}
+
+/* Everything real sits above the watermark. */
+.top, main.wrap, .runner { position: relative; z-index: 1; }
+
+@media (max-width: 900px) {
+  /* Too small to read as a ship, and it only muddies the text. */
+  body::before { display: none; }
+}
 
 /* ---------- header ---------- */
 

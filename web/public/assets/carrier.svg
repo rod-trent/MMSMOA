@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 340" role="img"
+     aria-label="Aircraft carrier silhouette">
+  <title>Aircraft carrier</title>
+  <desc>
+    Decorative silhouette for the MMS 2026 Midway Edition demo site. Drawn as
+    vector art rather than using a photograph: no licensing to worry about, a
+    few KB instead of megabytes, and it stays crisp at any projector
+    resolution. Colours come from currentColor so CSS controls the tint.
+  </desc>
+
+  <!-- Explicit fill, not currentColor: an SVG referenced from CSS url()
+       is a separate document and inherits nothing from the page. Pale blue so
+       the silhouette reads lighter than the navy behind it. -->
+  <g fill="#9DBBEA" fill-rule="evenodd">
+
+    <!-- Hull. Bow at left, deck overhanging the waterline forward. -->
+    <path d="M 126 262
+             L 1112 262
+             Q 1140 262 1148 244
+             L 1152 172
+             L 58 172
+             L 58 212
+             Q 58 232 84 248
+             Z"/>
+
+    <!-- Flight deck: the long flat slab, overhanging both ends. -->
+    <path d="M 34 150 L 1168 150 L 1168 172 L 34 172 Z"/>
+
+    <!-- Angled landing deck, port side aft - the giveaway that it is a
+         carrier and not a battleship. -->
+    <path d="M 300 150 L 690 150 L 640 126 L 268 126 Z" opacity=".72"/>
+
+    <!-- Deck-edge catwalk line -->
+    <path d="M 58 176 L 1148 176 L 1148 181 L 58 181 Z" opacity=".55"/>
+
+    <!-- Island superstructure, starboard, aft of midships -->
+    <path d="M 782 150 L 782 104 L 892 104 L 892 150 Z"/>
+    <path d="M 800 104 L 800 84 L 868 84 L 868 104 Z"/>
+    <path d="M 816 84 L 816 72 L 856 72 L 856 84 Z"/>
+
+    <!-- Funnel, canted outboard -->
+    <path d="M 896 150 L 900 116 L 926 116 L 930 150 Z" opacity=".85"/>
+
+    <!-- Mast and yardarms -->
+    <path d="M 833 72 L 839 72 L 839 22 L 833 22 Z"/>
+    <path d="M 806 46 L 866 46 L 866 51 L 806 51 Z"/>
+    <path d="M 814 32 L 858 32 L 858 36 L 814 36 Z"/>
+
+    <!-- Air-search radar -->
+    <path d="M 820 16 L 852 16 L 852 23 L 820 23 Z" opacity=".9"/>
+
+    <!-- Parked aircraft on the forward deck, seen in profile -->
+    <g opacity=".78">
+      <path d="M 150 150 L 152 140 L 176 138 L 196 142 L 198 150 Z"/>
+      <path d="M 168 138 L 174 128 L 180 128 L 178 138 Z"/>
+
+      <path d="M 226 150 L 228 140 L 252 138 L 272 142 L 274 150 Z"/>
+      <path d="M 244 138 L 250 128 L 256 128 L 254 138 Z"/>
+
+      <path d="M 986 150 L 988 140 L 1012 138 L 1032 142 L 1034 150 Z"/>
+      <path d="M 1004 138 L 1010 128 L 1016 128 L 1014 138 Z"/>
+    </g>
+
+    <!-- Sea: a few slack lines rather than a solid block, so the shape reads
+         as floating instead of sitting on a bar. -->
+    <g opacity=".35">
+      <path d="M 0 274 L 1200 274 L 1200 279 L 0 279 Z"/>
+      <path d="M 60 292 L 470 292 L 470 296 L 60 296 Z"/>
+      <path d="M 560 292 L 1080 292 L 1080 296 L 560 296 Z"/>
+      <path d="M 180 308 L 760 308 L 760 312 L 180 312 Z"/>
+      <path d="M 840 308 L 1150 308 L 1150 312 L 840 312 Z"/>
+    </g>
+  </g>
+</svg>
