@@ -226,6 +226,18 @@
         c.textContent = d.variants.length + ' variants';
         foot.appendChild(c);
       }
+
+      if (d.video) {
+        var vb = document.createElement('button');
+        vb.className = 'btn btn-sm btn-ghost';
+        vb.innerHTML = '&#9654; Recording';
+        vb.title = 'Silent screen recording, ' + (d.videoLength || '');
+        vb.addEventListener('click', function (e) {
+          e.stopPropagation();
+          openRunner(d, session, null, true);
+        });
+        foot.appendChild(vb);
+      }
     }
 
     (d.links || []).forEach(function (l) {
@@ -275,7 +287,7 @@
     history.replaceState(null, '', location.pathname + (q ? '?' + q : ''));
   }
 
-  function openRunner(d, session, forceVariant) {
+  function openRunner(d, session, forceVariant, startWithVideo) {
     state.demo = d;
     state.variantIndex = 0;
 
@@ -308,6 +320,17 @@
       bar.appendChild(b);
     });
 
+    if (d.video) {
+      var vbtn = document.createElement('button');
+      vbtn.className = 'btn btn-sm btn-ghost vid';
+      vbtn.innerHTML = '&#9654; Recording' + (d.videoLength ? ' · ' + d.videoLength : '');
+      vbtn.setAttribute('aria-pressed', 'false');
+      vbtn.addEventListener('click', function () { showVideo(d); });
+      bar.appendChild(vbtn);
+    }
+
+    if (startWithVideo && d.video) { showVideo(d); return; }
+
     var pick = (typeof forceVariant === 'number' && forceVariant >= 0 &&
                 forceVariant < d.variants.length)
       ? forceVariant
@@ -315,8 +338,38 @@
     start(pick < 0 ? 0 : pick);
   }
 
+  /* Swap the terminal for the recorded backup. */
+  function showVideo(d) {
+    if (state.player) { state.player.stop(); state.player = null; }
+    runToken++;                                   // cancel any pending run
+
+    var v = document.getElementById('run-video');
+    if (v.getAttribute('src') !== d.video) v.setAttribute('src', d.video);
+
+    document.getElementById('run-term').hidden = true;
+    document.getElementById('run-video-wrap').hidden = false;
+    document.getElementById('run-cmd').textContent = d.video.split('/').pop();
+    document.getElementById('run-status').innerHTML =
+      '<span class="a-yellow">recorded backup</span> — silent, no narration';
+
+    document.getElementById('run-variants').querySelectorAll('button')
+      .forEach(function (b) {
+        b.setAttribute('aria-pressed', String(b.classList.contains('vid')));
+      });
+
+    v.play().catch(function () {});              // autoplay may be blocked; fine
+  }
+
+  function hideVideo() {
+    var v = document.getElementById('run-video');
+    try { v.pause(); } catch (e) {}
+    document.getElementById('run-video-wrap').hidden = true;
+    document.getElementById('run-term').hidden = false;
+  }
+
   function closeRunner() {
     if (state.player) { state.player.stop(); state.player = null; }
+    hideVideo();
     document.getElementById('runner').hidden = true;
     state.demo = null;
     clearUrl();
@@ -327,8 +380,11 @@
     if (!d) return;
     state.variantIndex = index;
 
+    hideVideo();
     var buttons = document.getElementById('run-variants').querySelectorAll('button');
-    buttons.forEach(function (b, i) { b.setAttribute('aria-pressed', String(i === index)); });
+    buttons.forEach(function (b, i) {
+      b.setAttribute('aria-pressed', String(!b.classList.contains('vid') && i === index));
+    });
     syncUrl();
 
     var term = document.getElementById('run-term');
@@ -588,6 +644,7 @@
     if (!open) return;
 
     if (e.key === 'Escape') { closeRunner(); return; }
+    if (!document.getElementById('run-video-wrap').hidden) return;  // video has its own controls
     if (!state.player) return;
 
     if (e.key === ' ' || e.key === 'Spacebar') {

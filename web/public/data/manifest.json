@@ -86,6 +86,8 @@
       "blurb": "An analyst asks in plain language. The model discovers tables, writes the KQL, and refuses to answer until it has the UEBA baseline \u2014 which is what separates the real compromise from the VPN false positive.",
       "kind": "run",
       "script": "empowering-soc-teams/02-natural-language-triage/triage_walkthrough.py",
+      "video": "video/demo-08-mission1-triage.mp4",
+      "videoLength": "0:31",
       "variants": [
         {
           "label": "Run the mission",
@@ -112,6 +114,8 @@
       "blurb": "The six-stage loop, with an approval gate the agent cannot get past. Run it clean, then reject it on purpose and watch it re-plan.",
       "kind": "run",
       "script": "empowering-soc-teams/03-triage-agent-hitl/soc_triage_agent.py",
+      "video": "video/demo-09-triage-agent-hitl.mp4",
+      "videoLength": "1:26",
       "variants": [
         {
           "label": "The easy one (auto-close)",
@@ -256,6 +260,8 @@
       "blurb": "Hypothesis to evidence with no hand-written KQL. Two service accounts match the hypothesis; only one is a finding.",
       "kind": "run",
       "script": "modern-threat-detection/02-hypothesis-hunt/hunt_service_accounts.py",
+      "video": "video/demo-10-hypothesis-hunt.mp4",
+      "videoLength": "0:52",
       "variants": [
         {
           "label": "Run the hunt",
@@ -289,6 +295,8 @@
       "blurb": "UEBA anomalies to a validated finding to a generated analytics rule \u2014 and a flat refusal to generate that rule if you skip validation.",
       "kind": "run",
       "script": "modern-threat-detection/03-anomaly-to-detection/anomaly_to_detection.py",
+      "video": "video/demo-11-anomaly-to-detection.mp4",
+      "videoLength": "0:53",
       "variants": [
         {
           "label": "Run the mission",

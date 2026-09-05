@@ -103,6 +103,8 @@ DEMOS_MANIFEST: list[dict] = [
                  "is what separates the real compromise from the VPN false positive.",
         "kind": "run",
         "script": f"{SOC}/02-natural-language-triage/triage_walkthrough.py",
+        "video": "video/demo-08-mission1-triage.mp4",
+        "videoLength": "0:31",
         "variants": [
             {"label": "Run the mission", "args": ["--fast"], "primary": True},
             {"label": "Record only (JSON)", "args": ["--json"]},
@@ -117,6 +119,8 @@ DEMOS_MANIFEST: list[dict] = [
                  "Run it clean, then reject it on purpose and watch it re-plan.",
         "kind": "run",
         "script": f"{SOC}/03-triage-agent-hitl/soc_triage_agent.py",
+        "video": "video/demo-09-triage-agent-hitl.mp4",
+        "videoLength": "1:26",
         "variants": [
             {"label": "The easy one (auto-close)", "args": ["--auto-approve", "--fast"]},
             {"label": "The real one (48213)",
@@ -184,6 +188,8 @@ DEMOS_MANIFEST: list[dict] = [
                  "match the hypothesis; only one is a finding.",
         "kind": "run",
         "script": f"{HUNT}/02-hypothesis-hunt/hunt_service_accounts.py",
+        "video": "video/demo-10-hypothesis-hunt.mp4",
+        "videoLength": "0:52",
         "variants": [
             {"label": "Run the hunt", "args": ["--fast"], "primary": True},
             {"label": "Self-test (10 checks)", "args": ["--self-test"]},
@@ -199,6 +205,8 @@ DEMOS_MANIFEST: list[dict] = [
                  "and a flat refusal to generate that rule if you skip validation.",
         "kind": "run",
         "script": f"{HUNT}/03-anomaly-to-detection/anomaly_to_detection.py",
+        "video": "video/demo-11-anomaly-to-detection.mp4",
+        "videoLength": "0:53",
         "variants": [
             {"label": "Run the mission", "args": ["--fast"], "primary": True},
             {"label": "Skip validation (watch it refuse)",

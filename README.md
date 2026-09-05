@@ -233,10 +233,10 @@ show the same output the code produces — not a re-enactment.
 
 | Video | Mission | Length |
 |-------|---------|--------|
-| [`demo-08-mission1-triage.mp4`](demos/empowering-soc-teams/02-natural-language-triage/demo-08-mission1-triage.mp4) | SOC Mission 1 — hypothesis to evidence in plain language | 0:31 |
-| [`demo-09-triage-agent-hitl.mp4`](demos/empowering-soc-teams/03-triage-agent-hitl/demo-09-triage-agent-hitl.mp4) | SOC Mission 2 — the clean run **and** the rejection re-plan | 1:26 |
-| [`demo-10-hypothesis-hunt.mp4`](demos/modern-threat-detection/02-hypothesis-hunt/demo-10-hypothesis-hunt.mp4) | Hunt Mission 1 — including the decoy being dismissed | 0:52 |
-| [`demo-11-anomaly-to-detection.mp4`](demos/modern-threat-detection/03-anomaly-to-detection/demo-11-anomaly-to-detection.mp4) | Hunt Mission 2 — anomalies to a validated detection rule | 0:53 |
+| [`demo-08-mission1-triage.mp4`](web/public/video/demo-08-mission1-triage.mp4) | SOC Mission 1 — hypothesis to evidence in plain language | 0:31 |
+| [`demo-09-triage-agent-hitl.mp4`](web/public/video/demo-09-triage-agent-hitl.mp4) | SOC Mission 2 — the clean run **and** the rejection re-plan | 1:26 |
+| [`demo-10-hypothesis-hunt.mp4`](web/public/video/demo-10-hypothesis-hunt.mp4) | Hunt Mission 1 — including the decoy being dismissed | 0:52 |
+| [`demo-11-anomaly-to-detection.mp4`](web/public/video/demo-11-anomaly-to-detection.mp4) | Hunt Mission 2 — anomalies to a validated detection rule | 0:53 |
 
 > **These are silent.** The MOA videos above are named `-voiced` because someone
 > narrated them; these are screen recordings with no audio, and are named
@@ -245,6 +245,11 @@ show the same output the code produces — not a re-enactment.
 They pause on the same beats the live demo does — every stage note, and before
 each stage — so if a live mission dies you can talk over the recording with the
 rhythm you had planned.
+
+They live under `web/public/video/` rather than beside their demo, because the
+site serves them and `.vercelignore` keeps `demos/` out of the deploy. Each is
+also playable from its card on
+[the demo site](https://mms-midway-demos.vercel.app).
 
 To re-record after changing a demo:
 

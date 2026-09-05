@@ -47,8 +47,9 @@ TRANSCRIPTS = ROOT / "web" / "public" / "transcripts"
 # What to record
 # ---------------------------------------------------------------------------
 
-SOC = "demos/empowering-soc-teams"
-HUNT = "demos/modern-threat-detection"
+# The videos live inside the site so Vercel can serve them; .vercelignore
+# excludes demos/, and the demo READMEs link here.
+VIDEO = "web/public/video"
 
 RECORDINGS = [
     {
@@ -57,7 +58,7 @@ RECORDINGS = [
         "session": "Empowering SOC Teams",
         "slides": "slides 14–15",
         "parts": [("python triage_walkthrough.py", "soc-triage-walkthrough-0")],
-        "out": f"{SOC}/02-natural-language-triage/demo-08-mission1-triage.mp4",
+        "out": f"{VIDEO}/demo-08-mission1-triage.mp4",
     },
     {
         "id": "soc-m2",
@@ -70,7 +71,7 @@ RECORDINGS = [
             ("python soc_triage_agent.py --incident 48201  # rejected on purpose",
              "soc-triage-agent-2"),
         ],
-        "out": f"{SOC}/03-triage-agent-hitl/demo-09-triage-agent-hitl.mp4",
+        "out": f"{VIDEO}/demo-09-triage-agent-hitl.mp4",
     },
     {
         "id": "hunt-m1",
@@ -78,7 +79,7 @@ RECORDINGS = [
         "session": "Using AI for Modern Threat Detection",
         "slides": "slides 14–15",
         "parts": [("python hunt_service_accounts.py", "hunt-mission1-0")],
-        "out": f"{HUNT}/02-hypothesis-hunt/demo-10-hypothesis-hunt.mp4",
+        "out": f"{VIDEO}/demo-10-hypothesis-hunt.mp4",
     },
     {
         "id": "hunt-m2",
@@ -86,7 +87,7 @@ RECORDINGS = [
         "session": "Using AI for Modern Threat Detection",
         "slides": "slides 16–17",
         "parts": [("python anomaly_to_detection.py", "hunt-mission2-0")],
-        "out": f"{HUNT}/03-anomaly-to-detection/demo-11-anomaly-to-detection.mp4",
+        "out": f"{VIDEO}/demo-11-anomaly-to-detection.mp4",
     },
 ]
 
