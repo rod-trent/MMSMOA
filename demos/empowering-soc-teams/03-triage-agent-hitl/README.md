@@ -58,6 +58,22 @@ python soc_triage_agent.py --incident 48213
 | `--json` | Run record only, no transcript |
 | `--self-test` | Six guardrail assertions |
 
+## Recording
+
+A silent screen recording of this demo, for when the live version cannot run:
+
+**[▶ demo-09-triage-agent-hitl.mp4](../../../web/public/video/demo-09-triage-agent-hitl.mp4)** · 1:26
+
+It covers the full stage sequence: the clean run on 48213, then the rejection on 48201 and the re-plan that follows.
+
+It pauses on the same beats the live demo does — every stage note, and before
+each stage — so you can talk over it with the rhythm you had planned. There is
+no narration, so do not introduce it as a narrated walkthrough.
+
+It also plays from this demo's card on the
+[demo site](https://mms-midway-demos.vercel.app/?demo=soc-triage-agent). Re-render it with
+`python record-demos.py` from the repo root after changing this demo.
+
 ## The stage sequence
 
 Run it **three times**. Each run makes a different point, and together they

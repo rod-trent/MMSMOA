@@ -68,6 +68,20 @@ synthetic CONTOSO-PROD tenant built so the model has to do real work:
 | **Mission 2** | 17–18 | 3 | 10 |
 | Ship it | 19–23 | (4, 5 as reference) | rest |
 
+## Recordings
+
+Silent screen recordings of both missions, for when the live version cannot run.
+They pause on the same beats the live demo does, so you can talk over them with
+the rhythm you had planned.
+
+| Recording | Mission | Length |
+|-----------|---------|--------|
+| [▶ demo-08-mission1-triage.mp4](../../web/public/video/demo-08-mission1-triage.mp4) | Mission 1 — ask like an analyst | 0:31 |
+| [▶ demo-09-triage-agent-hitl.mp4](../../web/public/video/demo-09-triage-agent-hitl.mp4) | Mission 2 — the clean run **and** the rejection re-plan | 1:26 |
+
+Both also play from their cards on the [demo site](https://mms-midway-demos.vercel.app/?s=soc). Re-render with
+`python record-demos.py` from the repo root.
+
 ## Pre-flight
 
 The morning of the session:

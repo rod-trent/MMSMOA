@@ -46,6 +46,22 @@ python anomaly_to_detection.py --emit-rule        # write ARM + YAML
 python anomaly_to_detection.py --skip-validation  # see what blind trust produces
 ```
 
+## Recording
+
+A silent screen recording of this demo, for when the live version cannot run:
+
+**[▶ demo-11-anomaly-to-detection.mp4](../../../web/public/video/demo-11-anomaly-to-detection.mp4)** · 0:53
+
+It runs through validation and the generated analytics rule.
+
+It pauses on the same beats the live demo does — every stage note, and before
+each stage — so you can talk over it with the rhythm you had planned. There is
+no narration, so do not introduce it as a narrated walkthrough.
+
+It also plays from this demo's card on the
+[demo site](https://mms-midway-demos.vercel.app/?demo=hunt-mission2). Re-render it with
+`python record-demos.py` from the repo root after changing this demo.
+
 ## The five steps
 
 **1 — Start from anomalies, not alerts.** Eight UEBA anomalies, seven with no

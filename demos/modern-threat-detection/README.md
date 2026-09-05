@@ -91,6 +91,20 @@ hunt that reports them generates work instead of removing it.
 
 > **"If it cannot find your test, distrust its silence."** (Demo 4, seed known bad)
 
+## Recordings
+
+Silent screen recordings of both missions, for when the live version cannot run.
+They pause on the same beats the live demo does, so you can talk over them with
+the rhythm you had planned.
+
+| Recording | Mission | Length |
+|-----------|---------|--------|
+| [▶ demo-10-hypothesis-hunt.mp4](../../web/public/video/demo-10-hypothesis-hunt.mp4) | Mission 1 — including the decoy being dismissed | 0:52 |
+| [▶ demo-11-anomaly-to-detection.mp4](../../web/public/video/demo-11-anomaly-to-detection.mp4) | Mission 2 — anomalies to a validated detection rule | 0:53 |
+
+Both also play from their cards on the [demo site](https://mms-midway-demos.vercel.app/?s=hunt). Re-render with
+`python record-demos.py` from the repo root.
+
 ## Pre-flight for the live version
 
 From slides 14 and 16:
@@ -102,7 +116,7 @@ From slides 14 and 16:
   step 5 has nothing to say and the decoy does not resolve. This is the
   prerequisite most likely to be missing.
 - Both seeded scenarios present in the last 7 days
-- Recorded backups queued
+- Recorded backups queued (see **Recordings** above)
 
 Reuse `../empowering-soc-teams/01-mcp-connection/Test-SentinelMcpConnection.ps1`
 for the connection checks.

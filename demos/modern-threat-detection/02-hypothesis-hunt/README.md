@@ -52,6 +52,22 @@ python hunt_service_accounts.py --save mission1-record.json
 
 Save the record. Mission 2 starts from it.
 
+## Recording
+
+A silent screen recording of this demo, for when the live version cannot run:
+
+**[▶ demo-10-hypothesis-hunt.mp4](../../../web/public/video/demo-10-hypothesis-hunt.mp4)** · 0:52
+
+It includes step 5, where the decoy is dismissed — the part worth slowing down for.
+
+It pauses on the same beats the live demo does — every stage note, and before
+each stage — so you can talk over it with the rhythm you had planned. There is
+no narration, so do not introduce it as a narrated walkthrough.
+
+It also plays from this demo's card on the
+[demo site](https://mms-midway-demos.vercel.app/?demo=hunt-mission1). Re-render it with
+`python record-demos.py` from the repo root after changing this demo.
+
 ## The three moments to narrate
 
 **Step 2 — the model names its own weakest assumption.** Before running

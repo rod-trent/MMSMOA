@@ -57,6 +57,22 @@ Then ask it the prompts from `prompts.md`. The model picks its own path, which
 is a better rehearsal than the scripted transcript — and a good way to find out
 which of your prompts are fragile.
 
+## Recording
+
+A silent screen recording of this demo, for when the live version cannot run:
+
+**[▶ demo-08-mission1-triage.mp4](../../../web/public/video/demo-08-mission1-triage.mp4)** · 0:31
+
+It includes the moment the model declines to answer until it has the UEBA baseline.
+
+It pauses on the same beats the live demo does — every stage note, and before
+each stage — so you can talk over it with the rhythm you had planned. There is
+no narration, so do not introduce it as a narrated walkthrough.
+
+It also plays from this demo's card on the
+[demo site](https://mms-midway-demos.vercel.app/?demo=soc-triage-walkthrough). Re-render it with
+`python record-demos.py` from the repo root after changing this demo.
+
 ## The scenario
 
 | Incident | Account | Looks like | Actually is |
