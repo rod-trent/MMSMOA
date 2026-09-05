@@ -61,12 +61,13 @@ which of your prompts are fragile.
 
 A silent screen recording of this demo, for when the live version cannot run:
 
-**[▶ demo-08-mission1-triage.mp4](../../../web/public/video/demo-08-mission1-triage.mp4)** · 0:31
+**[▶ demo-08-mission1-triage.mp4](../../../web/public/video/demo-08-mission1-triage.mp4)** · 0:50
 
 It includes the moment the model declines to answer until it has the UEBA baseline.
 
-It pauses on the same beats the live demo does — every stage note, and before
-each stage — so you can talk over it with the rhythm you had planned. There is
+It pauses at every step — each stage, tool call, check and result — so you can
+describe what just happened before the next line appears. Same stops the demo
+site makes in its step-through mode. There is
 no narration, so do not introduce it as a narrated walkthrough.
 
 It also plays from this demo's card on the

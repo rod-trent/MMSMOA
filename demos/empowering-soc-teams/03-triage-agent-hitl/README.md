@@ -62,12 +62,13 @@ python soc_triage_agent.py --incident 48213
 
 A silent screen recording of this demo, for when the live version cannot run:
 
-**[▶ demo-09-triage-agent-hitl.mp4](../../../web/public/video/demo-09-triage-agent-hitl.mp4)** · 1:26
+**[▶ demo-09-triage-agent-hitl.mp4](../../../web/public/video/demo-09-triage-agent-hitl.mp4)** · 2:02
 
 It covers the full stage sequence: the clean run on 48213, then the rejection on 48201 and the re-plan that follows.
 
-It pauses on the same beats the live demo does — every stage note, and before
-each stage — so you can talk over it with the rhythm you had planned. There is
+It pauses at every step — each stage, tool call, check and result — so you can
+describe what just happened before the next line appears. Same stops the demo
+site makes in its step-through mode. There is
 no narration, so do not introduce it as a narrated walkthrough.
 
 It also plays from this demo's card on the

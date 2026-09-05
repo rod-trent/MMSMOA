@@ -184,15 +184,45 @@ def plain(spans) -> str:
     return "".join(s[0] for s in spans)
 
 
-# Same beats the live runner pauses on.
-def pause_after(text: str) -> bool:
-    return "STAGE NOTE:" in text
+# The same pause rules the live runner uses, so a recording and the page stop
+# in the same places. MODE mirrors the site's pause selector.
+MODE = "steps"          # "beats" | "steps"
+
+_STEP_AFTER = (
+    re.compile(r"^\s*\[\s*(PASS|FAIL|ok|SKIP|WARN)\s*\]", re.I),   # harness results
+    re.compile(r"^\s*\[(yes|no)\s*\]", re.I),                      # benign checks
+    re.compile(r"^\s*(INJ|HUNT-INJ|LEAK|BENIGN)-\d+"),             # scorecard rows
+    re.compile(r"^\s{2,}\[tool\]"),                                # agent tool calls
+)
+
+_STEP_BEFORE = (
+    re.compile(r"^\s*\d+\.\s+[A-Z]"),          # "4. Seed known bad"
+    re.compile(r"^(HUNTER|ANALYST)\s+>"),      # the human's next prompt
+)
 
 
-def pause_before(text: str) -> bool:
-    return bool(re.match(r"^\s*(STAGE|STEP)\s+\d+/\d+", text)) or \
-           "REQUIRES HUMAN APPROVAL" in text or \
-           bool(re.match(r"^\s*VERDICT:", text))
+def pause_after(text: str):
+    """Seconds to hold after printing this line, or None."""
+    if "STAGE NOTE:" in text:
+        return 2.6                             # the big "talk here" moments
+    if MODE != "steps":
+        return None
+    if any(p.match(text) for p in _STEP_AFTER):
+        return 1.2                             # step-level: enough for one sentence
+    return None
+
+
+def pause_before(text: str):
+    """Seconds to hold before printing this line, or None."""
+    if re.match(r"^\s*(STAGE|STEP)\s+\d+/\d+", text) or \
+       "REQUIRES HUMAN APPROVAL" in text or \
+       re.match(r"^\s*VERDICT:", text):
+        return 1.6
+    if MODE != "steps":
+        return None
+    if any(p.match(text) for p in _STEP_BEFORE):
+        return 1.4
+    return None
 
 
 # ---------------------------------------------------------------------------
@@ -269,10 +299,11 @@ def build_frames(rec):
         for i, spans in enumerate(lines):
             text = plain(spans)
 
-            if i > 0 and pause_before(text):
+            hold_s = pause_before(text) if i > 0 else None
+            if hold_s:
                 label = re.sub(r"\s+", " ", text).strip()[:70]
                 hold = frame(rec, cmd, shown[-VISIBLE:], note=f"next  ·  {label}")
-                for _ in range(int(FPS * 1.6)):
+                for _ in range(int(FPS * hold_s)):
                     yield hold
 
             shown.append(spans)
@@ -281,10 +312,12 @@ def build_frames(rec):
             for _ in range(1 if text.strip() == "" else 2):
                 yield f
 
-            if pause_after(text):
-                hold = frame(rec, cmd, shown[-VISIBLE:],
-                             note="stage note  ·  talk here")
-                for _ in range(int(FPS * 2.6)):
+            hold_s = pause_after(text)
+            if hold_s:
+                note = ("stage note  ·  talk here" if "STAGE NOTE:" in text
+                        else re.sub(r"\s+", " ", text).strip()[:70])
+                hold = frame(rec, cmd, shown[-VISIBLE:], note=note)
+                for _ in range(int(FPS * hold_s)):
                     yield hold
 
         end = frame(rec, cmd, shown[-VISIBLE:])
@@ -333,7 +366,13 @@ def main() -> int:
     ap.add_argument("--only", help="Record just this id.")
     ap.add_argument("--list", action="store_true")
     ap.add_argument("--preview", metavar="ID", help="Write one PNG and stop.")
+    ap.add_argument("--pauses", choices=("beats", "steps"), default="steps",
+                    help="Where to hold. 'steps' matches the site's step-through "
+                         "mode: every tool call, check and result. Default: steps.")
     args = ap.parse_args()
+
+    global MODE
+    MODE = args.pauses
 
     if args.list:
         for r in RECORDINGS:

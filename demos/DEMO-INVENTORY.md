@@ -57,10 +57,10 @@ beats the live demo does.
 
 | Recording | Mission | Length |
 |-----------|---------|--------|
-| [demo-08-mission1-triage.mp4](../web/public/video/demo-08-mission1-triage.mp4) | SOC Mission 1 | 0:31 |
-| [demo-09-triage-agent-hitl.mp4](../web/public/video/demo-09-triage-agent-hitl.mp4) | SOC Mission 2 — clean run **and** the rejection | 1:26 |
-| [demo-10-hypothesis-hunt.mp4](../web/public/video/demo-10-hypothesis-hunt.mp4) | Hunt Mission 1 — includes the decoy | 0:52 |
-| [demo-11-anomaly-to-detection.mp4](../web/public/video/demo-11-anomaly-to-detection.mp4) | Hunt Mission 2 | 0:53 |
+| [demo-08-mission1-triage.mp4](../web/public/video/demo-08-mission1-triage.mp4) | SOC Mission 1 | 0:50 |
+| [demo-09-triage-agent-hitl.mp4](../web/public/video/demo-09-triage-agent-hitl.mp4) | SOC Mission 2 — clean run **and** the rejection | 2:02 |
+| [demo-10-hypothesis-hunt.mp4](../web/public/video/demo-10-hypothesis-hunt.mp4) | Hunt Mission 1 — includes the decoy | 1:06 |
+| [demo-11-anomaly-to-detection.mp4](../web/public/video/demo-11-anomaly-to-detection.mp4) | Hunt Mission 2 | 1:03 |
 
 **No narration.** The MOA videos below are `-voiced` because someone talked over
 them; these are not.

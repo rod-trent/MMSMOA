@@ -56,12 +56,13 @@ Save the record. Mission 2 starts from it.
 
 A silent screen recording of this demo, for when the live version cannot run:
 
-**[▶ demo-10-hypothesis-hunt.mp4](../../../web/public/video/demo-10-hypothesis-hunt.mp4)** · 0:52
+**[▶ demo-10-hypothesis-hunt.mp4](../../../web/public/video/demo-10-hypothesis-hunt.mp4)** · 1:06
 
 It includes step 5, where the decoy is dismissed — the part worth slowing down for.
 
-It pauses on the same beats the live demo does — every stage note, and before
-each stage — so you can talk over it with the rhythm you had planned. There is
+It pauses at every step — each stage, tool call, check and result — so you can
+describe what just happened before the next line appears. Same stops the demo
+site makes in its step-through mode. There is
 no narration, so do not introduce it as a narrated walkthrough.
 
 It also plays from this demo's card on the

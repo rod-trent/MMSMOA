@@ -236,18 +236,17 @@ show the same output the code produces — not a re-enactment.
 
 | Video | Mission | Length |
 |-------|---------|--------|
-| [`demo-08-mission1-triage.mp4`](web/public/video/demo-08-mission1-triage.mp4) | SOC Mission 1 — hypothesis to evidence in plain language | 0:31 |
-| [`demo-09-triage-agent-hitl.mp4`](web/public/video/demo-09-triage-agent-hitl.mp4) | SOC Mission 2 — the clean run **and** the rejection re-plan | 1:26 |
-| [`demo-10-hypothesis-hunt.mp4`](web/public/video/demo-10-hypothesis-hunt.mp4) | Hunt Mission 1 — including the decoy being dismissed | 0:52 |
-| [`demo-11-anomaly-to-detection.mp4`](web/public/video/demo-11-anomaly-to-detection.mp4) | Hunt Mission 2 — anomalies to a validated detection rule | 0:53 |
+| [`demo-08-mission1-triage.mp4`](web/public/video/demo-08-mission1-triage.mp4) | SOC Mission 1 — hypothesis to evidence in plain language | 0:50 |
+| [`demo-09-triage-agent-hitl.mp4`](web/public/video/demo-09-triage-agent-hitl.mp4) | SOC Mission 2 — the clean run **and** the rejection re-plan | 2:02 |
+| [`demo-10-hypothesis-hunt.mp4`](web/public/video/demo-10-hypothesis-hunt.mp4) | Hunt Mission 1 — including the decoy being dismissed | 1:06 |
+| [`demo-11-anomaly-to-detection.mp4`](web/public/video/demo-11-anomaly-to-detection.mp4) | Hunt Mission 2 — anomalies to a validated detection rule | 1:03 |
 
 > **These are silent.** The MOA videos above are named `-voiced` because someone
 > narrated them; these are screen recordings with no audio, and are named
 > accordingly. Don't introduce one as the other.
 
-They pause on the same beats the live demo does — every stage note, and before
-each stage — so if a live mission dies you can talk over the recording with the
-rhythm you had planned.
+They pause at every step — each stage, tool call, check and result — so if a
+live mission dies you can narrate the recording exactly as you would the demo.
 
 They live under `web/public/video/` rather than beside their demo, because the
 site serves them and `.vercelignore` keeps `demos/` out of the deploy. Each is

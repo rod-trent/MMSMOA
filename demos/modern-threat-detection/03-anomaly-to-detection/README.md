@@ -50,12 +50,13 @@ python anomaly_to_detection.py --skip-validation  # see what blind trust produce
 
 A silent screen recording of this demo, for when the live version cannot run:
 
-**[▶ demo-11-anomaly-to-detection.mp4](../../../web/public/video/demo-11-anomaly-to-detection.mp4)** · 0:53
+**[▶ demo-11-anomaly-to-detection.mp4](../../../web/public/video/demo-11-anomaly-to-detection.mp4)** · 1:03
 
 It runs through validation and the generated analytics rule.
 
-It pauses on the same beats the live demo does — every stage note, and before
-each stage — so you can talk over it with the rhythm you had planned. There is
+It pauses at every step — each stage, tool call, check and result — so you can
+describe what just happened before the next line appears. Same stops the demo
+site makes in its step-through mode. There is
 no narration, so do not introduce it as a narrated walkthrough.
 
 It also plays from this demo's card on the

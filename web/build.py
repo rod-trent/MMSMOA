@@ -104,7 +104,7 @@ DEMOS_MANIFEST: list[dict] = [
         "kind": "run",
         "script": f"{SOC}/02-natural-language-triage/triage_walkthrough.py",
         "video": "video/demo-08-mission1-triage.mp4",
-        "videoLength": "0:31",
+        "videoLength": "0:50",
         "variants": [
             {"label": "Run the mission", "args": ["--fast"], "primary": True},
             {"label": "Record only (JSON)", "args": ["--json"]},
@@ -120,7 +120,7 @@ DEMOS_MANIFEST: list[dict] = [
         "kind": "run",
         "script": f"{SOC}/03-triage-agent-hitl/soc_triage_agent.py",
         "video": "video/demo-09-triage-agent-hitl.mp4",
-        "videoLength": "1:26",
+        "videoLength": "2:02",
         "variants": [
             {"label": "The easy one (auto-close)", "args": ["--auto-approve", "--fast"]},
             {"label": "The real one (48213)",
@@ -189,7 +189,7 @@ DEMOS_MANIFEST: list[dict] = [
         "kind": "run",
         "script": f"{HUNT}/02-hypothesis-hunt/hunt_service_accounts.py",
         "video": "video/demo-10-hypothesis-hunt.mp4",
-        "videoLength": "0:52",
+        "videoLength": "1:06",
         "variants": [
             {"label": "Run the hunt", "args": ["--fast"], "primary": True},
             {"label": "Self-test (10 checks)", "args": ["--self-test"]},
@@ -206,7 +206,7 @@ DEMOS_MANIFEST: list[dict] = [
         "kind": "run",
         "script": f"{HUNT}/03-anomaly-to-detection/anomaly_to_detection.py",
         "video": "video/demo-11-anomaly-to-detection.mp4",
-        "videoLength": "0:53",
+        "videoLength": "1:03",
         "variants": [
             {"label": "Run the mission", "args": ["--fast"], "primary": True},
             {"label": "Skip validation (watch it refuse)",

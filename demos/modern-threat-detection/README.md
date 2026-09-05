@@ -94,13 +94,14 @@ hunt that reports them generates work instead of removing it.
 ## Recordings
 
 Silent screen recordings of both missions, for when the live version cannot run.
-They pause on the same beats the live demo does, so you can talk over them with
+They pause at every step the live runner does — each stage, tool call,
+check and result, so you can talk over them with
 the rhythm you had planned.
 
 | Recording | Mission | Length |
 |-----------|---------|--------|
-| [▶ demo-10-hypothesis-hunt.mp4](../../web/public/video/demo-10-hypothesis-hunt.mp4) | Mission 1 — including the decoy being dismissed | 0:52 |
-| [▶ demo-11-anomaly-to-detection.mp4](../../web/public/video/demo-11-anomaly-to-detection.mp4) | Mission 2 — anomalies to a validated detection rule | 0:53 |
+| [▶ demo-10-hypothesis-hunt.mp4](../../web/public/video/demo-10-hypothesis-hunt.mp4) | Mission 1 — including the decoy being dismissed | 1:06 |
+| [▶ demo-11-anomaly-to-detection.mp4](../../web/public/video/demo-11-anomaly-to-detection.mp4) | Mission 2 — anomalies to a validated detection rule | 1:03 |
 
 Both also play from their cards on the [demo site](https://mms-midway-demos.vercel.app/?s=hunt). Re-render with
 `python record-demos.py` from the repo root.
