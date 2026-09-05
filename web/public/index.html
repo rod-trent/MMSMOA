@@ -70,6 +70,14 @@
     <div class="runner-bar">
       <div class="variants" id="run-variants"></div>
       <div class="runner-actions">
+        <label class="chk" title="Where playback stops so you can talk">
+          pause
+          <select id="opt-pause">
+            <option value="beats">at stages</option>
+            <option value="steps">at every step</option>
+            <option value="off">never</option>
+          </select>
+        </label>
         <label class="chk"><input type="checkbox" id="opt-animate" checked> animate</label>
         <button class="ghost" id="run-copy">Copy output</button>
       </div>

@@ -54,6 +54,16 @@
     document.getElementById('runner').addEventListener('click', function (e) {
       if (e.target.id === 'runner') closeRunner();
     });
+    var ps = document.getElementById('opt-pause');
+    try { ps.value = localStorage.getItem('mms-pause') || 'beats'; } catch (e) {}
+    ps.addEventListener('change', function () {
+      try { localStorage.setItem('mms-pause', ps.value); } catch (e) {}
+      if (state.demo && !document.getElementById('runner').hidden &&
+          document.getElementById('run-video-wrap').hidden) {
+        start(state.variantIndex);          // re-run so the new granularity applies
+      }
+    });
+
     document.addEventListener('keydown', onKey);
   });
 
@@ -485,16 +495,55 @@
    * Player — line-by-line playback with authored pause points
    * ------------------------------------------------------------------ */
 
+  /* Where playback stops. "beats" is the default - the moments the demos
+   * themselves mark. "steps" also stops on each numbered step, tool call and
+   * check result, for walking a room through line by line. */
+  function pauseMode() {
+    var el = document.getElementById('opt-pause');
+    return el ? el.value : 'beats';
+  }
+
   /* Pause AFTER a line the speaker should talk about. */
   function pauseAfter(plain) {
-    return /STAGE NOTE:/.test(plain);
+    var mode = pauseMode();
+    if (mode === 'off') return false;
+    if (/STAGE NOTE:/.test(plain)) return true;
+    if (mode !== 'steps') return false;
+
+    return /^\s*\[\s*(PASS|FAIL|ok|SKIP|WARN)\s*\]/i.test(plain) ||   // harness results
+           /^\s*\[(yes|no)\s*\]/i.test(plain) ||                       // benign checks
+           /^\s*(INJ|HUNT-INJ|LEAK|BENIGN)-\d+/.test(plain) ||          // scorecard rows
+           /^\s{2,}\[tool\]/.test(plain);                              // agent tool calls
   }
 
   /* Pause BEFORE a line that opens a new section, so you can set it up. */
   function pauseBefore(plain) {
-    return /^\s*(STAGE|STEP)\s+\d+\/\d+/.test(plain) ||
-           /REQUIRES HUMAN APPROVAL/.test(plain) ||
-           /^\s*VERDICT:/.test(plain);
+    var mode = pauseMode();
+    if (mode === 'off') return false;
+
+    if (/^\s*(STAGE|STEP)\s+\d+\/\d+/.test(plain) ||
+        /REQUIRES HUMAN APPROVAL/.test(plain) ||
+        /^\s*VERDICT:/.test(plain)) return true;
+    if (mode !== 'steps') return false;
+
+    return /^\s*\d+\.\s+[A-Z]/.test(plain) ||        // "4. Seed known bad"
+           /^(HUNTER|ANALYST)\s+>/.test(plain) ||       // the human's next prompt
+           /^\s*###\s/.test(plain);
+  }
+
+  /* What we actually stopped on, for the footer. "stage note" for everything
+   * was misleading once step mode started pausing on results and tool calls. */
+  function labelAfter(plain) {
+    if (/STAGE NOTE:/.test(plain)) return 'stage note  ·  talk here';
+    var t = plain.match(/^\s*\[\s*(PASS|FAIL|ok|SKIP|WARN)\s*\]\s*(.{0,52})/i);
+    if (t) return t[1].toUpperCase().trim() + '  ·  ' + t[2].trim();
+    var b = plain.match(/^\s*\[(yes|no)\s*\]\s*(.{0,52})/i);
+    if (b) return 'benign check (' + b[1].trim() + ')  ·  ' + b[2].trim();
+    var s2 = plain.match(/^\s*((?:INJ|HUNT-INJ|LEAK|BENIGN)-\d+)\s+(.{0,40})/);
+    if (s2) return s2[1] + '  ·  ' + s2[2].trim();
+    var tool = plain.match(/\[tool\]\s*(\w+)/);
+    if (tool) return 'tool call  ·  ' + tool[1];
+    return 'step';
   }
 
   function labelFor(plain) {
@@ -575,7 +624,7 @@
       i++;
 
       if (pauseAfter(plain)) {
-        pauseHere('stage note');
+        pauseHere(labelAfter(plain));
         return 'pause';
       }
       return 'ok';
