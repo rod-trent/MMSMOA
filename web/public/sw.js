@@ -9,7 +9,7 @@
  * and rebuilt on deploy), stale-while-revalidate for the Pyodide CDN.
  */
 
-var CACHE = 'mms-midway-v1';
+var CACHE = 'mms-midway-v2';
 
 var CORE = [
   './',
@@ -17,6 +17,9 @@ var CORE = [
   'assets/style.css',
   'assets/app.js',
   'assets/ansi.js',
+  'assets/mms-logo.png',
+  'assets/mms-midway-dark.webp',
+  'assets/mms-midway-dark.jpg',
   'data/manifest.json'
 ];
 

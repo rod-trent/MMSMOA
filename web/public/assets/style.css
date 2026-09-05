@@ -38,11 +38,7 @@ html { color-scheme: dark; }
 
 body {
   margin: 0;
-  background:
-    radial-gradient(1200px 540px at 12% -12%, #17306b 0%, transparent 62%),
-    radial-gradient(900px 420px at 92% -4%, #0f2559 0%, transparent 58%),
-    var(--bg);
-  background-attachment: fixed;
+  background: var(--bg);
   position: relative;
   overflow-x: hidden;
   color: var(--ink);
@@ -57,50 +53,62 @@ body {
 a { color: var(--soc); }
 a:hover { color: #7cc0ff; }
 
-/* Masthead: the official MMS Midway artwork.
+/* The MMS Midway artwork as the page itself.
  *
- * Supplied by the speaker, resized to 2000px and re-encoded. WebP because the
- * art is flat vector-style colour - JPEG rings around those hard edges, and
- * WebP is 60KB against 99KB. The JPEG stays as a fallback via the cascade.
+ * The supplied art has a light sky and a dark ship, which is the wrong way
+ * round for a dark page. mms-midway-dark.* is the same artwork with its tones
+ * reversed - and reversed by remapping luminance onto the deck's blues, not by
+ * inverting RGB, which would have turned that #52AEE1 sky orange-brown.
+ * Result: deep navy sky, light ship, dark clouds and contrails.
  *
- * It sits as a band rather than a full-page background because the artwork's
- * sky is light (#52AEE1) and this page is navy. Two things make it belong:
- * the ship's hull is #011633, near-identical to our --bg, so the hull melts
- * into the page; and the bottom fades to --bg so there is no hard seam.
+ * Fixed and covering, so the page scrolls over a stationary carrier. A scrim
+ * holds it back far enough that body text still clears contrast, and the cards
+ * are translucent so the hull reads faintly through them.
  */
-.masthead {
-  height: clamp(190px, 24vw, 330px);
-  background-color: #52AEE1;
-  background-image: url("mms-midway.jpg");
-  background-image: -webkit-image-set(url("mms-midway.webp") type("image/webp"),
-                                      url("mms-midway.jpg") type("image/jpeg"));
-  background-image: image-set(url("mms-midway.webp") type("image/webp"),
-                              url("mms-midway.jpg") type("image/jpeg"));
-  background-size: cover;
-  background-position: center 41%;
-  background-repeat: no-repeat;
-  position: relative;
-  z-index: 0;
-}
-/* Melt the bottom of the art into the page. */
-.masthead::after {
+body::before {
   content: "";
-  position: absolute; inset: 0;
-  background: linear-gradient(to bottom,
-    transparent 0%, transparent 46%, rgba(1,18,48,.55) 76%, var(--bg) 100%);
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background-color: var(--bg);
+  background-image: url("mms-midway-dark.jpg");
+  background-image: -webkit-image-set(url("mms-midway-dark.webp") type("image/webp"),
+                                      url("mms-midway-dark.jpg") type("image/jpeg"));
+  background-image: image-set(url("mms-midway-dark.webp") type("image/webp"),
+                              url("mms-midway-dark.jpg") type("image/jpeg"));
+  background-size: cover;
+  background-position: center 32%;
+  background-repeat: no-repeat;
+}
+
+/* Scrim. Heaviest at the top, where the header and intro text sit, easing off
+   over the deck so the ship is still legible behind the cards. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(to bottom,
+      rgba(1,18,48,.92) 0%,
+      rgba(1,18,48,.80) 26%,
+      rgba(1,18,48,.72) 58%,
+      rgba(1,18,48,.88) 100%);
 }
 
 @media (max-width: 620px) {
-  .masthead { height: 150px; background-position: center 48%; }
+  /* At phone width the ship crops to an unreadable slice and only muddies the
+     text, so drop back to flat navy. */
+  body::before { background-image: none; }
+  body::after  { background: var(--bg); }
 }
 
-.top, main.wrap, .runner { position: relative; z-index: 1; }
-
-/* ---------- header ---------- *//* ---------- header ---------- */
+/* ---------- header ---------- *//* ---------- header ---------- *//* ---------- header ---------- */
 
 .top {
   border-bottom: 1px solid var(--line);
-  background: rgba(1, 18, 48, .86);
+  background: rgba(1, 18, 48, .82);
   backdrop-filter: blur(10px);
   position: sticky; top: 0; z-index: 40;
 }
@@ -119,10 +127,9 @@ a:hover { color: #7cc0ff; }
 }
 .brand { display: flex; align-items: center; gap: 14px; }
 .mark {
-  font-weight: 700; letter-spacing: .10em; font-size: 15px;
-  color: #fff; background: var(--soc);
-  padding: 6px 11px; border-radius: 6px;
-  box-shadow: 0 0 0 1px rgba(255,255,255,.14) inset;
+  /* White bubble with the letters knocked out, so the header colour shows
+     through them exactly as the sky does in the artwork. */
+  display: block; height: 38px; width: auto;
 }
 .brand h1 { margin: 0; font-size: 20px; letter-spacing: .005em; font-family: var(--display); font-weight: 700; }
 .event { margin: 1px 0 0; font-size: 12.5px; color: var(--ink-faint); }
@@ -200,7 +207,9 @@ a:hover { color: #7cc0ff; }
 }
 
 .card {
-  background: var(--panel); border: 1px solid var(--line);
+  background: rgba(27, 42, 94, .74);
+  -webkit-backdrop-filter: blur(7px); backdrop-filter: blur(7px);
+  border: 1px solid var(--line);
   border-radius: 13px; padding: 19px 19px 16px;
   display: flex; flex-direction: column; gap: 11px;
   transition: border-color .14s, transform .14s, background .14s;
