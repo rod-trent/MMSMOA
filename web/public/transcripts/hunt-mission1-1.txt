@@ -1,0 +1,16 @@
+
+hunt_service_accounts self-test
+--------------------------------------------------------------------
+  [ok  ] hunt confirms the hypothesis
+  [ok  ] identifies svc-datasync as the finding   (svc-datasync@contoso.com)
+  [ok  ] dismisses the svc-reporting decoy   (the decoy is the whole point)
+  [ok  ] every benign explanation was actually checked
+  [ok  ] no benign explanation held for the finding
+  [ok  ] evidence cites tables and row counts   (6 items)
+  [ok  ] record states what the hunt would miss
+  [ok  ] read-only - no actions taken
+  [ok  ] ground truth never leaks into the record
+  [ok  ] next pivots hand off to Mission 2
+--------------------------------------------------------------------
+  10/10 passed
+

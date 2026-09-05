@@ -1,0 +1,14 @@
+
+validate_finding self-test
+--------------------------------------------------------------------
+  [ok  ] Mission 2 finding reaches high confidence   (high)
+  [ok  ] Mission 1 finding reaches high confidence   (high)
+  [ok  ] seed-known-bad canary is detected (app hunt)
+  [ok  ] seed-known-bad canary is detected (account hunt)
+  [ok  ] no benign explanation holds for svc-datasync   (3 checked)
+  [ok  ] the decoy FAILS the benign-case search   (if this passed, the harness would rubber-stamp anything)
+  [ok  ] the decoy does not reach high confidence   (low)
+  [ok  ] a failed canary forces confidence to 'none'   (silence from a blind hunt means nothing)
+--------------------------------------------------------------------
+  8/8 passed
+

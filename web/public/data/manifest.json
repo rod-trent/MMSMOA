@@ -1,0 +1,395 @@
+{
+  "generated_note": "Built by web/build.py. Do not edit by hand.",
+  "repo": "https://github.com/rod-trent/MMSMOA",
+  "event": {
+    "name": "MMS 2026 Midway Edition",
+    "location": "Manchester Grand Hyatt, San Diego",
+    "dates": "25\u201328 October 2026",
+    "url": "https://mmsmoa.com/mms2026midway"
+  },
+  "sessions": [
+    {
+      "id": "soc",
+      "title": "Empowering SOC Teams",
+      "subtitle": "How Claude, Copilot, ChatGPT, MCP Servers, and Agents Drive Efficiency",
+      "slot": "Monday 26 October \u00b7 3:00pm PDT \u00b7 Seaport H",
+      "presenters": "Rod Trent \u00b7 Ken Goossens",
+      "accent": "#4da3ff"
+    },
+    {
+      "id": "hunt",
+      "title": "Using AI for Modern Threat Detection",
+      "subtitle": "Hunt what SIEM rules miss",
+      "slot": "Tuesday 27 October \u00b7 10:00am PDT \u00b7 Seaport G",
+      "presenters": "Rod Trent \u00b7 Chris Sires",
+      "accent": "#ffb347"
+    }
+  ],
+  "pyAssets": [
+    "empowering-soc-teams/02-natural-language-triage/replay_mcp_server.py",
+    "empowering-soc-teams/02-natural-language-triage/triage_walkthrough.py",
+    "empowering-soc-teams/02-natural-language-triage/sample_tenant.json",
+    "empowering-soc-teams/03-triage-agent-hitl/soc_triage_agent.py",
+    "empowering-soc-teams/04-guardrails-injection-test/test_injection_defense.py",
+    "empowering-soc-teams/04-guardrails-injection-test/injection_corpus.json",
+    "modern-threat-detection/01-prompt-patterns/Build-HuntPrompt.py",
+    "modern-threat-detection/02-hypothesis-hunt/hunt_service_accounts.py",
+    "modern-threat-detection/02-hypothesis-hunt/sample_hunt_data.json",
+    "modern-threat-detection/03-anomaly-to-detection/anomaly_to_detection.py",
+    "modern-threat-detection/04-validation-harness/validate_finding.py",
+    "modern-threat-detection/05-injection-redteam/Invoke-HuntRedTeam.py"
+  ],
+  "demos": [
+    {
+      "id": "soc-mcp-connection",
+      "session": "soc",
+      "title": "Wire the Model",
+      "subtitle": "Mission 1 \u00b7 slides 14\u201315",
+      "blurb": "Register the Entra app, point Claude at the Sentinel MCP server, and confirm the connection before you go on stage.",
+      "kind": "reference",
+      "note": "PowerShell \u2014 runs against a real tenant, not in the browser.",
+      "links": [
+        {
+          "label": "Register-SentinelMcpApp.ps1",
+          "href": "https://github.com/rod-trent/MMSMOA/blob/main/demos/empowering-soc-teams/01-mcp-connection/Register-SentinelMcpApp.ps1"
+        },
+        {
+          "label": "Test-SentinelMcpConnection.ps1",
+          "href": "https://github.com/rod-trent/MMSMOA/blob/main/demos/empowering-soc-teams/01-mcp-connection/Test-SentinelMcpConnection.ps1"
+        }
+      ]
+    },
+    {
+      "id": "soc-tool-layer",
+      "session": "soc",
+      "title": "The Tool Layer",
+      "subtitle": "Mission 1 \u00b7 slide 15",
+      "blurb": "Thirteen assertions against the MCP tool layer: read-only enforcement, the table allow-list, the row cap, and the untrusted-data wrapper.",
+      "kind": "run",
+      "script": "empowering-soc-teams/02-natural-language-triage/replay_mcp_server.py",
+      "variants": [
+        {
+          "label": "Run self-test",
+          "args": [
+            "--self-test"
+          ],
+          "primary": true,
+          "transcript": "soc-tool-layer-0"
+        }
+      ]
+    },
+    {
+      "id": "soc-triage-walkthrough",
+      "session": "soc",
+      "title": "Ask Like an Analyst",
+      "subtitle": "Mission 1 \u00b7 slide 15",
+      "blurb": "An analyst asks in plain language. The model discovers tables, writes the KQL, and refuses to answer until it has the UEBA baseline \u2014 which is what separates the real compromise from the VPN false positive.",
+      "kind": "run",
+      "script": "empowering-soc-teams/02-natural-language-triage/triage_walkthrough.py",
+      "variants": [
+        {
+          "label": "Run the mission",
+          "args": [
+            "--fast"
+          ],
+          "primary": true,
+          "transcript": "soc-triage-walkthrough-0"
+        },
+        {
+          "label": "Record only (JSON)",
+          "args": [
+            "--json"
+          ],
+          "transcript": "soc-triage-walkthrough-1"
+        }
+      ]
+    },
+    {
+      "id": "soc-triage-agent",
+      "session": "soc",
+      "title": "Auto-Triage + Human on the Trigger",
+      "subtitle": "Mission 2 \u00b7 slides 16\u201318",
+      "blurb": "The six-stage loop, with an approval gate the agent cannot get past. Run it clean, then reject it on purpose and watch it re-plan.",
+      "kind": "run",
+      "script": "empowering-soc-teams/03-triage-agent-hitl/soc_triage_agent.py",
+      "variants": [
+        {
+          "label": "The easy one (auto-close)",
+          "args": [
+            "--auto-approve",
+            "--fast"
+          ],
+          "transcript": "soc-triage-agent-0"
+        },
+        {
+          "label": "The real one (48213)",
+          "args": [
+            "--incident",
+            "48213",
+            "--auto-approve",
+            "--fast"
+          ],
+          "primary": true,
+          "transcript": "soc-triage-agent-1"
+        },
+        {
+          "label": "Reject it on purpose",
+          "args": [
+            "--incident",
+            "48201",
+            "--reject",
+            "--fast"
+          ],
+          "highlight": true,
+          "transcript": "soc-triage-agent-2"
+        },
+        {
+          "label": "Injection payload (48176)",
+          "args": [
+            "--incident",
+            "48176",
+            "--auto-approve",
+            "--fast"
+          ],
+          "transcript": "soc-triage-agent-3"
+        },
+        {
+          "label": "Guardrail self-test",
+          "args": [
+            "--self-test"
+          ],
+          "transcript": "soc-triage-agent-4"
+        }
+      ]
+    },
+    {
+      "id": "soc-injection",
+      "session": "soc",
+      "title": "Prove the Guardrails Hold",
+      "subtitle": "Slide 20",
+      "blurb": "Ten prompt-injection payloads and two benign controls, scored. Reports one payload it does not detect, on purpose.",
+      "kind": "run",
+      "script": "empowering-soc-teams/04-guardrails-injection-test/test_injection_defense.py",
+      "variants": [
+        {
+          "label": "Scorecard",
+          "args": [],
+          "primary": true,
+          "transcript": "soc-injection-0"
+        },
+        {
+          "label": "With commentary",
+          "args": [
+            "--verbose"
+          ],
+          "transcript": "soc-injection-1"
+        },
+        {
+          "label": "Tool allow-list",
+          "args": [
+            "--tool-test"
+          ],
+          "highlight": true,
+          "transcript": "soc-injection-2"
+        }
+      ]
+    },
+    {
+      "id": "soc-roi",
+      "session": "soc",
+      "title": "Instrument, Then Automate",
+      "subtitle": "Slides 21\u201322",
+      "blurb": "The four baseline metrics, which alert class to automate first, and an ROI model that includes human review time \u2014 the largest cost line.",
+      "kind": "playback",
+      "note": "PowerShell \u2014 this is its recorded output.",
+      "transcript": "soc-roi"
+    },
+    {
+      "id": "hunt-prompt-builder",
+      "session": "hunt",
+      "title": "Prompts That Produce Evidence",
+      "subtitle": "Slides 11\u201312",
+      "blurb": "The template the room photographs, plus a linter that tells you when your hypothesis cannot fail.",
+      "kind": "run",
+      "script": "modern-threat-detection/01-prompt-patterns/Build-HuntPrompt.py",
+      "variants": [
+        {
+          "label": "Lint a bad hypothesis",
+          "args": [
+            "--lint",
+            "Find anything suspicious"
+          ],
+          "primary": true,
+          "highlight": true,
+          "transcript": "hunt-prompt-builder-0"
+        },
+        {
+          "label": "Six good hypotheses",
+          "args": [
+            "--list"
+          ],
+          "transcript": "hunt-prompt-builder-1"
+        },
+        {
+          "label": "Render the template",
+          "args": [
+            "--preset",
+            "service-accounts"
+          ],
+          "transcript": "hunt-prompt-builder-2"
+        },
+        {
+          "label": "OAuth consent hunt",
+          "args": [
+            "--preset",
+            "oauth-consent"
+          ],
+          "transcript": "hunt-prompt-builder-3"
+        }
+      ]
+    },
+    {
+      "id": "hunt-mission1",
+      "session": "hunt",
+      "title": "Speed the Investigation",
+      "subtitle": "Mission 1 \u00b7 slides 14\u201315",
+      "blurb": "Hypothesis to evidence with no hand-written KQL. Two service accounts match the hypothesis; only one is a finding.",
+      "kind": "run",
+      "script": "modern-threat-detection/02-hypothesis-hunt/hunt_service_accounts.py",
+      "variants": [
+        {
+          "label": "Run the hunt",
+          "args": [
+            "--fast"
+          ],
+          "primary": true,
+          "transcript": "hunt-mission1-0"
+        },
+        {
+          "label": "Self-test (10 checks)",
+          "args": [
+            "--self-test"
+          ],
+          "transcript": "hunt-mission1-1"
+        },
+        {
+          "label": "Record only (JSON)",
+          "args": [
+            "--json"
+          ],
+          "transcript": "hunt-mission1-2"
+        }
+      ]
+    },
+    {
+      "id": "hunt-mission2",
+      "session": "hunt",
+      "title": "What the Rules Missed",
+      "subtitle": "Mission 2 \u00b7 slides 16\u201317",
+      "blurb": "UEBA anomalies to a validated finding to a generated analytics rule \u2014 and a flat refusal to generate that rule if you skip validation.",
+      "kind": "run",
+      "script": "modern-threat-detection/03-anomaly-to-detection/anomaly_to_detection.py",
+      "variants": [
+        {
+          "label": "Run the mission",
+          "args": [
+            "--fast"
+          ],
+          "primary": true,
+          "transcript": "hunt-mission2-0"
+        },
+        {
+          "label": "Skip validation (watch it refuse)",
+          "args": [
+            "--skip-validation",
+            "--fast"
+          ],
+          "highlight": true,
+          "transcript": "hunt-mission2-1"
+        },
+        {
+          "label": "Self-test (15 checks)",
+          "args": [
+            "--self-test"
+          ],
+          "transcript": "hunt-mission2-2"
+        }
+      ]
+    },
+    {
+      "id": "hunt-validation",
+      "session": "hunt",
+      "title": "Validate Before You Believe",
+      "subtitle": "Slide 19",
+      "blurb": "Six techniques, ending in a verdict: still a lead, or now evidence. Includes seed-known-bad, the one everyone forgets.",
+      "kind": "run",
+      "script": "modern-threat-detection/04-validation-harness/validate_finding.py",
+      "variants": [
+        {
+          "label": "Validate the finding",
+          "args": [
+            "--finding",
+            "mission2"
+          ],
+          "primary": true,
+          "transcript": "hunt-validation-0"
+        },
+        {
+          "label": "Seed known bad only",
+          "args": [
+            "--technique",
+            "seed"
+          ],
+          "highlight": true,
+          "transcript": "hunt-validation-1"
+        },
+        {
+          "label": "Mission 1 finding",
+          "args": [
+            "--finding",
+            "mission1"
+          ],
+          "transcript": "hunt-validation-2"
+        },
+        {
+          "label": "Self-test (8 checks)",
+          "args": [
+            "--self-test"
+          ],
+          "transcript": "hunt-validation-3"
+        }
+      ]
+    },
+    {
+      "id": "hunt-redteam",
+      "session": "hunt",
+      "title": "Red-Team Your Own Hunt",
+      "subtitle": "Slide 20",
+      "blurb": "Leakage and injection testing for a hunting workflow. The highest-value injection against a hunt is not 'do something' \u2014 it is 'find nothing'.",
+      "kind": "run",
+      "script": "modern-threat-detection/05-injection-redteam/Invoke-HuntRedTeam.py",
+      "variants": [
+        {
+          "label": "Full red-team",
+          "args": [],
+          "primary": true,
+          "transcript": "hunt-redteam-0"
+        },
+        {
+          "label": "Why each payload matters",
+          "args": [
+            "--verbose"
+          ],
+          "transcript": "hunt-redteam-1"
+        },
+        {
+          "label": "Leakage posture only",
+          "args": [
+            "--leakage"
+          ],
+          "transcript": "hunt-redteam-2"
+        }
+      ]
+    }
+  ]
+}

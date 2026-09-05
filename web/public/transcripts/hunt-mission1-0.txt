@@ -1,0 +1,178 @@
+
+[1m  MISSION 1 - SPEED THE INVESTIGATION[0m
+[2m  CONTOSO-PROD / contoso-sentinel-prod[0m
+[2m  Window: last 7 days, as of 2026-10-27T09:00:00Z[0m
+[2m  Identity: hunter@contoso.com (Security Reader, read-only)[0m
+
+[2m==========================================================================[0m
+[1m STEP 1/6  State the hypothesis[0m
+[2m==========================================================================[0m
+
+[32mHUNTER[0m[2m  >  [0mService accounts should never sign in interactively. Show me any that did in the last 7 days and what they touched afterward.
+
+[33m  >> STAGE NOTE: That is a hypothesis, not a question. It can come back empty, and empty would be a real answer. Build-HuntPrompt.py in Demo 1 is the linter that enforces the difference.[0m
+
+[2m==========================================================================[0m
+[1m STEP 2/6  Watch table discovery[0m
+[2m==========================================================================[0m
+
+[36mCLAUDE[0m[2m |  [0mBefore I query anything, here is what I think is relevant and why:
+[36mCLAUDE[0m[2m |  [0m
+[36mCLAUDE[0m[2m |  [0m  SigninLogs                        interactive sign-ins, has IsInteractive
+[36mCLAUDE[0m[2m |  [0m  AADNonInteractiveUserSignInLogs   the baseline - what these accounts
+[36mCLAUDE[0m[2m |  [0m                                    normally do, so I can tell 'unusual'
+[36mCLAUDE[0m[2m |  [0m                                    from 'never'
+[36mCLAUDE[0m[2m |  [0m  MicrosoftGraphActivityLogs        what happened afterward
+[36mCLAUDE[0m[2m |  [0m  BehaviorAnalytics                 UEBA baseline per account
+[36mCLAUDE[0m[2m |  [0m  AuditLogs                         directory changes made after the fact
+[36mCLAUDE[0m[2m |  [0m
+[36mCLAUDE[0m[2m |  [0mI also need to know which accounts are service accounts. There is no
+[36mCLAUDE[0m[2m |  [0mflag for that in Entra - I will use the naming convention and confirm
+[36mCLAUDE[0m[2m |  [0magainst IdentityInfo. Say so now, because it is the weakest assumption
+[36mCLAUDE[0m[2m |  [0min this hunt.
+[2m        -> 10 tables in the workspace[0m
+
+[33m  >> STAGE NOTE: The model named its own weakest assumption before it ran anything. That is what you want, and it is the thing to point at.[0m
+
+[2m==========================================================================[0m
+[1m STEP 3/6  Review the KQL - the first validation checkpoint[0m
+[2m==========================================================================[0m
+
+[32mHUNTER[0m[2m  >  [0mShow me the query first. What would it miss?
+
+[35m        let window = 7d;[0m
+[35m        let service_accounts = IdentityInfo[0m
+[35m            | where AccountUPN startswith "svc-"[0m
+[35m            | distinct AccountUPN;[0m
+[35m        SigninLogs[0m
+[35m        | where TimeGenerated > ago(window)[0m
+[35m        | where UserPrincipalName in (service_accounts)[0m
+[35m        | where IsInteractive == true[0m
+[35m        | where ResultType == 0[0m
+[35m        | project TimeGenerated, UserPrincipalName, IPAddress,[0m
+[35m                  AutonomousSystemNumber, Location, AppDisplayName, UserAgent[0m
+[35m        | order by TimeGenerated desc[0m
+
+
+[36mCLAUDE[0m[2m |  [0mWhat it matches: successful interactive sign-ins by any account whose
+[36mCLAUDE[0m[2m |  [0mUPN starts with 'svc-', in the last 7 days.
+[36mCLAUDE[0m[2m |  [0m
+[36mCLAUDE[0m[2m |  [0mWhat it would MISS, which is the more useful list:
+[36mCLAUDE[0m[2m |  [0m  - service accounts not named svc-* (the naming convention is a
+[36mCLAUDE[0m[2m |  [0m    convention, not a control)
+[36mCLAUDE[0m[2m |  [0m  - failed interactive attempts, which are a signal in their own right
+[36mCLAUDE[0m[2m |  [0m  - workload identities and service principals, which live in
+[36mCLAUDE[0m[2m |  [0m    AADServicePrincipalSignInLogs, a different table entirely
+[36mCLAUDE[0m[2m |  [0m  - anything outside the 7-day window
+[36mCLAUDE[0m[2m |  [0m
+[36mCLAUDE[0m[2m |  [0mI would not treat an empty result from this query as 'no compromise'.
+
+[33m  >> STAGE NOTE: Say the line: "I never run a query I have not read." It comes back in the guardrails section and it answers half the Q&A.[0m
+
+[32mHUNTER[0m[2m  >  [0mRun it.
+[2m        -> 3 rows[0m
+
+[2m        2026-10-26T21:47:52Z  svc-datasync@contoso.com     AS202425  Chisinau   Microsoft Azure PowerShell[0m
+[2m        2026-10-26T21:52:31Z  svc-datasync@contoso.com     AS202425  Chisinau   Microsoft Graph Command Line Tools[0m
+[2m        2026-10-25T14:12:07Z  svc-reporting@contoso.com    AS10796   Columbus   Microsoft Azure PowerShell[0m
+
+[36mCLAUDE[0m[2m |  [0mTwo hits. Both are service accounts signing in interactively, which is
+[36mCLAUDE[0m[2m |  [0mthe thing you said should never happen.
+[36mCLAUDE[0m[2m |  [0m
+[36mCLAUDE[0m[2m |  [0mI am not going to tell you both are incidents. One of them looks like
+[36mCLAUDE[0m[2m |  [0minfrastructure I recognise. Checking the baseline before I say anything
+[36mCLAUDE[0m[2m |  [0mabout either.
+
+[2m==========================================================================[0m
+[1m STEP 5/6  Check the baseline - is this new for THIS account?[0m
+[2m==========================================================================[0m
+
+[1m        svc-datasync@contoso.com[0m
+[2m          UEBA investigation priority : 9[0m
+[2m          First-time signals          : FirstTimeUserConnectedFromCountry, FirstTimeUserConnectedViaISP, FirstTimeUserUsedApp, UncommonUserAgent, FirstTimeUserLoggedOnInteractively[0m
+[2m          [[31mno [0m[2m][0m AS202425 is a known Contoso egress[0m
+[2m          [[31mno [0m[2m][0m Sign-in came from an approved jump host[0m
+[2m          [[31mno [0m[2m][0m An open change record covers this sign-in[0m
+
+[1m        svc-reporting@contoso.com[0m
+[2m          UEBA investigation priority : 3[0m
+[2m          First-time signals          : FirstTimeUserLoggedOnInteractively[0m
+[2m          [[32myes[0m[2m][0m AS10796 is a known Contoso egress[0m
+[2m          [[32myes[0m[2m][0m Sign-in came from an approved jump host[0m
+[2m          [[32myes[0m[2m][0m An open change record covers this sign-in[0m
+
+[36mCLAUDE[0m[2m |  [0mThey are not the same thing.
+[36mCLAUDE[0m[2m |  [0m
+[36mCLAUDE[0m[2m |  [0m  svc-reporting@contoso.com
+[36mCLAUDE[0m[2m |  [0m    AS10796 is our Columbus HQ range, the sign-in came from an
+[36mCLAUDE[0m[2m |  [0m    approved jump host, and CHG-88901 covers the window. UEBA priority 3.
+[36mCLAUDE[0m[2m |  [0m    This is a documented break-glass procedure. Not reporting it.
+[36mCLAUDE[0m[2m |  [0m
+[36mCLAUDE[0m[2m |  [0m  svc-datasync@contoso.com
+[36mCLAUDE[0m[2m |  [0m    AS202425 is not ours. No jump host. No change record. UEBA
+[36mCLAUDE[0m[2m |  [0m    priority 9, and five first-time signals at once, including
+[36mCLAUDE[0m[2m |  [0m    'FirstTimeUserLoggedOnInteractively'.
+[36mCLAUDE[0m[2m |  [0m
+[36mCLAUDE[0m[2m |  [0mFollowing the second one.
+
+[33m  >> STAGE NOTE: This is the highest-value 30 seconds in the session. The model just declined to report a finding that matched the hypothesis, because the boring explanation held. A hunt that cannot do this generates work instead of removing it.[0m
+
+[2m==========================================================================[0m
+[1m STEP 4/6  Pivot on the hit - what did it touch afterward?[0m
+[2m==========================================================================[0m
+
+[32mHUNTER[0m[2m  >  [0mShow me everything that identity did in the 60 minutes after that sign-in, across every table you can reach.
+[2m        -> 4 Graph API calls[0m
+
+[2m        2026-10-26T21:54:03Z  GET   /users              1,840,221 bytes[0m
+[2m        2026-10-26T21:56:40Z  GET   /groups               402,118 bytes[0m
+[2m        2026-10-26T22:01:19Z  GET   /directoryRoles        18,422 bytes[0m
+[2m        2026-10-26T22:04:55Z  GET   /applications         220,481 bytes[0m
+
+[36mCLAUDE[0m[2m |  [0mFour Graph calls in seventeen minutes: /users, /groups, /directoryRoles,
+[36mCLAUDE[0m[2m |  [0m/applications. That sequence is directory enumeration - who exists, how
+[36mCLAUDE[0m[2m |  [0mthey are grouped, who is privileged, and what apps are trusted.
+[36mCLAUDE[0m[2m |  [0m
+[36mCLAUDE[0m[2m |  [0mThe /directoryRoles call is the one that matters. A data sync service
+[36mCLAUDE[0m[2m |  [0mhas no reason to ask who the administrators are.
+[36mCLAUDE[0m[2m |  [0m
+[36mCLAUDE[0m[2m |  [0m1.8 MB from /users means the full directory came back.
+
+[36mCLAUDE[0m[2m |  [0mOne more pivot, on the IP rather than the account.
+[36mCLAUDE[0m[2m |  [0m
+[36mCLAUDE[0m[2m |  [0mAS202425 / 45.129.14.201 also appears in
+[36mCLAUDE[0m[2m |  [0m2 CloudAppEvents rows for different users entirely -
+[36mCLAUDE[0m[2m |  [0m  2026-10-21T15:58:12Z  k.osei@contoso.com  MailItemsAccessed x94 via 'Contoso Doc Sync'
+[36mCLAUDE[0m[2m |  [0m  2026-10-24T16:45:31Z  s.whitfield@contoso.com  FileSyncDownloadedFull x311 via 'Contoso Doc Sync'
+[36mCLAUDE[0m[2m |  [0m
+[36mCLAUDE[0m[2m |  [0mThat is the same infrastructure touching mail and files through a
+[36mCLAUDE[0m[2m |  [0mthird-party application. This is not one compromised service
+[36mCLAUDE[0m[2m |  [0maccount. Recommend a second hunt on that application, in its own
+[36mCLAUDE[0m[2m |  [0mthread.
+
+[33m  >> STAGE NOTE: One hypothesis per thread. Park this and come back to it - that is exactly what Mission 2 does, and it is why the two demos are one story.[0m
+
+[2m==========================================================================[0m
+[1m STEP 6/6  Produce the record[0m
+[2m==========================================================================[0m
+
+[32mHUNTER[0m[2m  >  [0mGive me the record: hypothesis, evidence with row counts, timeline, confidence, what you checked for benign, and next pivots.
+
+[1m  Hypothesis    [0mService accounts are being used interactively from infrastructure we do not own.
+[1m  Result        [0m[31mconfirmed[0m
+[1m  Finding       [0msvc-datasync@contoso.com from AS202425
+[1m  Dismissed     [0msvc-reporting@contoso.com (documented break-glass)
+[1m  Evidence      [0m6 queries across 4 tables
+[1m  Confidence    [0mhigh
+[1m  Actions taken [0mnone - this connection is read-only
+
+[1m  Timeline[0m
+    2026-10-26T21:47:52Z  Interactive sign-in from AS202425 (Chisinau, MD) via Microsoft Azure PowerShell
+    2026-10-26T21:52:31Z  Second sign-in, Microsoft Graph Command Line Tools
+    2026-10-26T21:54:03Z  Graph GET /users (1,840,221 bytes)
+    2026-10-26T21:56:40Z  Graph GET /groups (402,118 bytes)
+    2026-10-26T22:01:19Z  Graph GET /directoryRoles (18,422 bytes)
+    2026-10-26T22:04:55Z  Graph GET /applications (220,481 bytes)
+
+[33m  >> STAGE NOTE: Save this record. Mission 2 starts from it - the application that shows up in the last pivot is what the analytics rules missed.[0m
+

@@ -1,0 +1,56 @@
+
+[1m  Validation harness - slide 19[0m
+[2m  A model finding is a lead until a human makes it evidence.[0m
+
+[1m  Finding  Service account used interactively from unowned infrastructure[0m
+[2m           svc-datasync@contoso.com signed in interactively from AS202425 and[0m
+[2m           then enumerated the directory via Graph API.[0m
+
+[2m  ----------------------------------------------------------------------[0m
+  [[32m PASS [0m] 1. [1mRe-query independently[0m
+[2m         Re-ran the core query for 'svc-datasync@contoso.com' on a 30-day window instead of the original 7-8 days.[0m
+         2 rows in the original window, 4 in the wider one
+[2m         Consistent. The wider window adds context without[0m
+[2m         contradicting the claim.[0m
+
+[2m  ----------------------------------------------------------------------[0m
+  [[32m PASS [0m] 2. [1mCross-source confirmation[0m
+[2m         Looked for 'svc-datasync@contoso.com' outside SigninLogs.[0m
+         Corroborated in: MicrosoftGraphActivityLogs, BehaviorAnalytics
+[2m         Confirmed across 3 independent sources. Identity plus[0m
+[2m         activity, not one table's opinion.[0m
+
+[2m  ----------------------------------------------------------------------[0m
+  [[32m PASS [0m] 3. [1mBaseline it[0m
+[2m         Compared 'svc-datasync@contoso.com' against 90 days of history.[0m
+         UEBA priority 9, 7 first-time signals: FirstTimeUserConnectedFromCountry, FirstTimeUserConnectedViaISP, FirstTimeUserLoggedOnInteractively, FirstTimeUserPerformedAction, FirstTimeUserUsedApp, UncommonHighVolumeOfActions, UncommonUserAgent
+[2m         Deviation is real against a 90-day baseline, and it is multi-[0m
+[2m         signal. One first-time signal is noise; 7 at once is not.[0m
+
+[2m  ----------------------------------------------------------------------[0m
+  [[32m PASS [0m] 4. [1mSeed known bad[0m
+[2m         Planted a synthetic record matching the hunt's own logic ('svc-hunttest@contoso.com') and re-ran the hunt.[0m
+         Canary detected
+[2m         The hunt can find what it is looking for, so its silence[0m
+[2m         elsewhere carries information.[0m
+
+[2m  ----------------------------------------------------------------------[0m
+  [[32m PASS [0m] 5. [1mHunt the benign case[0m
+[2m         Actively searched for an innocent explanation for 'svc-datasync@contoso.com'.[0m
+         3 explanations checked, 0 held
+[2m         No benign explanation held. The finding survives the[0m
+[2m         disconfirming search.[0m
+[2m           [[32mno [0m[2m][0m An open change record covers this activity[0m
+[2m           [[32mno [0m[2m][0m Interactive sign-in came from a known egress ASN[0m
+[2m           [[32mno [0m[2m][0m Interactive sign-in came from an approved jump host[0m
+
+[2m  ======================================================================[0m
+  [1m6. Score and log[0m
+         5/5 techniques passed
+[2m         Confidence: high. Log this alongside the finding - confirmed[0m
+[2m         AND rejected findings both feed rule tuning, and the rejected[0m
+[2m         ones are the more useful half.[0m
+
+[32m  VERDICT: This is now evidence. It survived all five techniques,[0m
+[32m  including a deliberate search for the innocent explanation.[0m
+

@@ -1,0 +1,115 @@
+
+[1m  MMS 2026 Midway Edition - Empowering SOC Teams[0m
+[2m  Mission 2: auto-triage with a human on the trigger[0m
+
+[2m  Agent identity  svc-soc-triage-agent@contoso.com[0m
+[2m  Role            Security Reader (+ scoped write, post-approval only)[0m
+[2m  Read tools      8 allowed[0m
+[2m  Write tools     3 allowed, gated[0m
+
+[2m==========================================================================[0m
+[1m STAGE 1/6  INGEST[0m[2m   pick the work[0m
+[2m==========================================================================[0m
+[36m  agent  [0mWorking incident 48176 as instructed.
+[35m  [tool] get_incident(incident_number=48176)[0m
+[2m         -> 1 row(s)[0m
+
+[31m  !! Retrieved incident content contains text addressed to me.[0m
+[36m  agent  [0mI am treating it as data and reporting it. I will not act on it,
+[36m  agent  [0mand it will not be allowed to select a tool. Continuing the
+[36m  agent  [0minvestigation on the actual evidence.
+
+[33m  >> STAGE NOTE: This is the prompt-injection defence from slide 20, firing for real. Demo 4 is the test harness that proves it.[0m
+
+  [1mIncident[0m  48176  Anomalous file download volume
+  [1mSeverity[0m  Medium  (New, unassigned)
+  [1mWindow  [0m  2026-10-27T10:55:00Z -> 2026-10-27T11:18:31Z
+  [1mEntities[0m  Account:p.nakamura@contoso.com, CloudApplication:Microsoft SharePoint Online
+
+[2m==========================================================================[0m
+[1m STAGE 2/6  CORRELATE[0m[2m   pull everything about these entities[0m
+[2m==========================================================================[0m
+[36m  agent  [0mAccount entities: p.nakamura@contoso.com
+[36m  agent  [0mPulling sign-in and directory activity for each.
+[35m  [tool] get_signin_activity(upn='p.nakamura@contoso.com', lookback_hours=24)[0m
+[2m         -> 0 row(s)[0m
+[35m  [tool] get_audit_activity(upn='p.nakamura@contoso.com', lookback_hours=24)[0m
+[2m         -> 0 row(s)[0m
+
+[2m==========================================================================[0m
+[1m STAGE 3/6  ENRICH[0m[2m   baseline, asset criticality, known-good[0m
+[2m==========================================================================[0m
+[35m  [tool] get_ueba_baseline(upn='p.nakamura@contoso.com')[0m
+[2m         -> 1 row(s)[0m
+[35m  [tool] run_kql(query='IdentityInfo | where AccountUPN == "p.nakamura@contoso.com"', timespan_hours=720)[0m
+[2m         -> 0 row(s)[0m
+[35m  [tool] run_kql(query='CloudAppEvents | where AccountUpn == "p.nakamura@contoso.com"', timespan_hours=24)[0m
+[2m         -> 0 row(s)[0m
+
+[2m==========================================================================[0m
+[1m STAGE 4/6  REASON[0m[2m   score it, and check the boring explanation first[0m
+[2m==========================================================================[0m
+[36m  agent  [0mWeighing the signals:
+
+[36m  agent  [0mBenign explanations checked before concluding:
+[2m           [[31mno [0m[2m][0m A change record covers this activity[0m
+
+[2m==========================================================================[0m
+[1m STAGE 5/6  APPROVE[0m[2m   the analyst reviews a finished investigation[0m
+[2m==========================================================================[0m
+
+[33m  ----------------------------------------------------------------------[0m
+[33m[1m   AGENT PROPOSAL - REQUIRES HUMAN APPROVAL[0m
+[33m  ----------------------------------------------------------------------[0m
+
+{
+  "incident": 48176,
+  "severity": "Low",
+  "confidence": 0.35,
+  "disposition": "Route to human - insufficient evidence",
+  "summary": "",
+  "account": "p.nakamura@contoso.com",
+  "evidence": [
+    "SecurityIncident 1 rows",
+    "SigninLogs 0 rows",
+    "AuditLogs 0 rows"
+  ],
+  "timeline": [],
+  "recommended_actions": [
+    "No response action recommended; document and close"
+  ],
+  "requires_approval": true
+}
+
+[2m   Benign explanations the agent checked before proposing this:[0m
+[2m     [no ] A change record covers this activity - No change record references this account[0m
+[33m  ----------------------------------------------------------------------[0m
+
+[33m  >> STAGE NOTE: The analyst is reviewing a finished investigation, not starting one. That is the whole pitch. Let it sit on screen for a beat.[0m
+
+[2m  [--auto-approve] approving without a human. Do not do this in production until accuracy earns it (slide 21).[0m
+
+[2m==========================================================================[0m
+[1m STAGE 6/6  ACT[0m[2m   only what the human approved[0m
+[2m==========================================================================[0m
+[36m  agent  [0mDisposition is not an escalation, so nobody gets paged.
+[36m  agent  [0mComment and classification only.
+[35m  [tool] add_incident_comment(incident=48176)[0m
+[2m         -> Agent triage: Route to human - insufficient evidence (confidence 0.35, approved by automation)[0m
+[35m  [tool] set_incident_classification(incident=48176)[0m
+[2m         -> Route to human - insufficient evidence[0m
+
+[2m==========================================================================[0m
+[1m RUN LOG[0m[2m   observability is not optional[0m
+[2m==========================================================================[0m
+
+  Tool calls        6
+  Evidence items    3
+  Re-plans          0
+  Security events   1
+  Actions taken     2
+
+[2m  Run written to run-48176-1788638962.json[0m
+
+[33m  >> STAGE NOTE: In production this run record goes to a custom Sentinel table. That is what you query for the ROI numbers on slide 21, and it is what an auditor asks for when they want to know who approved what.[0m
+

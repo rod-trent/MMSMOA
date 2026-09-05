@@ -12,6 +12,7 @@ on:
       - 'demos/empowering-soc-teams/**'
       - 'demos/modern-threat-detection/**'
       - 'run-all-tests.py'
+      - 'web/**'
       - '.github/workflows/demo-tests.yml'
   pull_request:
   workflow_dispatch:
@@ -51,3 +52,18 @@ jobs:
             exit 1
           fi
           echo "No case collisions."
+
+  site:
+    name: demo site is in sync
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # The site ships pre-built. This rebuilds it and fails if the committed
+      # output differs, so the page can never claim to run code it does not.
+      - name: Check web/public matches the demos
+        run: python web/build.py --check

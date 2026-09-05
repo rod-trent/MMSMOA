@@ -1,0 +1,19 @@
+
+replay_mcp_server self-test
+--------------------------------------------------------------------
+  [ok  ] list_tables returns the workspace   (9 tables)
+  [ok  ] describe_table SigninLogs   (13 columns)
+  [ok  ] describe_table rejects unknown table
+  [ok  ] list_incidents filters age/severity/assignment   (returned [48201, 48209, 48213])
+  [ok  ] get_signin_activity surfaces the Columbus -> Nairobi jump   (1 location change(s))
+  [ok  ] get_audit_activity finds MFA registration and consent   (['User registered security info', 'Consent to application'])
+  [ok  ] get_ueba_baseline flags first-time country
+  [ok  ] benign user's baseline already contains IE   (this is what kills the false positive)
+  [ok  ] run_kql executes a filtered read   (2 rows)
+  [ok  ] run_kql rejects write operations   (Rejected: query contains a write or management operation. Th)
+  [ok  ] run_kql enforces the table allow-list
+  [ok  ] free text is returned inside an untrusted-data marker   (see ../04-guardrails-injection-test/)
+  [ok  ] authoring notes are stripped from tool output
+--------------------------------------------------------------------
+  13/13 passed
+

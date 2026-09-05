@@ -1,0 +1,57 @@
+
+[1m  Validation harness - slide 19[0m
+[2m  A model finding is a lead until a human makes it evidence.[0m
+
+[1m  Finding  Low-and-slow OAuth consent to an unverified publisher[0m
+[2m           Six users granted consent to 'Contoso Doc Sync' over seven days;[0m
+[2m           the publisher is unverified and every grant includes[0m
+[2m           offline_access.[0m
+
+[2m  ----------------------------------------------------------------------[0m
+  [[32m PASS [0m] 1. [1mRe-query independently[0m
+[2m         Re-ran the core query for 'Contoso Doc Sync' on a 30-day window instead of the original 7-8 days.[0m
+         6 rows in the original window, 6 in the wider one
+[2m         Consistent. The wider window adds context without[0m
+[2m         contradicting the claim.[0m
+
+[2m  ----------------------------------------------------------------------[0m
+  [[32m PASS [0m] 2. [1mCross-source confirmation[0m
+[2m         Looked for 'Contoso Doc Sync' outside AuditLogs.[0m
+         Corroborated in: CloudAppEvents, BehaviorAnalytics
+[2m         Confirmed across 3 independent sources. Identity plus[0m
+[2m         activity, not one table's opinion.[0m
+
+[2m  ----------------------------------------------------------------------[0m
+  [[32m PASS [0m] 3. [1mBaseline it[0m
+[2m         Compared 'Contoso Doc Sync' against 90 days of history.[0m
+         First seen 2026-10-19; publisher not on the approved list: True
+[2m         New to the tenant and not an approved publisher. The 'new'[0m
+[2m         claim holds.[0m
+
+[2m  ----------------------------------------------------------------------[0m
+  [[32m PASS [0m] 4. [1mSeed known bad[0m
+[2m         Planted a synthetic record matching the hunt's own logic ('HUNT-TEST-CANARY') and re-ran the hunt.[0m
+         Canary detected
+[2m         The hunt can find what it is looking for, so its silence[0m
+[2m         elsewhere carries information.[0m
+
+[2m  ----------------------------------------------------------------------[0m
+  [[32m PASS [0m] 5. [1mHunt the benign case[0m
+[2m         Actively searched for an innocent explanation for 'Contoso Doc Sync'.[0m
+         3 explanations checked, 0 held
+[2m         No benign explanation held. The finding survives the[0m
+[2m         disconfirming search.[0m
+[2m           [[32mno [0m[2m][0m An open change record covers this activity[0m
+[2m           [[32mno [0m[2m][0m Publisher is verified or on the approved list[0m
+[2m           [[32mno [0m[2m][0m This is an admin-driven rollout, not user-initiated[0m
+
+[2m  ======================================================================[0m
+  [1m6. Score and log[0m
+         5/5 techniques passed
+[2m         Confidence: high. Log this alongside the finding - confirmed[0m
+[2m         AND rejected findings both feed rule tuning, and the rejected[0m
+[2m         ones are the more useful half.[0m
+
+[32m  VERDICT: This is now evidence. It survived all five techniques,[0m
+[32m  including a deliberate search for the innocent explanation.[0m
+

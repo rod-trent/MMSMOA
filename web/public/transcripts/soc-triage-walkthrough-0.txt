@@ -1,0 +1,148 @@
+
+[2m==========================================================================[0m
+[1m MISSION 1 - WIRE THE MODEL[0m
+[2m==========================================================================[0m
+
+  Tenant     CONTOSO-PROD
+  Workspace  contoso-sentinel-prod
+  As of      2026-10-28T14:00:00Z
+  Identity   analyst@contoso.com (Security Reader)
+  Transport  MCP / Data Exploration collection
+
+[2m==========================================================================[0m
+[1m Step 2 - Discover the workspace[0m
+[2m==========================================================================[0m
+
+[32mANALYST[0m[2m  >  [0mWhat can you see in this workspace?
+[35m           [tool] list_tables()[0m
+[2m           [<--] 9 tables[0m
+
+[36mCLAUDE [0m[2m |  [0mI have read access to 9 tables in contoso-sentinel-prod. The ones that matter for
+[36mCLAUDE [0m[2m |  [0midentity investigations are SigninLogs, AADNonInteractiveUserSignInLogs,
+[36mCLAUDE [0m[2m |  [0mAuditLogs, CloudAppEvents, IdentityInfo, and BehaviorAnalytics.
+[36mCLAUDE [0m[2m |  [0m
+[36mCLAUDE [0m[2m |  [0mI have not queried anything yet - tell me what you are looking for.
+
+[33m  >> STAGE NOTE: This is the moment to say it: no KQL yet, no schema knowledge required. The model just told you what a new analyst spends a month learning.[0m
+
+[2m==========================================================================[0m
+[1m Step 4 - Ask like an analyst[0m
+[2m==========================================================================[0m
+
+[32mANALYST[0m[2m  >  [0mWhich incidents from the last 24 hours involve a user with impossible travel plus a new MFA method?
+
+[36mCLAUDE [0m[2m |  [0mThat is two conditions across two tables, so I will do it in three moves:
+[36mCLAUDE [0m[2m |  [0m  1. pull unassigned incidents from the last 24 hours
+[36mCLAUDE [0m[2m |  [0m  2. for each account involved, look for a location change in SigninLogs
+[36mCLAUDE [0m[2m |  [0m  3. for any account that has one, check AuditLogs for MFA registration
+[36mCLAUDE [0m[2m |  [0m
+[36mCLAUDE [0m[2m |  [0mStarting with the incident list.
+[35m           [tool] list_incidents(max_age_hours=24, min_severity='Medium', unassigned_only=True)[0m
+[2m           [<--] 3 incidents[0m
+[2m             48201  Medium  Multiple failed sign-ins followed by success[0m
+[2m             48209  Medium  Atypical travel[0m
+[2m             48213  Medium  Atypical travel followed by suspicious OAuth consent[0m
+
+[36mCLAUDE [0m[2m |  [0mThree candidates. Two of them (48209 and 48213) mention travel; 48201 is a
+[36mCLAUDE [0m[2m |  [0mservice account with failed sign-ins, which is a different pattern.
+[36mCLAUDE [0m[2m |  [0mChecking sign-in history for both travel candidates.
+
+[2m==========================================================================[0m
+[1m Step 5 - Watch it pivot[0m
+[2m==========================================================================[0m
+[35m           [tool] get_signin_activity(upn='j.doe@contoso.com', lookback_hours=24)[0m
+[2m           [<--] 3 sign-ins, 1 location change(s)[0m
+[2m             j.doe@contoso.com: Columbus, US -> Nairobi, KE in 41.5 min (AS10796 -> AS33771)[0m
+[35m           [tool] get_signin_activity(upn='m.okafor@contoso.com', lookback_hours=24)[0m
+[2m           [<--] 2 sign-ins, 1 location change(s)[0m
+[2m             m.okafor@contoso.com: Columbus, US -> Dublin, IE in 22.7 min (AS10796 -> AS8075)[0m
+
+[36mCLAUDE [0m[2m |  [0mBoth accounts show a location change inside an hour. But look at the ASNs.
+[36mCLAUDE [0m[2m |  [0m
+[36mCLAUDE [0m[2m |  [0m  m.okafor  AS10796 -> AS8075. AS8075 is Microsoft.
+[36mCLAUDE [0m[2m |  [0m  j.doe     AS10796 -> AS33771. AS33771 is a Kenyan consumer ISP.
+[36mCLAUDE [0m[2m |  [0m
+[36mCLAUDE [0m[2m |  [0mBefore I call either one impossible travel, I want the behavioural
+[36mCLAUDE [0m[2m |  [0mbaseline. A VPN egress looks exactly like this in the raw logs.
+
+[33m  >> STAGE NOTE: Do not rush past this. The model just declined to answer the question it was asked, because the raw logs are not sufficient. That instinct is the whole session.[0m
+[35m           [tool] get_ueba_baseline(upn='j.doe@contoso.com')[0m
+[2m           [<--] priority 8, first-time country: True[0m
+[35m           [tool] get_ueba_baseline(upn='m.okafor@contoso.com')[0m
+[2m           [<--] priority 2, first-time country: False[0m
+
+[36mCLAUDE [0m[2m |  [0mThat settles it.
+[36mCLAUDE [0m[2m |  [0m
+[36mCLAUDE [0m[2m |  [0m  m.okafor  IE and AS8075 are both already in the 90-day baseline.
+[36mCLAUDE [0m[2m |  [0m            Investigation priority 2. This is routine VPN use.
+[36mCLAUDE [0m[2m |  [0m
+[36mCLAUDE [0m[2m |  [0m  j.doe     KE is a first-time country, AS33771 is a first-time ASN,
+[36mCLAUDE [0m[2m |  [0m            and Microsoft Graph Command Line Tools is a first-time app.
+[36mCLAUDE [0m[2m |  [0m            Investigation priority 8.
+[36mCLAUDE [0m[2m |  [0m
+[36mCLAUDE [0m[2m |  [0mIncident 48209 is a benign positive. Continuing on 48213 only.
+[35m           [tool] get_audit_activity(upn='j.doe@contoso.com', lookback_hours=24)[0m
+[2m           [<--] 2 directory events[0m
+[2m             2026-10-28T03:02:30Z  User registered security info[0m
+[2m             2026-10-28T03:09:55Z  Consent to application[0m
+
+[36mCLAUDE [0m[2m |  [0mBoth conditions from your question are met on 48213, and there is a third
+[36mCLAUDE [0m[2m |  [0mthing you did not ask for:
+[36mCLAUDE [0m[2m |  [0m
+[36mCLAUDE [0m[2m |  [0m  02:58:41  sign-in from Nairobi (first-time country, high risk)
+[36mCLAUDE [0m[2m |  [0m  03:02:30  new Microsoft Authenticator method registered
+[36mCLAUDE [0m[2m |  [0m  03:09:55  OAuth consent to 'Contoso Doc Sync' - unverified publisher,
+[36mCLAUDE [0m[2m |  [0m            granted Mail.Read, Files.Read.All, offline_access
+[36mCLAUDE [0m[2m |  [0m
+[36mCLAUDE [0m[2m |  [0mThe consent is the part that worries me. offline_access means a refresh
+[36mCLAUDE [0m[2m |  [0mtoken that survives a password reset. Checking whether the app has used it.
+[35m           [tool] run_kql(query='CloudAppEvents | where AccountUpn == "j.doe@contoso.com"')[0m
+[2m           [<--] 1 rows[0m
+[2m             2026-10-28T03:11:40Z  MailItemsAccessed by Contoso Doc Sync  objects=218[0m
+
+[36mCLAUDE [0m[2m |  [0mYes. 03:11:40 - 105 seconds after consent - the app read 218 mail items
+[36mCLAUDE [0m[2m |  [0mfrom the same Nairobi address. This is no longer a suspicious sign-in.
+[36mCLAUDE [0m[2m |  [0mIt is an active mailbox collection with persistence in place.
+[35m           [tool] run_kql(query='IdentityInfo | where AccountUPN == "j.doe@contoso.com"')[0m
+[2m           [<--] 1 row[0m
+
+[36mCLAUDE [0m[2m |  [0mContext that changes the severity: Jordan Doe, Senior Financial Analyst in Corporate Finance.
+[36mCLAUDE [0m[2m |  [0mGroups include SOX-InScope. Asset criticality High.
+[36mCLAUDE [0m[2m |  [0m
+[36mCLAUDE [0m[2m |  [0mA mailbox collection against a SOX-scoped finance analyst is not a
+[36mCLAUDE [0m[2m |  [0mMedium.
+
+[2m==========================================================================[0m
+[1m Step 6 - Check the benign case, then produce the record[0m
+[2m==========================================================================[0m
+
+[32mANALYST[0m[2m  >  [0mWhat would make this benign? Go look.
+
+[36mCLAUDE [0m[2m |  [0mThree things would.
+[36mCLAUDE [0m[2m |  [0m
+[36mCLAUDE [0m[2m |  [0m  1. AS33771 is a known Contoso egress -> checking asset inventory
+[36mCLAUDE [0m[2m |  [0m  2. The consented app is on the approved publisher list -> checking
+[36mCLAUDE [0m[2m |  [0m  3. There is a change record covering this -> checking
+[2m             [[31mno [0m[2m][0m 196.207.14.88 / AS33771 is a known Contoso egress[0m
+[2m             [[31mno [0m[2m][0m 'Contoso Doc Sync' publisher is on the approved list[0m
+[2m             [[31mno [0m[2m][0m A change record covers this activity[0m
+
+[36mCLAUDE [0m[2m |  [0mAll three fail. Nothing benign explains this. Producing the record.
+
+[2m==========================================================================[0m
+[1m THE RECORD[0m
+[2m==========================================================================[0m
+
+  2026-10-28T02:17:09Z  Normal sign-in, Columbus US, compliant device, MFA satisfied
+  2026-10-28T02:58:41Z  Sign-in from Nairobi KE - first-time country and ASN, high risk
+  2026-10-28T03:02:30Z  New Microsoft Authenticator method registered (persistence)
+  2026-10-28T03:06:12Z  Graph CLI sign-in - first-time app for this account
+  2026-10-28T03:09:55Z  OAuth consent to unverified 'Contoso Doc Sync' with offline_access
+  2026-10-28T03:11:40Z  218 mail items read by that app from the Nairobi address
+
+[2m  Evidence: 8 queries across 6 tables[0m
+[2m  Verdict:  true positive, high confidence[0m
+[2m  Actions:  none - this connection is read-only[0m
+
+[33m  >> STAGE NOTE: Close by opening the Sentinel audit view. Every tool call you just watched is in there, attributed to analyst@contoso.com, evaluated against Security Reader. Same RBAC as the portal.[0m
+

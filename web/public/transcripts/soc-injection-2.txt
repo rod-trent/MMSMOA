@@ -1,0 +1,16 @@
+
+[1m  Tool allow-list enforcement[0m
+[2m  The layer that actually stops an injection.[0m
+
+  [32mALLOWED[0m  run_kql                        [unapproved] [2mread tool, no approval needed[0m 
+  [32mALLOWED[0m  get_incident                   [unapproved] [2mread tool, no approval needed[0m 
+  [31mREFUSED[0m  add_incident_comment           [unapproved] [2mwrite tool, NO approval recorded[0m 
+  [32mALLOWED[0m  add_incident_comment           [approved  ] [2mwrite tool, approval recorded[0m 
+  [32mALLOWED[0m  set_incident_classification    [approved  ] [2mwrite tool, approval recorded[0m 
+  [31mREFUSED[0m  isolate_device                 [approved  ] [2mNOT on the allow-list, even with approval[0m 
+  [31mREFUSED[0m  revoke_user_sessions           [approved  ] [2mNOT on the allow-list, even with approval[0m 
+  [31mREFUSED[0m  http_post                      [approved  ] [2mno network tool exists at all[0m 
+
+[32m  Every outcome as expected. Note the last three: no amount of[0m
+[32m  approval grants a tool the agent was never given.[0m
+

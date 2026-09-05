@@ -1,0 +1,6 @@
+# Generated site assets are written LF by web/build.py.
+# Without this git would normalise them to CRLF on Windows checkouts and the
+# build --check drift guard would fail on Linux CI.
+web/public/transcripts/** -text
+web/public/data/** -text
+web/public/py/** -text

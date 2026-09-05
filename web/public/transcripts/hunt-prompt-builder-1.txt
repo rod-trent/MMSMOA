@@ -1,0 +1,40 @@
+
+[1m  Hunting hypotheses that can fail[0m
+
+[36m  service-accounts[0m
+      Service accounts are being used interactively from infrastructure we
+      do not own.
+[2m      why:    Mission 1. Service accounts have a narrow, machine-shaped baseline, so deviation is unusually legible.[0m
+[2m      tables: SigninLogs, AADNonInteractiveUserSignInLogs, AuditLogs, BehaviorAnalytics[0m
+
+[36m  oauth-consent[0m
+      One or more users granted OAuth consent to an unverified publisher,
+      and that application then read mail or files within the hour.
+[2m      why:    Mission 2. Consent grants are quiet, survive password resets via offline_access, and rarely have a matching analytics rule.[0m
+[2m      tables: AuditLogs, CloudAppEvents, BehaviorAnalytics, IdentityInfo[0m
+
+[36m  impossible-travel[0m
+      An account signed in from two locations too far apart for the
+      elapsed time, from an ASN outside our known egress ranges.
+[2m      why:    The classic. The ASN clause is what separates a real hunt from a VPN false-positive generator.[0m
+[2m      tables: SigninLogs, BehaviorAnalytics, IdentityInfo[0m
+
+[36m  lateral-movement[0m
+      A host authenticated to five or more distinct hosts within ten
+      minutes using an account with no prior logon to any of them.
+[2m      why:    Names an observable, not a tactic. 'Look for lateral movement' is not a hypothesis.[0m
+[2m      tables: DeviceLogonEvents, IdentityLogonEvents, BehaviorAnalytics[0m
+
+[36m  inbox-rules[0m
+      An inbox rule was created that forwards or deletes mail matching
+      finance keywords, on a mailbox whose owner did not create a rule in
+      the previous 90 days.
+[2m      why:    Business email compromise leaves this trace almost every time, and it is usually below alerting thresholds.[0m
+[2m      tables: CloudAppEvents, OfficeActivity, EmailEvents[0m
+
+[36m  ueba-orphans[0m
+      UEBA anomaly clusters exist in the last 7 days with no matching
+      incident, indicating behaviour no analytics rule covers.
+[2m      why:    Mission 2 step 1. Starting from anomalies instead of alerts is the flip that finds what the rules missed.[0m
+[2m      tables: BehaviorAnalytics, SecurityIncident, SecurityAlert[0m
+

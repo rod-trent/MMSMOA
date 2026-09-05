@@ -1,0 +1,133 @@
+
+[1m  MMS 2026 Midway Edition - Empowering SOC Teams[0m
+[2m  Mission 2: auto-triage with a human on the trigger[0m
+
+[2m  Agent identity  svc-soc-triage-agent@contoso.com[0m
+[2m  Role            Security Reader (+ scoped write, post-approval only)[0m
+[2m  Read tools      8 allowed[0m
+[2m  Write tools     3 allowed, gated[0m
+
+[2m==========================================================================[0m
+[1m STAGE 1/6  INGEST[0m[2m   pick the work[0m
+[2m==========================================================================[0m
+[36m  agent  [0mWorking incident 48213 as instructed.
+[35m  [tool] get_incident(incident_number=48213)[0m
+[2m         -> 1 row(s)[0m
+
+  [1mIncident[0m  48213  Atypical travel followed by suspicious OAuth consent
+  [1mSeverity[0m  Medium  (New, unassigned)
+  [1mWindow  [0m  2026-10-28T02:58:41Z -> 2026-10-28T03:09:55Z
+  [1mEntities[0m  Account:j.doe@contoso.com, Ip:196.207.14.88, Ip:73.114.22.9, CloudApplication:Contoso Doc Sync (unverified)
+
+[2m==========================================================================[0m
+[1m STAGE 2/6  CORRELATE[0m[2m   pull everything about these entities[0m
+[2m==========================================================================[0m
+[36m  agent  [0mAccount entities: j.doe@contoso.com
+[36m  agent  [0mPulling sign-in and directory activity for each.
+[35m  [tool] get_signin_activity(upn='j.doe@contoso.com', lookback_hours=24)[0m
+[2m         -> 3 row(s)[0m
+[35m  [tool] get_audit_activity(upn='j.doe@contoso.com', lookback_hours=24)[0m
+[2m         -> 2 row(s)[0m
+[2m         j.doe@contoso.com: Columbus, US -> Nairobi, KE in 41.5 min (AS10796 -> AS33771)[0m
+
+[2m==========================================================================[0m
+[1m STAGE 3/6  ENRICH[0m[2m   baseline, asset criticality, known-good[0m
+[2m==========================================================================[0m
+[35m  [tool] get_ueba_baseline(upn='j.doe@contoso.com')[0m
+[2m         -> 1 row(s)[0m
+[2m         j.doe@contoso.com: priority 8, first-time country=True, first-time ASN=True[0m
+[35m  [tool] run_kql(query='IdentityInfo | where AccountUPN == "j.doe@contoso.com"', timespan_hours=720)[0m
+[2m         -> 1 row(s)[0m
+[35m  [tool] run_kql(query='CloudAppEvents | where AccountUpn == "j.doe@contoso.com"', timespan_hours=24)[0m
+[2m         -> 1 row(s)[0m
+
+[2m==========================================================================[0m
+[1m STAGE 4/6  REASON[0m[2m   score it, and check the boring explanation first[0m
+[2m==========================================================================[0m
+[36m  agent  [0mWeighing the signals:
+[2m           + Location change Columbus, US -> Nairobi, KE in 41.5 min, first-time country and ASN.[0m
+[2m           + New MFA method registered during the suspicious session.[0m
+[2m           + OAuth consent to unverified publisher 'Contoso Doc Sync'.[0m
+[2m           + Grant includes offline_access - the refresh token survives a password reset.[0m
+[2m           + 218 objects accessed by 'Contoso Doc Sync' via MailItemsAccessed.[0m
+[2m           + Senior Financial Analyst in Corporate Finance; criticality High; groups ['Finance-All', 'SOX-InScope', 'VIP-Adjacent'].[0m
+
+[36m  agent  [0mBenign explanations checked before concluding:
+[2m           [[31mno [0m[2m][0m AS33771 is a Contoso-owned egress[0m
+[2m           [[31mno [0m[2m][0m Destination is already in j.doe@contoso.com's 90-day baseline[0m
+[2m           [[31mno [0m[2m][0m 'Contoso Doc Sync' is an approved publisher[0m
+[2m           [[31mno [0m[2m][0m A change record covers this activity[0m
+
+[2m==========================================================================[0m
+[1m STAGE 5/6  APPROVE[0m[2m   the analyst reviews a finished investigation[0m
+[2m==========================================================================[0m
+
+[33m  ----------------------------------------------------------------------[0m
+[33m[1m   AGENT PROPOSAL - REQUIRES HUMAN APPROVAL[0m
+[33m  ----------------------------------------------------------------------[0m
+
+{
+  "incident": 48213,
+  "severity": "High",
+  "confidence": 0.95,
+  "disposition": "Escalate to Tier 2",
+  "summary": "Location change Columbus, US -> Nairobi, KE in 41.5 min, first-time country and ASN.; New MFA method registered during the suspicious session.; OAuth consent to unverified publisher 'Contoso Doc Sync'.",
+  "account": "j.doe@contoso.com",
+  "evidence": [
+    "SecurityIncident 1 rows",
+    "SigninLogs 3 rows",
+    "AuditLogs 2 rows",
+    "BehaviorAnalytics 1 rows",
+    "IdentityInfo 1 rows",
+    "CloudAppEvents 1 rows"
+  ],
+  "timeline": [
+    "2026-10-28T02:58:41Z  Sign-in from Nairobi, KE - first-time country and ASN",
+    "2026-10-28T03:02:30Z  User registered security info - persistence",
+    "2026-10-28T03:09:55Z  Consent to 'Contoso Doc Sync' (Mail.Read, Files.Read.All, offline_access)",
+    "2026-10-28T03:11:40Z  MailItemsAccessed x218 by Contoso Doc Sync"
+  ],
+  "recommended_actions": [
+    "Revoke refresh tokens for the account and the consented service principal",
+    "Remove the OAuth consent grant and review other users who granted it",
+    "Reset MFA methods and require re-registration from a compliant device",
+    "Scope the mailbox access - which items, and were any forwarded"
+  ],
+  "requires_approval": true
+}
+
+[2m   Benign explanations the agent checked before proposing this:[0m
+[2m     [no ] AS33771 is a Contoso-owned egress - Known egress ASNs: [8075, 10796][0m
+[2m     [no ] Destination is already in j.doe@contoso.com's 90-day baseline - Usual countries: ['US'][0m
+[2m     [no ] 'Contoso Doc Sync' is an approved publisher - publisherVerified=False; approved list: ['Adobe', 'Atlassian', 'Microsoft', 'ServiceNow'][0m
+[2m     [no ] A change record covers this activity - No change record references this account[0m
+[33m  ----------------------------------------------------------------------[0m
+
+[33m  >> STAGE NOTE: The analyst is reviewing a finished investigation, not starting one. That is the whole pitch. Let it sit on screen for a beat.[0m
+
+[2m  [--auto-approve] approving without a human. Do not do this in production until accuracy earns it (slide 21).[0m
+
+[2m==========================================================================[0m
+[1m STAGE 6/6  ACT[0m[2m   only what the human approved[0m
+[2m==========================================================================[0m
+[35m  [tool] add_incident_comment(incident=48213)[0m
+[2m         -> Agent triage: Escalate to Tier 2 (confidence 0.95, approved by automation)[0m
+[35m  [tool] set_incident_classification(incident=48213)[0m
+[2m         -> Escalate to Tier 2[0m
+[35m  [tool] assign_incident(incident=48213)[0m
+[2m         -> tier2-oncall@contoso.com[0m
+
+[2m==========================================================================[0m
+[1m RUN LOG[0m[2m   observability is not optional[0m
+[2m==========================================================================[0m
+
+  Tool calls        6
+  Evidence items    6
+  Re-plans          0
+  Security events   0
+  Actions taken     3
+
+[2m  Run written to run-48213-1788638962.json[0m
+
+[33m  >> STAGE NOTE: In production this run record goes to a custom Sentinel table. That is what you query for the ROI numbers on slide 21, and it is what an auditor asks for when they want to know who approved what.[0m
+

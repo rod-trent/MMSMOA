@@ -1,0 +1,66 @@
+[2m
+==========================================================================[0m
+[1m SOC baseline - 30 days[0m
+[2m==========================================================================[0m
+[33m  SAMPLE MODE. No -WorkspaceId supplied, so these are illustrative
+  numbers, not your tenant. Pass -WorkspaceId to measure for real.[0m
+
+[1m The four metrics (slide 21)[0m
+[2m--------------------------------------------------------------------------[0m
+  Mean time to triage        [31m68.4 min[0m        [2mindustry ~56 min to first action[0m
+    p50 / p90                41 / 187 min    [2mp90 is where the pain actually is[0m
+  Uninvestigated rate        [33m39.2%[0m           [2mindustry 42%[0m
+  Auto-disposition accuracy  no data         [2mno rows in SOCAgentRuns_CL yet - expected pre-agent[0m
+  Analyst hours reclaimed    0 (baseline)    [2mtarget: 10 hrs/week into hunting[0m
+
+[1m Where to start (slide 22: one high-volume, low-risk class)[0m
+[2m--------------------------------------------------------------------------[0m
+[2m  Alert class                                  Volume  High sev  Opportunity[0m
+  Atypical travel                                1842      4.1%        38863
+  Multiple failed sign-ins then success           688     11.3%        18918
+  Suspicious sign-in from unfamiliar ISP         1106      6.8%        18554
+  Anomalous file download volume                  402     14.9%        15052
+  Malware detected and remediated                 974        2%        11454
+[2m  Suspicious inbox forwarding rule                 97     62.9%         1979[0m
+
+[32m  Recommended first class: Atypical travel[0m
+[2m  1842 alerts in 30 days, 4.1% high severity.
+  Greyed rows are high-severity classes. Do not start there.[0m
+
+[1m ROI model (the version your CFO will accept)[0m
+[2m--------------------------------------------------------------------------[0m
+
+  Class            Atypical travel
+  Volume           1842 alerts/month
+  Minutes saved    17.6 of 22 per alert (agent owns ~80% of the loop)
+  Analyst rate     $65/hr fully loaded
+
+[32m  BENEFIT
+    540.3 analyst-hours/month               $35,120[0m
+
+[33m  COST[0m
+    Model tokens                               $111
+    Platform / licensing                     $1,200
+    Engineering (amortised)                    $139
+    Human review (2.5 min/alert)             $4,989
+[33m    Total                                    $6,439[0m
+
+[32m  NET                                       $28,681/month[0m
+[2m                                            $344,172/year
+
+  Sanity check before you show this to anyone: does the benefit
+  line represent hours your team actually gets back, or hours
+  nobody was spending in the first place? Alerts in the 42%
+  uninvestigated bucket cost you risk, not payroll. Automating
+  those is worth doing and it is not a payroll saving - say so
+  before your CFO says it for you.
+
+  Human review is a real, recurring cost. Any ROI model that
+  omits it is selling something.[0m
+
+[1m Scaling gate (slide 21)[0m
+[2m--------------------------------------------------------------------------[0m
+
+  No agent runs yet. That is correct for a baseline.
+[2m  Capture these four metrics for 30 days, THEN deploy the agent
+  read-only on one class, THEN compare. In that order.[0m

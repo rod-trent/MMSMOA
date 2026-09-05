@@ -22,6 +22,22 @@ without giving up control, compliance, or judgement.
 > python run-all-tests.py
 > ```
 
+### ▶ Run them in a browser
+
+There is a **[live demo site](web/)** that runs these demos in a browser — real
+Python compiled to WebAssembly, executing in the tab. Nothing to install, and it
+is what gets driven on stage beside the deck.
+
+- Playback **pauses at every stage note** and before each stage, so you can talk
+  over it. `space` continues, `→` skips to the end.
+- Each demo's CLI flags become buttons, so "reject the disposition on purpose"
+  is one click.
+- Deep-linkable: `?demo=soc-triage-agent&v=2` opens straight to the rejection run.
+- If the venue network dies it falls back to transcripts baked from the same
+  code, and a service worker keeps it working fully offline once loaded.
+
+See [`web/README.md`](web/README.md) for deployment and the full key map.
+
 ---
 
 ### 🛡️ Empowering SOC Teams: How Claude, Copilot, ChatGPT, MCP Servers, and Agents Drive Efficiency
@@ -237,6 +253,11 @@ MMSMOA/
 │   ├── Using AI for Modern Threat Detection - MMS Midway 2026.pptx
 │   ├── Agentic Threat Hunting - MMS MOA 2026.pptx
 │   └── Governing GenAI - MMS MOA 2026.pptx
+│
+├── web/                                ← live demo site (Vercel)
+│   ├── build.py                        ← rebuilds public/ from demos/
+│   ├── vercel.json
+│   └── public/                         ← deployed as-is; py/ + transcripts/ generated
 │
 └── demos/
     ├── empowering-soc-teams/           ← MMS Midway 2026, offline

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MMS 2026 Midway — Live Demos</title>
+<meta name="description" content="Runnable session demos for MMS 2026 Midway Edition. Real Python, in the browser.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🛡️</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <span class="mark">MMS</span>
+      <div>
+        <h1>Live Demos</h1>
+        <p class="event">2026 Midway Edition · San Diego · 25–28 October</p>
+      </div>
+    </div>
+    <div class="topright">
+      <span id="engine" class="pill pill-wait" title="Python runtime status">
+        <span class="dot"></span><span id="engine-text">starting…</span>
+      </span>
+      <a class="ghost" href="https://github.com/rod-trent/MMSMOA" target="_blank" rel="noopener">Source</a>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="lede">
+    <p>
+      These run the <strong>actual demo code</strong> from the repository — real Python,
+      compiled to WebAssembly, executing in this tab. No tenant, no network calls,
+      nothing to install.
+    </p>
+    <p class="muted">
+      Every dataset is synthetic. "CONTOSO-PROD", its users and its incidents are
+      fabricated for teaching.
+    </p>
+  </section>
+
+  <nav class="sessionnav" id="sessionnav"></nav>
+
+  <div id="sessions"></div>
+
+  <footer class="foot">
+    <p>
+      Built from <a href="https://github.com/rod-trent/MMSMOA" target="_blank" rel="noopener">rod-trent/MMSMOA</a>.
+      The site is rebuilt from the demo sources, and CI fails if the two drift apart.
+    </p>
+    <p class="muted" id="footnote"></p>
+  </footer>
+
+</main>
+
+<!-- Runner ------------------------------------------------------------- -->
+<div class="runner" id="runner" hidden>
+  <div class="runner-box" role="dialog" aria-modal="true" aria-labelledby="run-title">
+    <div class="runner-head">
+      <div>
+        <h2 id="run-title"></h2>
+        <p id="run-sub" class="muted"></p>
+      </div>
+      <button class="close" id="run-close" aria-label="Close">✕</button>
+    </div>
+
+    <div class="runner-bar">
+      <div class="variants" id="run-variants"></div>
+      <div class="runner-actions">
+        <label class="chk"><input type="checkbox" id="opt-animate" checked> animate</label>
+        <button class="ghost" id="run-copy">Copy output</button>
+      </div>
+    </div>
+
+    <pre class="term" id="run-term" tabindex="0"><span class="muted">Pick a run above.</span></pre>
+
+    <div class="runner-foot">
+      <span id="run-status" class="muted"></span>
+      <span id="run-cmd" class="cmd"></span>
+    </div>
+  </div>
+</div>
+
+<script src="assets/ansi.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

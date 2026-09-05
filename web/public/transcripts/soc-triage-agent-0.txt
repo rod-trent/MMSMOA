@@ -1,0 +1,117 @@
+
+[1m  MMS 2026 Midway Edition - Empowering SOC Teams[0m
+[2m  Mission 2: auto-triage with a human on the trigger[0m
+
+[2m  Agent identity  svc-soc-triage-agent@contoso.com[0m
+[2m  Role            Security Reader (+ scoped write, post-approval only)[0m
+[2m  Read tools      8 allowed[0m
+[2m  Write tools     3 allowed, gated[0m
+
+[2m==========================================================================[0m
+[1m STAGE 1/6  INGEST[0m[2m   pick the work[0m
+[2m==========================================================================[0m
+[36m  agent  [0mNo incident specified. Taking the oldest unassigned incident at
+[36m  agent  [0mMedium or above from the last 24 hours - the queue nobody got to.
+[35m  [tool] list_incidents(max_age_hours=24, min_severity='Medium', unassigned_only=True)[0m
+[2m         -> 3 row(s)[0m
+
+[2m         48201  Medium  Multiple failed sign-ins followed by success[0m
+[2m         48209  Medium  Atypical travel[0m
+[2m         48213  Medium  Atypical travel followed by suspicious OAuth conse[0m
+[36m  agent  [0mTaking 48201. It has been open the longest.
+[35m  [tool] get_incident(incident_number=48201)[0m
+[2m         -> 1 row(s)[0m
+
+  [1mIncident[0m  48201  Multiple failed sign-ins followed by success
+  [1mSeverity[0m  Medium  (New, unassigned)
+  [1mWindow  [0m  2026-10-27T22:18:00Z -> 2026-10-27T22:39:12Z
+  [1mEntities[0m  Account:svc-backup@contoso.com, Ip:10.44.8.12
+
+[2m==========================================================================[0m
+[1m STAGE 2/6  CORRELATE[0m[2m   pull everything about these entities[0m
+[2m==========================================================================[0m
+[36m  agent  [0mAccount entities: svc-backup@contoso.com
+[36m  agent  [0mPulling sign-in and directory activity for each.
+[35m  [tool] get_signin_activity(upn='svc-backup@contoso.com', lookback_hours=24)[0m
+[2m         -> 0 row(s)[0m
+[35m  [tool] get_audit_activity(upn='svc-backup@contoso.com', lookback_hours=24)[0m
+[2m         -> 0 row(s)[0m
+
+[2m==========================================================================[0m
+[1m STAGE 3/6  ENRICH[0m[2m   baseline, asset criticality, known-good[0m
+[2m==========================================================================[0m
+[35m  [tool] get_ueba_baseline(upn='svc-backup@contoso.com')[0m
+[2m         -> 1 row(s)[0m
+[35m  [tool] run_kql(query='IdentityInfo | where AccountUPN == "svc-backup@contoso.com"', timespan_hours=720)[0m
+[2m         -> 0 row(s)[0m
+[35m  [tool] run_kql(query='CloudAppEvents | where AccountUpn == "svc-backup@contoso.com"', timespan_hours=24)[0m
+[2m         -> 0 row(s)[0m
+
+[2m==========================================================================[0m
+[1m STAGE 4/6  REASON[0m[2m   score it, and check the boring explanation first[0m
+[2m==========================================================================[0m
+[36m  agent  [0mWeighing the signals:
+[2m           + Change record CHG-88214 covers this activity.[0m
+
+[36m  agent  [0mBenign explanations checked before concluding:
+[2m           [[32myes[0m[2m][0m A change record covers this activity[0m
+
+[2m==========================================================================[0m
+[1m STAGE 5/6  APPROVE[0m[2m   the analyst reviews a finished investigation[0m
+[2m==========================================================================[0m
+
+[33m  ----------------------------------------------------------------------[0m
+[33m[1m   AGENT PROPOSAL - REQUIRES HUMAN APPROVAL[0m
+[33m  ----------------------------------------------------------------------[0m
+
+{
+  "incident": 48201,
+  "severity": "Low",
+  "confidence": 0.35,
+  "disposition": "Close as benign positive",
+  "summary": "Change record CHG-88214 covers this activity.",
+  "account": "svc-backup@contoso.com",
+  "evidence": [
+    "SecurityIncident 1 rows",
+    "SigninLogs 0 rows",
+    "AuditLogs 0 rows"
+  ],
+  "timeline": [],
+  "recommended_actions": [
+    "No response action recommended; document and close"
+  ],
+  "requires_approval": true
+}
+
+[2m   Benign explanations the agent checked before proposing this:[0m
+[2m     [yes] A change record covers this activity - CHG-88214[0m
+[33m  ----------------------------------------------------------------------[0m
+
+[33m  >> STAGE NOTE: The analyst is reviewing a finished investigation, not starting one. That is the whole pitch. Let it sit on screen for a beat.[0m
+
+[2m  [--auto-approve] approving without a human. Do not do this in production until accuracy earns it (slide 21).[0m
+
+[2m==========================================================================[0m
+[1m STAGE 6/6  ACT[0m[2m   only what the human approved[0m
+[2m==========================================================================[0m
+[36m  agent  [0mDisposition is not an escalation, so nobody gets paged.
+[36m  agent  [0mComment and classification only.
+[35m  [tool] add_incident_comment(incident=48201)[0m
+[2m         -> Agent triage: Close as benign positive (confidence 0.35, approved by automation)[0m
+[35m  [tool] set_incident_classification(incident=48201)[0m
+[2m         -> Close as benign positive[0m
+
+[2m==========================================================================[0m
+[1m RUN LOG[0m[2m   observability is not optional[0m
+[2m==========================================================================[0m
+
+  Tool calls        7
+  Evidence items    3
+  Re-plans          0
+  Security events   0
+  Actions taken     2
+
+[2m  Run written to run-48201-1788638962.json[0m
+
+[33m  >> STAGE NOTE: In production this run record goes to a custom Sentinel table. That is what you query for the ROI numbers on slide 21, and it is what an auditor asks for when they want to know who approved what.[0m
+

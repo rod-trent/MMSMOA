@@ -1,0 +1,106 @@
+{
+  "mission": "Mission 1 - natural-language investigation",
+  "generated_utc": "2026-09-05T20:09:22+00:00",
+  "tenant": "CONTOSO-PROD",
+  "analyst_identity": "analyst@contoso.com",
+  "analyst_role": "Security Reader",
+  "question_asked": "Which incidents from the last 24 hours involve a user with impossible travel plus a new MFA method?",
+  "incidents_reviewed": [
+    48213,
+    48209,
+    48201
+  ],
+  "finding": {
+    "incident": 48213,
+    "account": "j.doe@contoso.com",
+    "verdict": "true_positive",
+    "confidence": "high",
+    "why": "First-time country and ASN, immediately followed by MFA registration, OAuth consent to an unverified publisher with offline_access, and mailbox reads by that app 105 seconds later. Account is SOX-scoped with High asset criticality."
+  },
+  "dismissed": [
+    {
+      "incident": 48209,
+      "account": "m.okafor@contoso.com",
+      "verdict": "benign_positive",
+      "why": "Destination country IE and AS8075 are both inside the account's 90-day UEBA baseline. AS8075 is the Contoso Azure VPN egress in the asset inventory. Investigation priority 2."
+    }
+  ],
+  "evidence": [
+    {
+      "table": "SecurityIncident",
+      "filter": "last 24h, Medium+, unassigned",
+      "rows": 3
+    },
+    {
+      "table": "SigninLogs",
+      "filter": "UserPrincipalName == 'j.doe@contoso.com', last 24h",
+      "rows": 3
+    },
+    {
+      "table": "SigninLogs",
+      "filter": "UserPrincipalName == 'm.okafor@contoso.com', last 24h",
+      "rows": 2
+    },
+    {
+      "table": "BehaviorAnalytics",
+      "filter": "UserPrincipalName == 'j.doe@contoso.com', 90d baseline",
+      "rows": 1
+    },
+    {
+      "table": "BehaviorAnalytics",
+      "filter": "UserPrincipalName == 'm.okafor@contoso.com', 90d baseline",
+      "rows": 1
+    },
+    {
+      "table": "AuditLogs",
+      "filter": "InitiatedBy == 'j.doe@contoso.com', last 24h",
+      "rows": 2
+    },
+    {
+      "table": "CloudAppEvents",
+      "filter": "AccountUpn == 'j.doe@contoso.com', last 24h",
+      "rows": 1
+    },
+    {
+      "table": "IdentityInfo",
+      "filter": "AccountUPN == 'j.doe@contoso.com'",
+      "rows": 1
+    }
+  ],
+  "timeline": [
+    "2026-10-28T02:17:09Z  Normal sign-in, Columbus US, compliant device, MFA satisfied",
+    "2026-10-28T02:58:41Z  Sign-in from Nairobi KE - first-time country and ASN, high risk",
+    "2026-10-28T03:02:30Z  New Microsoft Authenticator method registered (persistence)",
+    "2026-10-28T03:06:12Z  Graph CLI sign-in - first-time app for this account",
+    "2026-10-28T03:09:55Z  OAuth consent to unverified 'Contoso Doc Sync' with offline_access",
+    "2026-10-28T03:11:40Z  218 mail items read by that app from the Nairobi address"
+  ],
+  "benign_explanations_checked": [
+    {
+      "explanation": "196.207.14.88 / AS33771 is a known Contoso egress",
+      "checked": true,
+      "result": "no",
+      "detail": "Known egress ASNs: [8075, 10796]"
+    },
+    {
+      "explanation": "'Contoso Doc Sync' publisher is on the approved list",
+      "checked": true,
+      "result": "no",
+      "detail": "Publisher unverified. Approved list: Microsoft, Adobe, Atlassian, ServiceNow"
+    },
+    {
+      "explanation": "A change record covers this activity",
+      "checked": true,
+      "result": "no",
+      "detail": "No change record references this account"
+    }
+  ],
+  "next_pivots": [
+    "Revoke refresh tokens for j.doe and the Contoso Doc Sync service principal",
+    "Enumerate every other consent grant to app id b17c9a02-4d5e-4a11-9f7b-2c8813ee0d55",
+    "Check for inbox rules created on j.doe's mailbox after 02:58",
+    "Confirm no other account signed in from AS33771 in the last 30 days"
+  ],
+  "actions_taken": [],
+  "note": "Read-only investigation. No incident was modified. Mission 2 picks this up and adds the approval gate."
+}

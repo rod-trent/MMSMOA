@@ -1,0 +1,14 @@
+
+[1m  Hypothesis[0m
+    Find anything suspicious
+
+[31m  WARN [0mVery short. A hypothesis usually needs a subject, a behaviour, and a qualifier.
+[31m  WARN [0m'anything' is not falsifiable - the model will always find something
+[31m  WARN [0m'suspicious' names a feeling, not an observable
+[33m  note [0mNo observable event named. What row in what table would prove this true?
+[33m  note [0mNo time relationship. 'X then Y within N minutes' is far more specific than 'X and Y'.
+[33m  note [0mConsider an exclusion clause ('...from an ASN we do not own', '...with no prior logon'). Exclusions are what stop a hunt returning your entire estate.
+
+[2m  The test: can you state in advance what result would make you[0m
+[2m  drop this hunt? If not, it is a fishing trip.[0m
+

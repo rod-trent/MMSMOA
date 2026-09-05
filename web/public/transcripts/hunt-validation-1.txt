@@ -1,0 +1,16 @@
+
+[1m  Validation harness - slide 19[0m
+[2m  A model finding is a lead until a human makes it evidence.[0m
+
+[1m  Finding  Low-and-slow OAuth consent to an unverified publisher[0m
+[2m           Six users granted consent to 'Contoso Doc Sync' over seven days;[0m
+[2m           the publisher is unverified and every grant includes[0m
+[2m           offline_access.[0m
+
+[2m  ----------------------------------------------------------------------[0m
+  [[32m PASS [0m] 1. [1mSeed known bad[0m
+[2m         Planted a synthetic record matching the hunt's own logic ('HUNT-TEST-CANARY') and re-ran the hunt.[0m
+         Canary detected
+[2m         The hunt can find what it is looking for, so its silence[0m
+[2m         elsewhere carries information.[0m
+
