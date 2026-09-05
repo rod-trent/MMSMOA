@@ -154,12 +154,12 @@ with UEBA.
 
 📁 **[Demos →](demos/agentic-threat-hunting/)**
 
-| # | Demo | Script |
-|---|------|--------|
-| 1 | Building Your First MCP Tool | [`sentinel_mcp_server.py`](demos/agentic-threat-hunting/01-mcp-server/sentinel_mcp_server.py) |
-| 2 | Natural Language Threat Hunt | [`demo_hunt.py`](demos/agentic-threat-hunting/02-natural-language-hunt/demo_hunt.py) |
-| 3 | Graph Investigation Walkthrough | [`graph_investigation.py`](demos/agentic-threat-hunting/03-graph-investigation/graph_investigation.py) |
-| 4 | Autonomous Threat Hunter Agent | [`sentinel_threat_hunter_agent.py`](demos/agentic-threat-hunting/UnifiedAgent/sentinel_threat_hunter_agent.py) |
+| # | Demo | Script | Video |
+|---|------|--------|-------|
+| 1 | Building Your First MCP Tool | [`sentinel_mcp_server.py`](demos/agentic-threat-hunting/01-mcp-server/sentinel_mcp_server.py) | [▶ walkthrough](demos/agentic-threat-hunting/01-mcp-server/demo-01-mcp-server-voiced.mp4) |
+| 2 | Natural Language Threat Hunt | [`demo_hunt.py`](demos/agentic-threat-hunting/02-natural-language-hunt/demo_hunt.py) | [▶ walkthrough](demos/agentic-threat-hunting/02-natural-language-hunt/demo-02-nl-threat-hunt-voiced.mp4) |
+| 3 | Graph Investigation Walkthrough | [`graph_investigation.py`](demos/agentic-threat-hunting/03-graph-investigation/graph_investigation.py) | [▶ walkthrough](demos/agentic-threat-hunting/03-graph-investigation/demo-03-graph-investigation-voiced.mp4) |
+| 4 | Autonomous Threat Hunter Agent | [`sentinel_threat_hunter_agent.py`](demos/agentic-threat-hunting/UnifiedAgent/sentinel_threat_hunter_agent.py) | — |
 
 ### Governing GenAI: Monitoring and Securing Copilot with Microsoft Purview
 
@@ -169,20 +169,59 @@ signals, audit, and eDiscovery.
 
 📁 **[Demos →](demos/governing-genai/)**
 
-| # | Demo | Script |
-|---|------|--------|
-| 5 | Sensitivity Labels for AI Content | [`Create-SensitivityLabels.ps1`](demos/governing-genai/01-sensitivity-labels/Create-SensitivityLabels.ps1) |
-| 6 | DLP Policy for Microsoft 365 Copilot | [`Create-CopilotDLPPolicy.ps1`](demos/governing-genai/02-dlp-policy/Create-CopilotDLPPolicy.ps1) |
-| 7 | Copilot Audit Log Analysis | [`Analyze-CopilotAuditLogs.ps1`](demos/governing-genai/03-audit-log-analysis/Analyze-CopilotAuditLogs.ps1) |
-| 8 | Blocking Sensitive Prompts | [`Test-DLPEnforcement.ps1`](demos/governing-genai/04-blocking-sensitive-prompts/Test-DLPEnforcement.ps1) |
-| 9 | Governance Autopilot Agent | [`Invoke-GovernanceAutopilot.ps1`](demos/governing-genai/Agent/Invoke-GovernanceAutopilot.ps1) |
-
-Each MOA demo folder includes an MP4 walkthrough with narration, also embedded in
-the slide decks.
+| # | Demo | Script | Video |
+|---|------|--------|-------|
+| 5 | Sensitivity Labels for AI Content | [`Create-SensitivityLabels.ps1`](demos/governing-genai/01-sensitivity-labels/Create-SensitivityLabels.ps1) | [▶ walkthrough](demos/governing-genai/01-sensitivity-labels/demo-04-sensitivity-labels-voiced.mp4) |
+| 6 | DLP Policy for Microsoft 365 Copilot | [`Create-CopilotDLPPolicy.ps1`](demos/governing-genai/02-dlp-policy/Create-CopilotDLPPolicy.ps1) | [▶ walkthrough](demos/governing-genai/02-dlp-policy/demo-05-dlp-policy-voiced.mp4) |
+| 7 | Copilot Audit Log Analysis | [`Analyze-CopilotAuditLogs.ps1`](demos/governing-genai/03-audit-log-analysis/Analyze-CopilotAuditLogs.ps1) | [▶ walkthrough](demos/governing-genai/03-audit-log-analysis/demo-06-audit-log-analysis-voiced.mp4) |
+| 8 | Blocking Sensitive Prompts | [`Test-DLPEnforcement.ps1`](demos/governing-genai/04-blocking-sensitive-prompts/Test-DLPEnforcement.ps1) | [▶ walkthrough](demos/governing-genai/04-blocking-sensitive-prompts/demo-07-blocking-prompts-voiced.mp4) |
+| 9 | Governance Autopilot Agent | [`Invoke-GovernanceAutopilot.ps1`](demos/governing-genai/Agent/Invoke-GovernanceAutopilot.ps1) | — |
 
 > ⚠️ The MOA PowerShell demos touch real tenant configuration. They start in
 > simulation / read-only mode where they can. Read each script and its README
 > before running against a production tenant.
+
+---
+
+## Demo walkthrough videos
+
+Narrated MP4s live alongside the code they demonstrate, and are embedded on the
+corresponding demo slide in each deck. GitHub will not stream them inline — click
+through and use **Download**, or clone the repo.
+
+### MMS MOA 2026 — 7 recordings
+
+| Video | Demo | Folder |
+|-------|------|--------|
+| [`demo-01-mcp-server-voiced.mp4`](demos/agentic-threat-hunting/01-mcp-server/demo-01-mcp-server-voiced.mp4) | Sentinel MCP server setup and first query | `agentic-threat-hunting/01-mcp-server` |
+| [`demo-02-nl-threat-hunt-voiced.mp4`](demos/agentic-threat-hunting/02-natural-language-hunt/demo-02-nl-threat-hunt-voiced.mp4) | Natural language → KQL → lateral movement | `agentic-threat-hunting/02-natural-language-hunt` |
+| [`demo-03-graph-investigation-voiced.mp4`](demos/agentic-threat-hunting/03-graph-investigation/demo-03-graph-investigation-voiced.mp4) | Incident entity graph walkthrough | `agentic-threat-hunting/03-graph-investigation` |
+| [`demo-04-sensitivity-labels-voiced.mp4`](demos/governing-genai/01-sensitivity-labels/demo-04-sensitivity-labels-voiced.mp4) | Creating Copilot-aware sensitivity labels | `governing-genai/01-sensitivity-labels` |
+| [`demo-05-dlp-policy-voiced.mp4`](demos/governing-genai/02-dlp-policy/demo-05-dlp-policy-voiced.mp4) | DLP policy deployment for M365 Copilot | `governing-genai/02-dlp-policy` |
+| [`demo-06-audit-log-analysis-voiced.mp4`](demos/governing-genai/03-audit-log-analysis/demo-06-audit-log-analysis-voiced.mp4) | Copilot audit log analysis and reporting | `governing-genai/03-audit-log-analysis` |
+| [`demo-07-blocking-prompts-voiced.mp4`](demos/governing-genai/04-blocking-sensitive-prompts/demo-07-blocking-prompts-voiced.mp4) | DLP enforcement validation | `governing-genai/04-blocking-sensitive-prompts` |
+
+The two agent demos — Autonomous Threat Hunter and Governance Autopilot — have no
+recording. Both run offline in replay mode, so the terminal transcript is the
+walkthrough.
+
+### MMS 2026 Midway Edition — recordings pending
+
+Not yet recorded. Both decks call for a recorded backup on every mission slide
+(14 and 17 in *Empowering SOC Teams*; 14 and 16 in *Modern Threat Detection*),
+so four are needed before the conference:
+
+| Needed | Mission | Capture from |
+|--------|---------|--------------|
+| `demo-08-mcp-connection-voiced.mp4` | SOC Mission 1 — wire the model and investigate | Live Claude + Sentinel MCP, or `triage_walkthrough.py --step` |
+| `demo-09-triage-agent-voiced.mp4` | SOC Mission 2 — auto-triage with the approval gate | `soc_triage_agent.py --incident 48213`, then `--incident 48201 --reject` |
+| `demo-10-hypothesis-hunt-voiced.mp4` | Hunt Mission 1 — hypothesis to evidence | `hunt_service_accounts.py --step` |
+| `demo-11-anomaly-to-detection-voiced.mp4` | Hunt Mission 2 — anomalies to a detection rule | `anomaly_to_detection.py --step` |
+
+Because every Midway demo runs offline and deterministically, a recording made
+from the replay scripts matches what the live version does — which is the point
+of the `--step` flag. Record those first; capture the live tenant version later
+if the tenant cooperates.
 
 ---
 
