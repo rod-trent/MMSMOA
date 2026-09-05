@@ -24,7 +24,9 @@ without giving up control, compliance, or judgement.
 
 ### ▶ Run them in a browser
 
-There is a **[live demo site](web/)** that runs these demos in a browser — real
+**→ [mms-midway-demos.vercel.app](https://mms-midway-demos.vercel.app)**
+
+A site that runs these demos in a browser — real
 Python compiled to WebAssembly, executing in the tab. Nothing to install, and it
 is what gets driven on stage beside the deck.
 
@@ -32,7 +34,9 @@ is what gets driven on stage beside the deck.
   over it. `space` continues, `→` skips to the end.
 - Each demo's CLI flags become buttons, so "reject the disposition on purpose"
   is one click.
-- Deep-linkable: `?demo=soc-triage-agent&v=2` opens straight to the rejection run.
+- Deep-linkable: [`?demo=soc-triage-agent&v=2`](https://mms-midway-demos.vercel.app/?demo=soc-triage-agent&v=2)
+  opens straight to the rejection run — hyperlink these from a slide.
+- The two sessions are tabs, so the projector only ever shows the one being presented.
 - If the venue network dies it falls back to transcripts baked from the same
   code, and a service worker keeps it working fully offline once loaded.
 

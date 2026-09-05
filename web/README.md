@@ -1,5 +1,7 @@
 # Live demo site
 
+**Deployed: [mms-midway-demos.vercel.app](https://mms-midway-demos.vercel.app)**
+
 A static site that runs the Midway demos **in a browser**, so you can put it
 beside the deck and click through the demos instead of alt-tabbing to a terminal.
 
@@ -94,13 +96,20 @@ they ran into their output. That is not drift.
 
 The site is committed pre-built, so Vercel needs no build step.
 
-1. **New Project** → import `rod-trent/MMSMOA`
-2. **Root Directory**: `web`
-3. Framework preset: **Other**. Build command: none. Output directory: `public`.
-4. Deploy.
+Already set up as the `mms-midway-demos` project, connected to this repo, so
+every push to `main` redeploys. `vercel.json` lives at the **repo root** (not
+in `web/`) because the Vercel project's Root Directory is `.`; it points
+`outputDirectory` at `web/public`. The root `.vercelignore` keeps the slide
+decks and demo videos out of each upload.
 
-`vercel.json` sets the output directory and the headers, so those settings
-should be picked up automatically. Every push to `main` redeploys.
+To deploy by hand from the repo root:
+
+```bash
+npx vercel deploy --prod
+```
+
+Note that the per-deployment URLs (`…-<hash>-<team>.vercel.app`) are behind
+Vercel SSO. The **production alias is public** — that is the one to use.
 
 To run it locally:
 
