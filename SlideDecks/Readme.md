@@ -34,6 +34,22 @@ requirements and fallback plans for each live mission.
 Demo walkthrough MP4s are embedded on each demo slide and also live in the demo
 folders.
 
+
+### The demo site
+
+Both decks carry **[mms-midway-demos.vercel.app](https://mms-midway-demos.vercel.app)**
+on two slides: the *Live Missions* section header (with a QR, so the room can
+follow along on their own laptops while you present) and *Takeaways*.
+
+`qr-demo-site.png` is that QR — 33 modules at error-correction level Q, so it
+survives projector glare and a keystoned screen. Regenerate with:
+
+```python
+import segno
+segno.make("https://mms-midway-demos.vercel.app", error="q").save(
+    "qr-demo-site.png", scale=24, border=3, dark="#011230", light="#FFFFFF")
+```
+
 ---
 
 ### Before you present
