@@ -121,8 +121,8 @@ upside. The pin is stable and the CDN does not retire versions.
 
 ## Still open — your call
 
-Three things I found but did not apply, because they change the talk rather than
-correct it.
+Two things I found but did not apply, because they change the talk rather than
+correct it. (The third, fresher statistics, is now applied — see below.)
 
 **1. Graph tools are in preview and nobody has seen them.** The hosted server now
 exposes `find_blastradius`, `find_walkable_paths`, `find_exposure_perimeter`,
@@ -135,12 +135,52 @@ tools from saved KQL advanced-hunting queries. That is a genuine callback: *"las
 time I showed you how to roll this yourself; Microsoft shipped it."* Costs a
 slide.
 
-**3. Fresher stats are available.** Vectra 2026: **76%** say AI agents already
-handle more than 10% of SOC workload, **63%** of that workload is unaddressed.
-Prophet 2026: **60%** say an ignored alert later proved material, **40%** have
-disabled or would disable a detection rule for lack of capacity. Both decks
-currently use older figures that are still accurate — swapping them in is
-editorial, not a correction.
+---
+
+## Fresher 2026 statistics — added 16 October 2026
+
+Every figure below was re-verified against the publisher's own wording before it
+went on a slide. One number in my earlier draft was wrong: Vectra's **63%**
+refers to **alerts that go unaddressed**, not to share of workload. The slides
+use the correct phrasing.
+
+### Sources
+
+- **Vectra AI, *2026 State of Threat Detection and Response Report*** — 1,450
+  security practitioners, published 10 February 2026. "76% of defenders stating
+  that AI agents and/or AI assistants now handle more than 10% of their
+  workload"; "63% of alerts still go unaddressed"; "an average of 2,992 security
+  alerts per day, down from 3,832 the year prior"; "71% of defenders report
+  setting aside important security tasks at least two days per week."
+- **Prophet Security, *State of AI in the SOC 2026*** — 250 IT and security
+  professionals, surveyed by ViB. "Sixty percent said an alert they ignored or
+  never investigated later proved material", and "for 34% that happened three or
+  more times in twelve months"; "Forty percent have also turned off a detection
+  rule, or say they might"; roughly **28%** of alerts uninvestigated on average,
+  **22%** median.
+
+### Where they landed
+
+| Deck | Slide | Added |
+|------|-------|-------|
+| SOC | 6 — Drowning in Alerts | 60% ignored-alert-proved-material, as the consequence line |
+| SOC | 7 — Volume Eases | "The queue shrank. The gap did not — 63% of alerts still go unaddressed." |
+| SOC | 12 — Maturity Ladder | 76% already have AI handling >10% of their workload |
+| SOC | 21 — Measuring ROI | second baseline for the uninvestigated rate: 28% (Prophet) beside 42% (Omdia) |
+| Hunt | 6 — Hunting Works | 60% proved-material **and** 40% have turned off a detection rule |
+| Hunt | 9 — Where AI Already Lives | new band: 76% already have AI handling >10% of their workload |
+| Hunt | 16 — Mission 2 | the 40% rule-disabling figure, in the speaker notes, as the setup |
+
+Speaker notes on each of those slides carry the sample size, the publication
+date, and the supporting figures (34% three-or-more-times, 71% setting tasks
+aside, 22% median) so you can answer a challenge without reaching for a phone.
+
+**One more correction while I was in there:** hunt deck slide 9's *Sentinel MCP
+server* card listed **Logic Apps** as a client in visible body text. Same
+inaccuracy I fixed in the SOC deck's notes, but on screen. Removed, and the card
+now says Claude/ChatGPT reach it via connector.
+
+All six changed slides were rendered to PNG and checked for clipping.
 
 ---
 
