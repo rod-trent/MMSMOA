@@ -46,10 +46,18 @@ about four seconds. They also run in a browser at
 | # | Slide | Demo | File | What it does |
 |---|-------|------|------|--------------|
 | 7 | 11–12 | Prompts That Produce Evidence | [`Build-HuntPrompt.py`](modern-threat-detection/01-prompt-patterns/Build-HuntPrompt.py) | Renders the slide-12 hunting template for a hypothesis, and lints the hypothesis first — "find anything suspicious" gets three warnings. Six built-in presets, all falsifiable. |
-| 8 | 14–15 | Speed the Investigation | [`hunt_service_accounts.py`](modern-threat-detection/02-hypothesis-hunt/hunt_service_accounts.py) | Mission 1. Two service accounts match the hypothesis; only one is a finding. The other is a documented break-glass on a compliant jump host, and the hunt must dismiss it. |
-| 9 | 16–17 | What the Rules Missed | [`anomaly_to_detection.py`](modern-threat-detection/03-anomaly-to-detection/anomaly_to_detection.py) | Mission 2. UEBA anomalies → validated finding → a generated Sentinel analytics rule, and a flat refusal to generate that rule if you skip validation. |
-| 10 | 19 | Validate Before You Believe | [`validate_finding.py`](modern-threat-detection/04-validation-harness/validate_finding.py) | The six validation techniques, ending in a verdict: still a lead, or now evidence. Includes seed-known-bad — a failed canary forces confidence to `none`. |
-| 11 | 20 | Red-Team Your Own Hunt | [`Invoke-HuntRedTeam.py`](modern-threat-detection/05-injection-redteam/Invoke-HuntRedTeam.py) | Leakage and injection testing for a hunting workflow, mapped to the OWASP LLM Top 10. The highest-value injection against a hunt is not "do something" — it is "find nothing". |
+| 8 | 15–16 | Speed the Investigation | [`hunt_service_accounts.py`](modern-threat-detection/02-hypothesis-hunt/hunt_service_accounts.py) | Mission 1. Two service accounts match the hypothesis; only one is a finding. The other is a documented break-glass on a compliant jump host, and the hunt must dismiss it. |
+| 9 | 17–18 | What the Rules Missed | [`anomaly_to_detection.py`](modern-threat-detection/03-anomaly-to-detection/anomaly_to_detection.py) | Mission 2. UEBA anomalies → validated finding → a generated Sentinel analytics rule, and a flat refusal to generate that rule if you skip validation. |
+| 10 | 20 | Validate Before You Believe | [`validate_finding.py`](modern-threat-detection/04-validation-harness/validate_finding.py) | The six validation techniques, ending in a verdict: still a lead, or now evidence. Includes seed-known-bad — a failed canary forces confidence to `none`. |
+| 11 | 21 | Red-Team Your Own Hunt | [`Invoke-HuntRedTeam.py`](modern-threat-detection/05-injection-redteam/Invoke-HuntRedTeam.py) | Leakage and injection testing for a hunting workflow, mapped to the OWASP LLM Top 10. The highest-value injection against a hunt is not "do something" — it is "find nothing". |
+
+> **Slide 13, *Your Best Hunts Become Tools*, has no demo.** It is the callback to
+> the MMS MOA session's "From KQL Query to MCP Tool: Step-by-Step" — seven hand-rolled
+> steps, of which Microsoft now ships one as **Save as tool** in advanced hunting.
+> Nothing to run; the slide notes carry the walkthrough, and
+> [`save-as-tool.md`](modern-threat-detection/save-as-tool.md) has the mapping table,
+> a worked parameterized query, and the caveats.
+> Inserting it renumbered every later slide in this deck by one.
 
 **Supporting files:** [`hunting-prompt-template.md`](modern-threat-detection/01-prompt-patterns/hunting-prompt-template.md) (the slide the room photographs, as pasteable text), [`sample_hunt_data.json`](modern-threat-detection/02-hypothesis-hunt/sample_hunt_data.json), [`kql/mission1-hunt.kql`](modern-threat-detection/02-hypothesis-hunt/kql/mission1-hunt.kql), [`generated/`](modern-threat-detection/03-anomaly-to-detection/generated/) ARM + YAML analytics rule.
 

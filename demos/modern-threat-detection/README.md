@@ -18,10 +18,11 @@ Everything here runs **offline**. No tenant, no Azure, no network.
 | # | Demo | Maps to | Runs offline |
 |---|------|---------|:---:|
 | 1 | [Prompts That Produce Evidence](01-prompt-patterns/) | Slides 11–12 | ✅ |
-| 2 | [Speed the Investigation](02-hypothesis-hunt/) | Mission 1, slides 14–15 | ✅ |
-| 3 | [What the Rules Missed](03-anomaly-to-detection/) | Mission 2, slides 16–17 | ✅ |
-| 4 | [Validate Before You Believe](04-validation-harness/) | Slide 19 | ✅ |
-| 5 | [Red-Team Your Own Hunt](05-injection-redteam/) | Slide 20 | ✅ |
+| 2 | [Speed the Investigation](02-hypothesis-hunt/) | Mission 1, slides 15–16 | ✅ |
+| 3 | [What the Rules Missed](03-anomaly-to-detection/) | Mission 2, slides 17–18 | ✅ |
+| 4 | [Validate Before You Believe](04-validation-harness/) | Slide 20 | ✅ |
+| 5 | [Red-Team Your Own Hunt](05-injection-redteam/) | Slide 21 | ✅ |
+| — | [Save a Hunt as an MCP Tool](save-as-tool.md) | Slide 13 | reference only |
 
 Demos 2–3 are the stage content. Demo 1 is the thing the room photographs.
 Demos 4–5 are the take-home proof for the two guardrail slides.
@@ -108,7 +109,7 @@ Both also play from their cards on the [demo site](https://mms-midway-demos.verc
 
 ## Pre-flight for the live version
 
-From slides 14 and 16:
+From slides 15 and 16:
 
 - Entra app with `SentinelPlatform.DelegatedAccess`, admin-consented
 - Sentinel data lake enabled

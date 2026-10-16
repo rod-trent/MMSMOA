@@ -7,7 +7,7 @@ turn the finding into a detection rule.
 Demo 3 · Session: Using AI for Modern Threat Detection
 Conference: MMS 2026 Midway Edition - San Diego, October 25-28 2026
 
-The five steps from slide 17:
+The five steps from slide 18:
 
     1. Start from anomalies, not alerts   <- the flip
     2. Let the model propose hypotheses

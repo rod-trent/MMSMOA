@@ -1,5 +1,5 @@
 
-[1m  Hunt red-team - slide 20[0m
+[1m  Hunt red-team - slide 21[0m
 [2m  Leakage (LLM02) and prompt injection (LLM01) against an AI-assisted hunt[0m
 
 [1m  STOP THE LEAK  (OWASP LLM02)[0m

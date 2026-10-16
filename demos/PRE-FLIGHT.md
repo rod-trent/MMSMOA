@@ -179,15 +179,39 @@ re-recorded (now 1:09, was 0:50). Slide 15 renders clean at 1600x900.
 
 ---
 
+## The MOA callback — added 16 October 2026
+
+The hunt deck gains **slide 13, *Your Best Hunts Become Tools***, between
+*Anatomy of a Hunting Prompt* and *Live Missions*.
+
+MOA slide 16 was "From KQL Query to MCP Tool: Step-by-Step" and it was **seven**
+steps. Microsoft now ships **one** of them — the handler — as **Save as tool**
+in advanced hunting. The slide is a two-column then/now, and the line to use is
+that the plumbing went away and the judgment did not.
+
+[`demos/modern-threat-detection/save-as-tool.md`](modern-threat-detection/save-as-tool.md)
+has the full mapping table, the exact portal steps, the Mission 1 hunt query
+rewritten with `{LookbackDays}` and `{AccountPrefix}` parameters, and the
+description guidance — which is MOA slide 21 restated by the vendor.
+
+Caveats on the slide and in the notes: prerelease; needs Sentinel data lake plus
+Defender licenses; **Security Operator/Admin/Global Admin** to create and
+**Security Reader/Global Reader** to invoke; and custom collections are consumed
+from Security Copilot, Copilot Studio, Foundry or VS Code — **not** from the
+claude.ai connector, so do not promise it inside Claude.
+
+**This renumbered the hunt deck.** Everything from the old slide 13 onward moved
+up by one: Mission 1 is now 15–16, Mission 2 is 17–18, Validate is 20, Guardrails
+is 21. Thirty-one references across the hunt demos, the inventory and the demo
+site were updated to match, and the SOC deck's numbering is untouched. If you
+have notes or a printed running order from before today, that is the one thing
+to re-check.
+
+---
+
 ## Still open — your call
 
-One thing I found but did not apply, because it changes the talk rather than
-correcting it.
-
-**Microsoft now ships what the MOA session taught.** You can build custom MCP
-tools from saved KQL advanced-hunting queries. That is a genuine callback: *"last
-time I showed you how to roll this yourself; Microsoft shipped it."* Costs a
-slide.
+Nothing. Both items from the first review are now applied.
 
 ---
 

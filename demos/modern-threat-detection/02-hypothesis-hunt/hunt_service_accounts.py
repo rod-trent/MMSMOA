@@ -6,12 +6,12 @@ Mission 1: hypothesis to evidence, without writing a line of KQL.
 Demo 2 · Session: Using AI for Modern Threat Detection
 Conference: MMS 2026 Midway Edition - San Diego, October 25-28 2026
 
-The hypothesis (slide 15, step 1):
+The hypothesis (slide 16, step 1):
 
     "Service accounts should never sign in interactively. Show me any that
      did in the last 7 days and what they touched afterward."
 
-The six steps from slide 15, replayed deterministically:
+The six steps from slide 16, replayed deterministically:
 
     1. State the hypothesis
     2. Watch table discovery

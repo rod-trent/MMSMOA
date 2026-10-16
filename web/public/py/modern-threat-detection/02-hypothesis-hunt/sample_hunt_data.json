@@ -5,12 +5,12 @@
     "",
     "Two seeded scenarios, matching the deck's pre-flight notes:",
     "",
-    "  Mission 1 (slide 14): svc-datasync signs in interactively from a new ASN,",
+    "  Mission 1 (slide 15): svc-datasync signs in interactively from a new ASN,",
     "    followed by unusual Graph API activity. Falsifiable, findable, and it",
     "    has a benign twin - svc-reporting does the same thing from a documented",
     "    jump host during a change window, and must NOT be reported.",
     "",
-    "  Mission 2 (slide 16): low-and-slow OAuth consent grants to one unverified",
+    "  Mission 2 (slide 17): low-and-slow OAuth consent grants to one unverified",
     "    publisher across several users over 8 days. No analytics rule catches",
     "    it because no single day crosses a threshold. This is the 'what the",
     "    rules missed' finding.",
@@ -246,7 +246,7 @@
       "PublisherVerified": false,
       "Permissions": ["Mail.Read", "Files.Read.All", "offline_access"],
       "ConsentType": "Principal",
-      "_note": "Six users, eight days, one unverified publisher, never more than one grant per day. No threshold rule fires. This is the low-and-slow pattern from slide 17."
+      "_note": "Six users, eight days, one unverified publisher, never more than one grant per day. No threshold rule fires. This is the low-and-slow pattern from slide 18."
     },
     {
       "TimeGenerated": "2026-10-22T08:15:00Z",

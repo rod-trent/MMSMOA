@@ -1,6 +1,6 @@
 # Demo 2 — Speed the Investigation
 
-**Mission 1** · Session: *Using AI for Modern Threat Detection* · Slides 14–15
+**Mission 1** · Session: *Using AI for Modern Threat Detection* · Slides 15–16
 
 From a hypothesis to defensible evidence without writing a line of KQL.
 
@@ -37,7 +37,7 @@ change record and the known ASN that do it.
 
 | File | What it does |
 |------|--------------|
-| `hunt_service_accounts.py` | The six steps from slide 15, replayed deterministically with stage notes inline. |
+| `hunt_service_accounts.py` | The six steps from slide 16, replayed deterministically with stage notes inline. |
 | `sample_hunt_data.json` | Synthetic CONTOSO-PROD hunting data. Both seeded scenarios, the decoy, and one injection payload. Shared with Demos 3–5. |
 | `kql/mission1-hunt.kql` | The queries the model produces, plus the benign checks and the seed-known-bad test. |
 
@@ -103,7 +103,7 @@ so, and park the thread rather than chasing it (one hypothesis per thread).
 
 ## Pre-flight for the live version
 
-From slide 14's speaker notes:
+From slide 15's speaker notes:
 
 - Entra app with redirect `https://claude.ai/api/mcp/auth_callback` and
   `SentinelPlatform.DelegatedAccess` consented
@@ -122,11 +122,11 @@ for the connection checks.
 | Failure | Fallback |
 |---------|----------|
 | MCP auth fails | Run `hunt_service_accounts.py` and narrate over it |
-| Only auth fails, portal works | Paste `kql/mission1-hunt.kql` into Advanced Hunting and narrate what Claude would have done — this is the documented fallback on slide 15 |
+| Only auth fails, portal works | Paste `kql/mission1-hunt.kql` into Advanced Hunting and narrate what Claude would have done — this is the documented fallback on slide 16 |
 | Everything fails | Recorded backup |
 
 ## Timing
 
-Slide 14 budgets 8 minutes. The transcript runs about 7 with narration, leaving
+Slide 15 budgets 8 minutes. The transcript runs about 7 with narration, leaving
 room for one clarifying question. If you are long, compress step 4's Graph
 enumeration — never step 5.

@@ -1,13 +1,13 @@
 """
 validate_finding.py
 ===================
-Runs the six validation techniques from slide 19 against a hunt finding and
+Runs the six validation techniques from slide 20 against a hunt finding and
 tells you whether it is still a lead or has become evidence.
 
 Demo 4 - validation · Session: Using AI for Modern Threat Detection
 Conference: MMS 2026 Midway Edition - San Diego, October 25-28 2026
 
-Slide 19: "A model finding is a lead until a human makes it evidence."
+Slide 20: "A model finding is a lead until a human makes it evidence."
 
 The six techniques:
 
@@ -223,7 +223,7 @@ def t4_seed_known_bad(finding: dict[str, Any]) -> dict[str, Any]:
     """Plant a pattern you know is there and confirm the hunt finds it.
 
     If the hunt cannot find your test, its silence means nothing. This is the
-    single cheapest control on slide 19 and the one that is almost never run.
+    single cheapest control on slide 20 and the one that is almost never run.
     """
     # A synthetic record matching the hunt's detection logic exactly.
     if finding["entity_type"] == "application":
@@ -420,7 +420,7 @@ def validate(finding_key: str, only: str | None = None, quiet: bool = False) -> 
 
     if not quiet:
         print()
-        print(c("  Validation harness - slide 19", BOLD))
+        print(c("  Validation harness - slide 20", BOLD))
         print(c("  A model finding is a lead until a human makes it evidence.", DIM))
         print()
         print(c(f"  Finding  {finding['name']}", BOLD))
@@ -572,7 +572,7 @@ def self_test() -> int:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Slide 19 validation techniques.")
+    parser = argparse.ArgumentParser(description="Slide 20 validation techniques.")
     parser.add_argument("--finding", choices=sorted(FINDINGS), default="mission2")
     parser.add_argument("--technique", choices=sorted(TECHNIQUES),
                         help="Run one technique instead of all six.")

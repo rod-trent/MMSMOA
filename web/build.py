@@ -185,7 +185,7 @@ DEMOS_MANIFEST: list[dict] = [
         "id": "hunt-mission1",
         "session": "hunt",
         "title": "Speed the Investigation",
-        "subtitle": "Mission 1 · slides 14–15",
+        "subtitle": "Mission 1 · slides 15–16",
         "blurb": "Hypothesis to evidence with no hand-written KQL. Two service accounts "
                  "match the hypothesis; only one is a finding.",
         "kind": "run",
@@ -202,7 +202,7 @@ DEMOS_MANIFEST: list[dict] = [
         "id": "hunt-mission2",
         "session": "hunt",
         "title": "What the Rules Missed",
-        "subtitle": "Mission 2 · slides 16–17",
+        "subtitle": "Mission 2 · slides 17–18",
         "blurb": "UEBA anomalies to a validated finding to a generated analytics rule — "
                  "and a flat refusal to generate that rule if you skip validation.",
         "kind": "run",
@@ -220,7 +220,7 @@ DEMOS_MANIFEST: list[dict] = [
         "id": "hunt-validation",
         "session": "hunt",
         "title": "Validate Before You Believe",
-        "subtitle": "Slide 19",
+        "subtitle": "Slide 20",
         "blurb": "Six techniques, ending in a verdict: still a lead, or now evidence. "
                  "Includes seed-known-bad, the one everyone forgets.",
         "kind": "run",
@@ -237,7 +237,7 @@ DEMOS_MANIFEST: list[dict] = [
         "id": "hunt-redteam",
         "session": "hunt",
         "title": "Red-Team Your Own Hunt",
-        "subtitle": "Slide 20",
+        "subtitle": "Slide 21",
         "blurb": "Leakage and injection testing for a hunting workflow. The highest-value "
                  "injection against a hunt is not 'do something' — it is 'find nothing'.",
         "kind": "run",

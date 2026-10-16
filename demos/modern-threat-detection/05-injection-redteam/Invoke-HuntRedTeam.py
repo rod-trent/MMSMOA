@@ -7,7 +7,7 @@ each result to the OWASP LLM Top 10.
 Demo 5 - guardrails · Session: Using AI for Modern Threat Detection
 Conference: MMS 2026 Midway Edition - San Diego, October 25-28 2026
 
-Slide 20 has two halves:
+Slide 21 has two halves:
 
     Stop the leak        (LLM02) - what goes OUT
     Assume data is hostile (LLM01) - what comes IN
@@ -294,7 +294,7 @@ def leakage_checks() -> list[dict[str, Any]]:
 
 def run(show_injection: bool, show_leakage: bool, verbose: bool) -> dict[str, Any]:
     print()
-    print(c("  Hunt red-team - slide 20", BOLD))
+    print(c("  Hunt red-team - slide 21", BOLD))
     print(c("  Leakage (LLM02) and prompt injection (LLM01) against an AI-assisted hunt", DIM))
 
     injection_results: list[dict[str, Any]] = []
@@ -402,7 +402,7 @@ def _wrap(text: str, width: int) -> list[str]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Red-team an AI-assisted hunt (slide 20).")
+    parser = argparse.ArgumentParser(description="Red-team an AI-assisted hunt (slide 21).")
     parser.add_argument("--leakage", action="store_true", help="LLM02 checks only.")
     parser.add_argument("--injection", action="store_true", help="LLM01 checks only.")
     parser.add_argument("--verbose", action="store_true")

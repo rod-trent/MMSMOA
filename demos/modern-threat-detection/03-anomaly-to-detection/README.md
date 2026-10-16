@@ -1,6 +1,6 @@
 # Demo 3 — What the Rules Missed
 
-**Mission 2** · Session: *Using AI for Modern Threat Detection* · Slides 16–17
+**Mission 2** · Session: *Using AI for Modern Threat Detection* · Slides 17–18
 
 Start from anomalies instead of alerts, validate the finding on purpose, and
 turn it into a detection rule — in that order, because the order is the point.
@@ -121,7 +121,7 @@ generate the rule**:
 > pattern as a detection rule is how you page the wrong team at 2am for the next
 > two years."*
 
-Slide 17's closing line is *"the finding becomes a detection only after step 4."*
+Slide 18's closing line is *"the finding becomes a detection only after step 4."*
 This enforces it rather than asserting it, and `--self-test` proves the refusal
 holds.
 
@@ -150,6 +150,6 @@ sensitive scopes — otherwise every Teams install becomes an alert.
 
 ## Timing
 
-Slide 16 budgets 10 minutes. If you are short, **skip step 5's generation and
+Slide 17 budgets 10 minutes. If you are short, **skip step 5's generation and
 show the pre-generated file** — the threshold conversation is worth more than
 watching JSON print. Never compress step 4.

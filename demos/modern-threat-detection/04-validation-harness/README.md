@@ -1,6 +1,6 @@
 # Demo 4 — Validate Before You Believe
 
-**Take-home / bonus** · Session: *Using AI for Modern Threat Detection* · Slide 19
+**Take-home / bonus** · Session: *Using AI for Modern Threat Detection* · Slide 20
 
 The six validation techniques, run against a real finding, ending in a verdict:
 still a lead, or now evidence.
