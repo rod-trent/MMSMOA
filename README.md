@@ -31,6 +31,9 @@ without giving up control, compliance, or judgement.
 
 **→ [mms-midway-demos.vercel.app](https://mms-midway-demos.vercel.app)**
 
+Presenting? Start with **[demos/PRE-FLIGHT.md](demos/PRE-FLIGHT.md)** — the currency
+review, the known caveats, and the Monday-morning checklist.
+
 A site that runs these demos in a browser — real
 Python compiled to WebAssembly, executing in the tab. Nothing to install, and it
 is what gets driven on stage beside the deck.

@@ -23,10 +23,32 @@ Slide 12's **Level 2 — Connected**. The two moments that matter on stage:
 | File | What it does |
 |------|--------------|
 | `sample_tenant.json` | Synthetic CONTOSO-PROD data. One true positive, one VPN false positive, four pieces of noise, one prompt-injection payload. Shared by Demos 3 and 4. |
-| `replay_mcp_server.py` | A real MCP server over stdio serving that data with the same tool shapes as the hosted Sentinel MCP server. Offline fallback and rehearsal rig. |
+| `replay_mcp_server.py` | A real MCP server over stdio serving that data. Its tools are *analogous* to the hosted server's, not identically named — see the mapping below. Offline fallback and rehearsal rig. |
 | `triage_walkthrough.py` | Deterministic replay of the Mission 1 conversation as a terminal transcript, with stage notes inline. |
 | `prompts.md` | The exact prompts, in order, with what to watch for and timing. |
 | `kql/mission1-queries.kql` | The queries the model produces. Read them before the session; paste them into the portal if auth dies. |
+
+## Replay tools vs the real server
+
+The replay server's tool names are mine, chosen to read well on stage. If an
+attendee asks what the *hosted* server actually exposes, these are the names:
+
+| Replay server | Hosted Sentinel MCP (data exploration) |
+|---------------|----------------------------------------|
+| `list_tables` | `search_tables` |
+| `describe_table` | `search_tables` (returns schema) / `get_schema` |
+| `run_kql` | `query_lake` |
+| `list_incidents`, `get_incident` | triage collection (`list_incidents`, `get_incident`) — VS Code only |
+| `get_signin_activity`, `get_audit_activity` | reached through `query_lake` over `SigninLogs` / `AuditLogs` |
+| `get_ueba_baseline` | no direct equivalent — composed from `query_lake` |
+
+The hosted server also exposes `list_sentinel_workspaces`, and, in preview, the
+graph tools `find_blastradius`, `find_walkable_paths`,
+`find_exposure_perimeter`, `find_connected_nodes` and `get_graph_context`.
+
+**The honest line:** *"this is a stand-in so the demo runs without my tenant —
+the real server calls it `query_lake`, and the shape of the conversation is the
+same."* Say it once and move on.
 
 ## Run it
 
@@ -118,7 +140,7 @@ self-test proves each one:
 
 | Failure | Fallback |
 |---------|----------|
-| OAuth / consent fails | Point Claude at `replay_mcp_server.py` — same tool names, same transcript shape |
+| OAuth / consent fails | Point Claude at `replay_mcp_server.py` — equivalent tools, same transcript shape |
 | Conference Wi-Fi blocked | Same, it is fully offline |
 | Model wanders off script | Run `triage_walkthrough.py --step` and narrate over it |
 | Everything is on fire | Recorded backup video, queued before you go on stage |

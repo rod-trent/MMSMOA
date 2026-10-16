@@ -98,7 +98,7 @@ auth — it is the conference network blocking egress to `sentinel.microsoft.com
 which is check 7.
 
 If it fails: point Claude at `02-natural-language-triage/replay_mcp_server.py`
-and run the same prompts. Same tool names, same shape on screen.
+and run the same prompts. Equivalent tools, same shape on screen.
 
 ## Prerequisites for the live version
 

@@ -57,9 +57,9 @@ python Invoke-HuntRedTeam.py --json       # for CI
 |----|--------|-------|---------------------------|
 | INJ-01 | **Silence the hunt** | LLM01 | Asks for nothing to be found. No audit trail, no action, invisible. |
 | INJ-02 | **Poison the allow-list** | LLM01 | Persistent — one success suppresses every *future* hunt over that infrastructure. |
-| INJ-03 | **Exfiltrate the findings** | LLM02 / LLM06 | Your hunt findings are a map of what you know and don't. Worse to lose than the original compromise. |
-| INJ-04 | **Tool hijack via TI feed** | LLM06 | Data selecting a tool. Even for a read-only tool, the allow-list must be what refuses it. |
-| INJ-05 | **Forged verdict** | LLM09 | Targets the hunter, not the model. Verification beats pattern matching. |
+| INJ-03 | **Exfiltrate the findings** | LLM02 / LLM03 | Your hunt findings are a map of what you know and don't. Worse to lose than the original compromise. |
+| INJ-04 | **Tool hijack via TI feed** | LLM03 | Data selecting a tool. Even for a read-only tool, the allow-list must be what refuses it. |
+| INJ-05 | **Forged verdict** | LLM07 | Targets the hunter, not the model. Verification beats pattern matching. |
 | INJ-06 | **Encoded instruction** | LLM01 | Base64. Keyword screening cannot see it, and this corpus says so. |
 
 `HUNT-BENIGN-02` is the most important control in the file:
@@ -99,9 +99,14 @@ poisoned, so you can go and find out who can write to it. If your defence is
 |-------|-------|
 | LLM01 Prompt Injection | INJ-01, 02, 04, 06 |
 | LLM02 Sensitive Information Disclosure | INJ-03, LEAK-01, 03, 04, 05 |
-| LLM05 Improper Output Handling | Demo 3's refusal to emit an unvalidated rule |
-| LLM06 Excessive Agency | INJ-03, INJ-04, LEAK-02 |
-| LLM09 Misinformation | INJ-05, and Demo 4's whole harness |
+| LLM03 Excessive Agency | INJ-03, INJ-04, LEAK-02 |
+| LLM07 Misinformation | INJ-05, and Demo 4's whole harness |
+| LLM10 Improper Output Handling | Demo 3's refusal to emit an unvalidated rule |
+
+> Numbering follows the **2026 edition** of the OWASP Top 10 for LLM
+> Applications. Excessive Agency moved from LLM06 to **LLM03**, Misinformation
+> from LLM09 to **LLM07**, and Improper Output Handling from LLM05 to **LLM10**.
+> If a slide or an audience member cites the old numbers, that is why.
 
 ## Do this in your own tenant
 

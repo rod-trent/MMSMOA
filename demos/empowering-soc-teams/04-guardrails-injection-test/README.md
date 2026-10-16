@@ -108,8 +108,13 @@ Run `--tool-test` to show the strongest layer directly:
 |-------|----------|
 | LLM01 Prompt Injection | INJ-01, 02, 03, 04, 06, 07 |
 | LLM02 Sensitive Information Disclosure | INJ-05 |
-| LLM06 Excessive Agency | INJ-04, INJ-05 |
-| LLM09 Misinformation | INJ-08 |
+| LLM03 Excessive Agency | INJ-04, INJ-05 |
+| LLM07 Misinformation | INJ-08 |
+
+> Numbering follows the **2026 edition** of the OWASP Top 10 for LLM
+> Applications. Excessive Agency moved from LLM06 to **LLM03**, Misinformation
+> from LLM09 to **LLM07**, and Improper Output Handling from LLM05 to **LLM10**.
+> If a slide or an audience member cites the old numbers, that is why.
 
 ## Using it on your own agent
 

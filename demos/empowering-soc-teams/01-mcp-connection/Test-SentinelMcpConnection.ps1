@@ -8,17 +8,18 @@
     Session:    Empowering SOC Teams
     Conference: MMS Midway 2026 (San Diego)
 
-    Runs seven checks in the order things usually break:
+    Runs eight checks in the order things usually break:
 
       1. Az / Graph modules present
       2. Signed in, and to the right tenant
       3. Sentinel data lake enabled (the MCP server needs it)
-      4. App registration exists with the right redirect URIs
-      5. Delegated scope consented
-      6. Demo account holds Security Reader - and no more
-      7. MCP endpoints reachable and returning 401 (not 404 / DNS failure)
+      4. App registration exists, with the Claude redirect URI on the Web platform
+      5. An unexpired client secret exists (Claude's connector form requires one)
+      6. Delegated scope consented
+      7. Demo account holds Security Reader - and no more
+      8. MCP endpoints reachable and returning 401 (not 404 / DNS failure)
 
-    Check 7 is deliberately looking for HTTP 401. An unauthenticated GET to a
+    The endpoint check is deliberately looking for HTTP 401. An unauthenticated GET to a
     working MCP endpoint should be rejected. A 404 means the URL moved; a DNS
     or timeout error means egress is blocked on the conference network, which
     is the single most common day-of failure.
@@ -143,14 +144,36 @@ else {
         Add-Result 'Delegated consent' 'SKIP' 'No app to check'
     }
     else {
-        $redirects = @($app.PublicClient.RedirectUris)
-        $hasClaude = $redirects | Where-Object { $_ -like '*claude*mcp/auth_callback' }
+        # Claude's connector form needs a confidential client: the redirect URI
+        # must be on the Web platform and the app must have a secret.
+        $webRedirects    = @($app.Web.RedirectUris)
+        $publicRedirects = @($app.PublicClient.RedirectUris)
+        $hasClaudeWeb    = $webRedirects    | Where-Object { $_ -like '*claude*mcp/auth_callback' }
+        $hasClaudePublic = $publicRedirects | Where-Object { $_ -like '*claude*mcp/auth_callback' }
 
-        if ($hasClaude) {
-            Add-Result 'App registration' 'PASS' "appId $($app.AppId), $($redirects.Count) redirect URI(s)"
+        if ($hasClaudeWeb) {
+            Add-Result 'App registration' 'PASS' "appId $($app.AppId), Claude redirect URI on the Web platform"
+        }
+        elseif ($hasClaudePublic) {
+            Add-Result 'App registration' 'FAIL' "appId $($app.AppId): Claude redirect URI is on the public-client platform. Claude needs it on Web, with a secret. Re-run Register-SentinelMcpApp.ps1."
         }
         else {
             Add-Result 'App registration' 'WARN' "appId $($app.AppId) but no Claude redirect URI found"
+        }
+
+        $secrets = @($app.PasswordCredentials | Where-Object { $_.EndDateTime -gt (Get-Date) })
+        if ($secrets.Count -gt 0) {
+            $soonest = ($secrets | Sort-Object EndDateTime | Select-Object -First 1).EndDateTime
+            $days    = [int]($soonest - (Get-Date)).TotalDays
+            if ($days -lt 14) {
+                Add-Result 'Client secret' 'WARN' "Valid, but expires in $days day(s) on $($soonest.ToString('yyyy-MM-dd'))"
+            }
+            else {
+                Add-Result 'Client secret' 'PASS' "Valid until $($soonest.ToString('yyyy-MM-dd'))"
+            }
+        }
+        else {
+            Add-Result 'Client secret' 'FAIL' 'No unexpired client secret. Claude''s connector form requires one - add a secret in Entra or re-run Register-SentinelMcpApp.ps1.'
         }
 
         # Consent shows up as an oauth2PermissionGrant against the Sentinel SP.

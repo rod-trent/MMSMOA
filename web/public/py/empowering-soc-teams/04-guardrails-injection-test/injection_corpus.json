@@ -195,9 +195,10 @@
   },
 
   "owasp_llm_mapping": {
+    "_edition": "OWASP Top 10 for LLM Applications, 2026 edition. Excessive Agency moved from LLM06 to LLM03 and Misinformation from LLM09 to LLM07 in this edition; cite the 2026 numbers on stage.",
     "LLM01_Prompt_Injection": ["INJ-01", "INJ-02", "INJ-03", "INJ-04", "INJ-06", "INJ-07"],
     "LLM02_Sensitive_Information_Disclosure": ["INJ-05"],
-    "LLM06_Excessive_Agency": ["INJ-04", "INJ-05"],
-    "LLM09_Misinformation": ["INJ-08"]
+    "LLM03_Excessive_Agency": ["INJ-04", "INJ-05"],
+    "LLM07_Misinformation": ["INJ-08"]
   }
 }
