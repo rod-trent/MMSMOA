@@ -29,6 +29,10 @@ the MCP server is. Swap Claude for ChatGPT and the plumbing does not change.
 - A **Privileged Role Administrator** to grant admin consent (the script prints the URL)
 - A demo analyst account holding **Security Reader and nothing else** (this is the point of slide 20 — check it)
 - **Tenant-level administrative privileges** to add the connector, per the Learn article
+- For the **graph tools** in Mission 1 step 7: the data lake **onboarded to the
+  Defender portal**, and at least **read-only access in Microsoft Security
+  Exposure Management** to read graph data. Graph tools are preview and bill
+  against the **Sentinel graph meter**, separately from the data lake.
 - A **Claude Pro, Max, Team, or Enterprise** plan — custom connectors are not on the free tier
 - `Az.Accounts`, `Az.Resources`, `Microsoft.Graph.Applications`
 

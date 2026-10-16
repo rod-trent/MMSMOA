@@ -77,7 +77,7 @@ the rhythm you had planned.
 
 | Recording | Mission | Length |
 |-----------|---------|--------|
-| [▶ demo-08-mission1-triage.mp4](../../web/public/video/demo-08-mission1-triage.mp4) | Mission 1 — ask like an analyst | 0:50 |
+| [▶ demo-08-mission1-triage.mp4](../../web/public/video/demo-08-mission1-triage.mp4) | Mission 1 — ask like an analyst | 1:09 |
 | [▶ demo-09-triage-agent-hitl.mp4](../../web/public/video/demo-09-triage-agent-hitl.mp4) | Mission 2 — the clean run **and** the rejection re-plan | 2:02 |
 
 Both also play from their cards on the [demo site](https://mms-midway-demos.vercel.app/?s=soc). Re-render with

@@ -119,18 +119,72 @@ upside. The pin is stable and the CDN does not retire versions.
 
 ---
 
+## Graph tools in Mission 1 — added 16 October 2026
+
+Mission 1 gained **step 7: Map the blast radius**, built against the documented
+preview graph tools. Tool names and parameter names were taken from Learn, not
+from memory — and that caught two things my earlier note had wrong: there is a
+sixth tool, `find_nodes`, and I had the descriptions of `find_walkable_paths`
+and `find_connected_nodes` swapped.
+
+| Tool | Parameters |
+|------|-----------|
+| `get_graph_context` | — |
+| `find_nodes` | `validNodeLabel`, `validNodeProperties`, `resultsLimit` |
+| `find_blastradius` | `sourceName` |
+| `find_walkable_paths` | `sourceName`, `targetName` |
+| `find_exposure_perimeter` | `targetName`, `minPathLength`, `maxPathLength`, `resultsCountLimit` |
+| `find_connected_nodes` | `sourceNodeLabel`, `sourceNodeProperties`, `targetNodeLabel`, `targetNodeProperties`, `resultsCountLimit` |
+
+It runs **offline**, like everything else. The replay server now serves all six
+under their real names, and `--self-test` went from 13 assertions to **25**.
+
+### The two moments to land
+
+**"Eligible is not active."** Jordan Doe is PIM-eligible for `FIN-SOX-Approvers`,
+which holds a role on `kv-contoso-fin-prod`. The edge exists, so a tool that
+*counts* edges puts the key vault in the blast radius and sends you to wake up
+its owner. The edge is not traversable — activation needs approval plus MFA —
+so the correct answer shows the path and says why it is blocked. That is the
+decoy, and it is the same discrimination test as the VPN false positive in the
+earlier steps.
+
+**"Two doors into the mailbox."** `find_exposure_perimeter` on the mailbox
+returns two entry points: the account itself, and the Contoso Doc Sync OAuth
+grant carrying `offline_access`. A password reset closes one of them. The
+refresh token is not tied to the credential, so **revoke the grant first, then
+reset**. Containment order is a graph question, and getting it backwards is how
+an incident comes back three days later.
+
+### What it costs you on stage
+
+The UPN failure is scripted in on purpose: `find_blastradius` with
+`j.doe@contoso.com` returns an error, because graph identity lookups do not
+accept UPNs. Let it happen and read the error out — it is the most common
+first-try failure with these tools.
+
+Extra prerequisites beyond the rest of Mission 1:
+
+- Data lake **onboarded to the Defender portal**
+- At least **read-only access in Microsoft Security Exposure Management**
+- Graph tools bill against the **Sentinel graph meter**, separately from the
+  data lake, and they are **prerelease**
+
+Mission 1 is now ~11 minutes against slide 14's 8. `prompts.md` gives you two
+ways to cut it back to ~9. If the tenant misbehaves, **step 7 is the first thing
+to drop** — the offline version on the demo site always works.
+
+Slide 15 was reflowed from six cells to seven, and the Mission 1 video was
+re-recorded (now 1:09, was 0:50). Slide 15 renders clean at 1600x900.
+
+---
+
 ## Still open — your call
 
-Two things I found but did not apply, because they change the talk rather than
-correct it. (The third, fresher statistics, is now applied — see below.)
+One thing I found but did not apply, because it changes the talk rather than
+correcting it.
 
-**1. Graph tools are in preview and nobody has seen them.** The hosted server now
-exposes `find_blastradius`, `find_walkable_paths`, `find_exposure_perimeter`,
-`find_connected_nodes` and `get_graph_context`. "Show me the blast radius of
-this compromised identity" is a strong 60-second addition to Mission 1 — but it
-needs a tenant, and preview tools break.
-
-**2. Microsoft now ships what the MOA session taught.** You can build custom MCP
+**Microsoft now ships what the MOA session taught.** You can build custom MCP
 tools from saved KQL advanced-hunting queries. That is a genuine callback: *"last
 time I showed you how to roll this yourself; Microsoft shipped it."* Costs a
 slide.
@@ -203,7 +257,8 @@ python web/build.py --check    # expect: up to date
 ```
 
 Then open <https://mms-midway-demos.vercel.app>, set the pause mode to **every
-step**, and walk both sessions once end to end.
+step**, and walk both sessions once end to end. Rehearse Mission 1 step 7 twice —
+it is the newest material and the one with a scripted error in it.
 
 *Review run 16 October 2026. Re-read the
 [connector article](https://learn.microsoft.com/azure/sentinel/datalake/sentinel-mcp-chatgpt-claude-connector)

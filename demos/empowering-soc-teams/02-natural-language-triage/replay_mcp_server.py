@@ -397,6 +397,291 @@ def tool_get_ueba_baseline(upn: str) -> dict[str, Any]:
 # Tool registry
 # ---------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------
+# Graph tools (preview)
+#
+# These six use the REAL tool names and the REAL parameter names from the
+# hosted data-exploration collection, unlike the stand-in names above. If you
+# are reading this to learn the actual API surface, this section is accurate:
+#
+#   get_graph_context()
+#   find_nodes(validNodeLabel, validNodeProperties, resultsLimit)
+#   find_blastradius(sourceName)
+#   find_walkable_paths(sourceName, targetName)
+#   find_exposure_perimeter(targetName, minPathLength, maxPathLength, resultsCountLimit)
+#   find_connected_nodes(sourceNodeLabel, sourceNodeProperties,
+#                        targetNodeLabel, targetNodeProperties, resultsCountLimit)
+#
+# Two documented behaviours are reproduced on purpose because they bite on
+# stage: identity lookups reject user principal names, and the graph tools are
+# preview and metered separately from the rest of the collection.
+# ---------------------------------------------------------------------------
+
+GRAPH_PREVIEW_NOTE = (
+    "Graph tools are in PREVIEW and bill against the Sentinel graph meter, "
+    "separately from the data lake."
+)
+
+
+def _graph() -> dict[str, Any]:
+    g = TENANT.get("graph")
+    if not g:
+        raise ValueError("No graph data in the sample tenant.")
+    return g
+
+
+def _reject_upn(value: str, parameter: str) -> None:
+    """The hosted graph tools do not accept UPNs for identity lookups."""
+    if "@" in value:
+        raise ValueError(
+            f"{parameter}={value!r} looks like a user principal name. Graph "
+            "identity lookups do not accept UPNs - use the display name or the "
+            "object ID. Try find_nodes(validNodeLabel='Identity') to list them."
+        )
+
+
+def _find_node(keywords: str, parameter: str) -> dict[str, Any]:
+    """Match a node by keywords, the way the hosted tools describe it."""
+    _reject_upn(keywords, parameter)
+    needle = keywords.strip().lower()
+    nodes = _graph()["nodes"]
+
+    # Callers are told to put the type before the name ("user Jordan Doe"), so
+    # strip a leading label word before matching.
+    for node in nodes:
+        if needle.startswith(node["label"].lower() + " "):
+            needle = needle[len(node["label"]) + 1:].strip()
+            break
+    for alias in ("user ", "identity ", "app ", "group "):
+        if needle.startswith(alias):
+            needle = needle[len(alias):].strip()
+            break
+
+    exact = [n for n in nodes if n["name"].lower() == needle]
+    if exact:
+        return exact[0]
+    partial = [n for n in nodes if needle and needle in n["name"].lower()]
+    if len(partial) == 1:
+        return partial[0]
+    if len(partial) > 1:
+        raise ValueError(
+            f"{parameter}={keywords!r} matched {len(partial)} nodes: "
+            + ", ".join(n["name"] for n in partial)
+        )
+    raise ValueError(
+        f"{parameter}={keywords!r} matched no node in the graph. "
+        "Use get_graph_context() for supported labels."
+    )
+
+
+def _edges_from(name: str) -> list[dict[str, Any]]:
+    return [e for e in _graph()["edges"] if e["source"] == name]
+
+
+def _walk(start: str, target: str | None = None,
+          max_hops: int = 6) -> list[list[dict[str, Any]]]:
+    """Depth-first path enumeration. Returns paths as lists of edges.
+
+    Untraversable edges are included as a final hop so the caller can SEE the
+    blocked path and say why, rather than silently pretending it is not there.
+    That distinction is the whole point of the demo beat.
+    """
+    paths: list[list[dict[str, Any]]] = []
+
+    def step(node: str, trail: list[dict[str, Any]], seen: set[str]) -> None:
+        if len(trail) >= max_hops:
+            return
+        for edge in _edges_from(node):
+            if edge["target"] in seen:
+                continue
+            extended = trail + [edge]
+            if target is None or edge["target"] == target:
+                paths.append(extended)
+            # Recurse through blocked edges too. A path that is only blocked by
+            # one hop still has to be SHOWN, with the reason, or the analyst
+            # cannot tell "you cannot get there" from "I did not look".
+            step(edge["target"], extended, seen | {edge["target"]})
+
+    step(start, [], {start})
+    return paths
+
+
+def _path_view(path: list[dict[str, Any]]) -> dict[str, Any]:
+    blocked = [e for e in path if not e.get("traversable", True)]
+    return {
+        "hops": len(path),
+        "route": " -> ".join([path[0]["source"]] + [e["target"] for e in path]),
+        "edges": [
+            {k: v for k, v in e.items() if not k.startswith("_") and k != "id"}
+            for e in path
+        ],
+        "traversable": not blocked,
+        "blocked_by": blocked[0]["blocked_by"] if blocked else None,
+    }
+
+
+def tool_get_graph_context() -> dict[str, Any]:
+    ctx = dict(_graph()["context"])
+    ctx["preview_note"] = GRAPH_PREVIEW_NOTE
+    return ctx
+
+
+def tool_find_nodes(validNodeLabel: str, validNodeProperties: str | None = None,
+                    resultsLimit: int = 25) -> dict[str, Any]:
+    labels = {n["label"] for n in _graph()["nodes"]}
+    if validNodeLabel not in labels:
+        raise ValueError(
+            f"validNodeLabel={validNodeLabel!r} is not a label in this graph. "
+            f"Supported: {', '.join(sorted(labels))}"
+        )
+    hits = [n for n in _graph()["nodes"] if n["label"] == validNodeLabel]
+
+    if validNodeProperties:
+        wanted = [p.strip() for p in validNodeProperties.split(",") if p.strip()]
+        for prop in wanted:
+            if "=" in prop:
+                key, _, val = prop.partition("=")
+                hits = [n for n in hits
+                        if str(n.get(key.strip(), "")).lower() == val.strip().lower()]
+            else:
+                hits = [n for n in hits if prop in n]
+
+    return clean({
+        "preview": True,
+        "label": validNodeLabel,
+        "match_count": len(hits),
+        "nodes": hits[:resultsLimit],
+    })
+
+
+def tool_find_blastradius(sourceName: str) -> dict[str, Any]:
+    node = _find_node(sourceName, "sourceName")
+    critical = set(_graph()["critical_assets"])
+    paths = _walk(node["name"])
+
+    reachable, blocked = [], []
+    for path in paths:
+        if path[-1]["target"] not in critical:
+            continue
+        view = _path_view(path)
+        (reachable if view["traversable"] else blocked).append(view)
+
+    # Non-critical but sensitive endpoints still belong in the answer.
+    collateral = sorted({
+        p[-1]["target"] for p in paths
+        if p[-1]["target"] not in critical
+        and all(e.get("traversable", True) for e in p)
+    })
+
+    recommendations = []
+    oauth = [e for e in _graph()["edges"]
+             if e["type"] == "HAS_OAUTH_GRANT_ON" and e.get("traversable", True)]
+    if oauth:
+        recommendations.append(
+            "Revoke the OAuth grant before resetting the credential. "
+            "offline_access refresh tokens are not tied to the password, so a "
+            "reset on its own leaves this path open."
+        )
+    if blocked:
+        recommendations.append(
+            "Keep the blocked path blocked: confirm PIM activation still "
+            "requires approval and MFA for FIN-SOX-Approvers."
+        )
+    recommendations.append(
+        "Scope containment to the reachable critical assets above, not to "
+        "every asset the account is nominally associated with."
+    )
+
+    return {
+        "preview": True,
+        "preview_note": GRAPH_PREVIEW_NOTE,
+        "source": {"label": node["label"], "name": node["name"]},
+        "critical_assets_reachable_now": sorted(
+            {p["route"].split(" -> ")[-1] for p in reachable}
+        ),
+        "paths_to_critical_assets": reachable,
+        "paths_blocked": blocked,
+        "other_reachable_nodes": collateral,
+        "recommendations": recommendations,
+    }
+
+
+def tool_find_walkable_paths(sourceName: str, targetName: str) -> dict[str, Any]:
+    src = _find_node(sourceName, "sourceName")
+    dst = _find_node(targetName, "targetName")
+    views = [_path_view(p) for p in _walk(src["name"], dst["name"])]
+    return {
+        "preview": True,
+        "source": src["name"],
+        "target": dst["name"],
+        "path_count": len(views),
+        "walkable_now": [v for v in views if v["traversable"]],
+        "not_walkable": [v for v in views if not v["traversable"]],
+    }
+
+
+def tool_find_exposure_perimeter(targetName: str, minPathLength: int | None = None,
+                                 maxPathLength: int | None = None,
+                                 resultsCountLimit: int = 25) -> dict[str, Any]:
+    dst = _find_node(targetName, "targetName")
+    views: list[dict[str, Any]] = []
+    for node in _graph()["nodes"]:
+        if node["name"] == dst["name"]:
+            continue
+        for path in _walk(node["name"], dst["name"]):
+            view = _path_view(path)
+            if minPathLength is not None and view["hops"] < minPathLength:
+                continue
+            if maxPathLength is not None and view["hops"] > maxPathLength:
+                continue
+            view["entry_point"] = node["name"]
+            view["entry_label"] = node["label"]
+            views.append(view)
+
+    views.sort(key=lambda v: (not v["traversable"], v["hops"]))
+    walkable = [v for v in views if v["traversable"]]
+    return {
+        "preview": True,
+        "target": {"label": dst["label"], "name": dst["name"],
+                   "criticality": dst.get("criticality")},
+        "incoming_path_count": len(views),
+        "entry_points_now": sorted({v["entry_point"] for v in walkable}),
+        "paths": views[:resultsCountLimit],
+        "recommendation": (
+            "Reduce the perimeter by cutting the shortest walkable path first - "
+            "it is almost always a group membership, not a direct assignment."
+        ),
+    }
+
+
+def tool_find_connected_nodes(sourceNodeLabel: str, targetNodeLabel: str,
+                              sourceNodeProperties: str | None = None,
+                              targetNodeProperties: str | None = None,
+                              resultsCountLimit: int = 25) -> dict[str, Any]:
+    sources = tool_find_nodes(sourceNodeLabel, sourceNodeProperties, 100)["nodes"]
+    targets = {n["name"] for n in
+               tool_find_nodes(targetNodeLabel, targetNodeProperties, 100)["nodes"]}
+
+    views: list[dict[str, Any]] = []
+    for src in sources:
+        for path in _walk(src["name"]):
+            if path[-1]["target"] not in targets:
+                continue
+            view = _path_view(path)
+            view["from"] = src["name"]
+            view["to"] = path[-1]["target"]
+            views.append(view)
+
+    views.sort(key=lambda v: (not v["traversable"], v["hops"]))
+    return {
+        "preview": True,
+        "source_label": sourceNodeLabel,
+        "target_label": targetNodeLabel,
+        "path_count": len(views),
+        "paths": views[:resultsCountLimit],
+    }
+
+
 TOOLS: list[dict[str, Any]] = [
     {
         "name": "list_tables",
@@ -497,6 +782,109 @@ TOOLS: list[dict[str, Any]] = [
             "required": ["upn"],
         },
     },
+    # --- Graph tools (preview) ------------------------------------------
+    # Real names, real parameter names. See the implementations above.
+    {
+        "name": "get_graph_context",
+        "description": (
+            "PREVIEW. Return the labels, properties, and edge types this graph "
+            "supports, plus the usage rules for the other graph tools."
+        ),
+        "handler": tool_get_graph_context,
+        "schema": {"type": "object", "properties": {}},
+    },
+    {
+        "name": "find_nodes",
+        "description": (
+            "PREVIEW. Find entities the graph represents as nodes, by label and "
+            "optional properties."
+        ),
+        "handler": tool_find_nodes,
+        "schema": {
+            "type": "object",
+            "properties": {
+                "validNodeLabel": {"type": "string"},
+                "validNodeProperties": {
+                    "type": "string",
+                    "description": "Comma-separated properties, e.g. 'criticality=Critical'.",
+                },
+                "resultsLimit": {"type": "integer", "default": 25},
+            },
+            "required": ["validNodeLabel"],
+        },
+    },
+    {
+        "name": "find_blastradius",
+        "description": (
+            "PREVIEW. Evaluate the blast radius of a node by exploring "
+            "propagation paths toward critical assets. Identity lookups do not "
+            "accept UPNs - use the display name."
+        ),
+        "handler": tool_find_blastradius,
+        "schema": {
+            "type": "object",
+            "properties": {
+                "sourceName": {
+                    "type": "string",
+                    "description": "Keywords matching a node. Not a UPN.",
+                }
+            },
+            "required": ["sourceName"],
+        },
+    },
+    {
+        "name": "find_walkable_paths",
+        "description": (
+            "PREVIEW. Enumerate the connections between a source and a target "
+            "and decide whether they can be traversed for lateral movement."
+        ),
+        "handler": tool_find_walkable_paths,
+        "schema": {
+            "type": "object",
+            "properties": {
+                "sourceName": {"type": "string"},
+                "targetName": {"type": "string"},
+            },
+            "required": ["sourceName", "targetName"],
+        },
+    },
+    {
+        "name": "find_exposure_perimeter",
+        "description": (
+            "PREVIEW. List the incoming connections from other entities to the "
+            "specified entity, to show the risk it faces."
+        ),
+        "handler": tool_find_exposure_perimeter,
+        "schema": {
+            "type": "object",
+            "properties": {
+                "targetName": {"type": "string"},
+                "minPathLength": {"type": "integer"},
+                "maxPathLength": {"type": "integer"},
+                "resultsCountLimit": {"type": "integer", "default": 25},
+            },
+            "required": ["targetName"],
+        },
+    },
+    {
+        "name": "find_connected_nodes",
+        "description": (
+            "PREVIEW. List traversable paths between two sets of entities "
+            "selected by label and properties rather than by name."
+        ),
+        "handler": tool_find_connected_nodes,
+        "schema": {
+            "type": "object",
+            "properties": {
+                "sourceNodeLabel": {"type": "string"},
+                "sourceNodeProperties": {"type": "string"},
+                "targetNodeLabel": {"type": "string"},
+                "targetNodeProperties": {"type": "string"},
+                "resultsCountLimit": {"type": "integer", "default": 25},
+            },
+            "required": ["sourceNodeLabel", "targetNodeLabel"],
+        },
+    },
 ]
 
 TOOLS_BY_NAME = {t["name"]: t for t in TOOLS}
@@ -511,6 +899,10 @@ def call_tool(name: str, arguments: dict[str, Any] | None = None) -> dict[str, A
         return tool["handler"](**(arguments or {}))
     except TypeError as exc:
         return {"error": f"Bad arguments for {name}: {exc}"}
+    except ValueError as exc:
+        # Graph tools raise these for UPN lookups and unknown labels. They are
+        # expected, actionable errors - hand them back rather than crashing.
+        return {"error": str(exc)}
 
 
 # ---------------------------------------------------------------------------
@@ -621,6 +1013,83 @@ def self_test() -> int:
 
     leaked = json.dumps(injected)
     check("authoring notes are stripped from tool output", "_ground_truth" not in leaked)
+
+    # --- graph tools (preview) ------------------------------------------
+
+    ctx = tool_get_graph_context()
+    check(
+        "get_graph_context advertises labels and the UPN rule",
+        "Identity" in ctx["node_labels"]
+        and any("principal name" in n for n in ctx["usage_notes"]),
+        f"{len(ctx['node_labels'])} labels",
+    )
+
+    upn_attempt = call_tool("find_blastradius", {"sourceName": "j.doe@contoso.com"})
+    check(
+        "graph identity lookup rejects a UPN, as the hosted tools do",
+        "error" in upn_attempt and "principal name" in upn_attempt["error"],
+    )
+
+    blast = tool_find_blastradius("user Jordan Doe")
+    check(
+        "find_blastradius reaches both SOX crown jewels",
+        blast["critical_assets_reachable_now"]
+        == ["sql-sox-reporting-01", "stcontosofinarchive"],
+        ", ".join(blast["critical_assets_reachable_now"]),
+    )
+    check(
+        "find_blastradius excludes the PIM-gated key vault from the live radius",
+        "kv-contoso-fin-prod" not in blast["critical_assets_reachable_now"],
+    )
+    check(
+        "find_blastradius still SHOWS the blocked path, with the reason",
+        len(blast["paths_blocked"]) == 1
+        and "kv-contoso-fin-prod" in blast["paths_blocked"][0]["route"]
+        and "PIM" in blast["paths_blocked"][0]["blocked_by"],
+    )
+    check(
+        "find_blastradius leads with revoking the grant, not resetting the password",
+        "evoke" in blast["recommendations"][0]
+        and "offline_access" in blast["recommendations"][0],
+    )
+
+    vault = tool_find_walkable_paths("Jordan Doe", "kv-contoso-fin-prod")
+    check(
+        "find_walkable_paths marks the key vault unreachable right now",
+        not vault["walkable_now"] and len(vault["not_walkable"]) == 1,
+        f"{len(vault['walkable_now'])} walkable",
+    )
+
+    mailbox = tool_find_exposure_perimeter("Jordan Doe mailbox")
+    check(
+        "find_exposure_perimeter finds BOTH doors into the mailbox",
+        mailbox["entry_points_now"] == ["Contoso Doc Sync", "Jordan Doe"],
+        ", ".join(mailbox["entry_points_now"]),
+    )
+
+    criticals = tool_find_nodes("StorageAccount", "criticality=Critical")
+    check(
+        "find_nodes filters on a property",
+        criticals["match_count"] == 1
+        and criticals["nodes"][0]["name"] == "stcontosofinarchive",
+    )
+
+    bad_label = call_tool("find_nodes", {"validNodeLabel": "Mainframe"})
+    check("find_nodes rejects an unsupported label", "error" in bad_label)
+
+    id_to_vault = tool_find_connected_nodes("Identity", "KeyVault")
+    check(
+        "find_connected_nodes selects by label, not by name",
+        id_to_vault["path_count"] == 1
+        and id_to_vault["paths"][0]["traversable"] is False,
+    )
+
+    graph_leak = json.dumps([blast, mailbox, vault, criticals])
+    check(
+        "graph output carries no authoring notes",
+        '"_note"' not in graph_leak and "_ground_truth" not in graph_leak,
+    )
+
 
     print()
     print("replay_mcp_server self-test")

@@ -357,5 +357,68 @@
       { "id": "CHG-88214", "opened": "2026-10-27T22:05:00Z", "summary": "Rotate svc-backup client secret", "affects": ["svc-backup@contoso.com"] }
     ],
     "approved_oauth_publishers": ["Microsoft", "Adobe", "Atlassian", "ServiceNow"]
+  },
+
+  "_graph_comment": [
+    "Sentinel graph data for the Mission 1 blast-radius beat (slide 15, step 6).",
+    "Tool names and parameter names here match the REAL hosted graph tools:",
+    "find_blastradius(sourceName), find_walkable_paths(sourceName, targetName),",
+    "find_exposure_perimeter(targetName, ...), find_connected_nodes(...),",
+    "find_nodes(validNodeLabel, ...), get_graph_context(). Graph tools are PREVIEW.",
+    "",
+    "The decoy here is kv-contoso-fin-prod. It LOOKS reachable from j.doe because",
+    "the PIM eligibility edge exists, but the edge is not traversable without an",
+    "approval plus MFA, so it is not in the current blast radius. A model that",
+    "counts edges instead of reading them will get this wrong on stage.",
+    "",
+    "The real teaching point is edge e5: the OAuth grant reaches the mailbox",
+    "independently of j.doe's credential, so a password reset does not shrink",
+    "the blast radius. You have to revoke the grant."
+  ],
+
+  "graph": {
+    "context": {
+      "preview": true,
+      "node_labels": ["Identity", "ServicePrincipal", "Group", "Device", "StorageAccount", "SqlServer", "KeyVault", "Mailbox"],
+      "node_properties": ["name", "criticality", "objectId", "appId", "environment", "dataClassification"],
+      "edge_types": ["MEMBER_OF", "PIM_ELIGIBLE_FOR", "HAS_ROLE_ON", "HAS_OAUTH_GRANT_ON", "SIGNED_IN_FROM", "OWNS"],
+      "criticality_values": ["Critical", "High", "Medium", "Low"],
+      "usage_notes": [
+        "Scope a prompt to the graph by adding 'in my graph'.",
+        "Identity lookups do not accept user principal names. Use the display name or the object ID.",
+        "When you name an entity type, put the type before the name - 'user Jordan Doe'."
+      ]
+    },
+
+    "nodes": [
+      { "label": "Identity", "name": "Jordan Doe", "objectId": "7c1f2a44-9b3e-4d61-8f02-5a7e91c3d410", "upn": "j.doe@contoso.com", "criticality": "High", "_note": "Entry point. Compromised in incident 48213." },
+      { "label": "ServicePrincipal", "name": "Contoso Doc Sync", "appId": "b17c9a02-4d5e-4a11-9f7b-2c8813ee0d55", "criticality": "Medium", "publisherVerified": false },
+      { "label": "Group", "name": "FIN-Reporting-Readers", "criticality": "Medium", "memberCount": 34 },
+      { "label": "Group", "name": "FIN-SOX-Approvers", "criticality": "High", "memberCount": 6, "pimProtected": true },
+      { "label": "Device", "name": "LPT-JDOE-07", "criticality": "Low", "compliant": true },
+      { "label": "Mailbox", "name": "Jordan Doe mailbox", "criticality": "High", "dataClassification": "Confidential" },
+      { "label": "StorageAccount", "name": "stcontosofinarchive", "criticality": "Critical", "environment": "prod", "dataClassification": "SOX" },
+      { "label": "SqlServer", "name": "sql-sox-reporting-01", "criticality": "Critical", "environment": "prod", "dataClassification": "SOX" },
+      { "label": "KeyVault", "name": "kv-contoso-fin-prod", "criticality": "Critical", "environment": "prod", "dataClassification": "Secrets" }
+    ],
+
+    "edges": [
+      { "id": "e1", "source": "Jordan Doe", "target": "FIN-Reporting-Readers", "type": "MEMBER_OF", "traversable": true, "detail": "Direct, permanent membership." },
+      { "id": "e2", "source": "FIN-Reporting-Readers", "target": "stcontosofinarchive", "type": "HAS_ROLE_ON", "role": "Storage Blob Data Reader", "traversable": true, "detail": "Group holds a data-plane read role on the prod SOX archive." },
+      { "id": "e3", "source": "FIN-Reporting-Readers", "target": "sql-sox-reporting-01", "type": "HAS_ROLE_ON", "role": "db_datareader", "traversable": true, "detail": "Read access to the SOX reporting database." },
+      { "id": "e4", "source": "Jordan Doe", "target": "LPT-JDOE-07", "type": "SIGNED_IN_FROM", "traversable": true, "detail": "Compliant corporate laptop." },
+      { "id": "e5", "source": "Contoso Doc Sync", "target": "Jordan Doe mailbox", "type": "HAS_OAUTH_GRANT_ON", "scopes": ["Mail.Read", "offline_access"], "traversable": true, "detail": "Delegated grant with offline_access. Survives a password reset - the refresh token is not tied to the credential.", "_note": "This is the edge the demo is built around." },
+      { "id": "e8", "source": "Jordan Doe", "target": "Jordan Doe mailbox", "type": "OWNS", "traversable": true, "detail": "The account's own mailbox. This route closes when the credential is reset." },
+      { "id": "e6", "source": "Jordan Doe", "target": "FIN-SOX-Approvers", "type": "PIM_ELIGIBLE_FOR", "traversable": false, "blocked_by": "PIM activation requires approval plus MFA; no activation in the last 90 days.", "detail": "Eligible, not active. The edge exists but cannot be walked right now." },
+      { "id": "e7", "source": "FIN-SOX-Approvers", "target": "kv-contoso-fin-prod", "type": "HAS_ROLE_ON", "role": "Key Vault Secrets User", "traversable": true, "detail": "Only reachable once e6 is activated." }
+    ],
+
+    "critical_assets": ["stcontosofinarchive", "sql-sox-reporting-01", "kv-contoso-fin-prod"],
+
+    "_ground_truth": {
+      "blast_radius_now": ["stcontosofinarchive", "sql-sox-reporting-01", "Jordan Doe mailbox"],
+      "blocked_until_pim_activated": ["kv-contoso-fin-prod"],
+      "key_insight": "e5 does not depend on j.doe's password. Resetting the credential leaves the mailbox reachable."
+    }
   }
 }

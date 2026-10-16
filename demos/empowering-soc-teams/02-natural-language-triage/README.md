@@ -42,13 +42,37 @@ attendee asks what the *hosted* server actually exposes, these are the names:
 | `get_signin_activity`, `get_audit_activity` | reached through `query_lake` over `SigninLogs` / `AuditLogs` |
 | `get_ueba_baseline` | no direct equivalent — composed from `query_lake` |
 
-The hosted server also exposes `list_sentinel_workspaces`, and, in preview, the
-graph tools `find_blastradius`, `find_walkable_paths`,
-`find_exposure_perimeter`, `find_connected_nodes` and `get_graph_context`.
+The hosted server also exposes `list_sentinel_workspaces`.
 
 **The honest line:** *"this is a stand-in so the demo runs without my tenant —
 the real server calls it `query_lake`, and the shape of the conversation is the
 same."* Say it once and move on.
+
+### The graph tools are the exception
+
+Step 7 uses the **preview graph tools**, and for those the replay server uses
+the **real names and the real parameter names**:
+
+| Tool | Parameters |
+|------|-----------|
+| `get_graph_context` | — |
+| `find_nodes` | `validNodeLabel`, `validNodeProperties`, `resultsLimit` |
+| `find_blastradius` | `sourceName` |
+| `find_walkable_paths` | `sourceName`, `targetName` |
+| `find_exposure_perimeter` | `targetName`, `minPathLength`, `maxPathLength`, `resultsCountLimit` |
+| `find_connected_nodes` | `sourceNodeLabel`, `sourceNodeProperties`, `targetNodeLabel`, `targetNodeProperties`, `resultsCountLimit` |
+
+Two documented behaviours are reproduced deliberately because they bite live:
+
+- **Identity lookups reject UPNs.** `find_blastradius(sourceName="j.doe@contoso.com")`
+  fails. Use the display name, or `find_nodes(validNodeLabel="Identity")` first.
+  The walkthrough hits this on purpose — it is the most common first-try failure.
+- **Graph tools are preview and separately metered.** They bill against the
+  Sentinel graph meter, not the data lake. Say so if anyone asks about cost.
+
+Graph tools also need the data lake **onboarded to the Defender portal**, and
+reading graph data in the portal needs at least read-only access in **Microsoft
+Security Exposure Management**.
 
 ## Run it
 
@@ -67,6 +91,9 @@ python triage_walkthrough.py
 python triage_walkthrough.py --step      # pause at every beat
 python triage_walkthrough.py --fast      # no pacing delay
 python triage_walkthrough.py --json      # just the record
+
+# Just the graph beat, to rehearse step 7 on its own
+python replay_mcp_server.py --self-test | grep -i graph
 ```
 
 Wire the replay server into Claude Code and drive it yourself:
@@ -83,7 +110,7 @@ which of your prompts are fragile.
 
 A silent screen recording of this demo, for when the live version cannot run:
 
-**[▶ demo-08-mission1-triage.mp4](../../../web/public/video/demo-08-mission1-triage.mp4)** · 0:50
+**[▶ demo-08-mission1-triage.mp4](../../../web/public/video/demo-08-mission1-triage.mp4)** · 1:09
 
 It includes the moment the model declines to answer until it has the UEBA baseline.
 

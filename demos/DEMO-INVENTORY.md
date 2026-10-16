@@ -31,7 +31,7 @@ about four seconds. They also run in a browser at
 |---|-------|------|------|--------------|
 | 1 | 14–15 | Wire the Model | [`Register-SentinelMcpApp.ps1`](empowering-soc-teams/01-mcp-connection/Register-SentinelMcpApp.ps1) | Creates the Entra public-client app with `SentinelPlatform.DelegatedAccess` and the right redirect URIs. Supports `-WhatIf`. Delegated, never application — the per-user RBAC story depends on it. |
 | 1b | 14–15 | Pre-flight | [`Test-SentinelMcpConnection.ps1`](empowering-soc-teams/01-mcp-connection/Test-SentinelMcpConnection.ps1) | Seven checks in the order things actually break. Check 7 catches the conference network blocking egress to `sentinel.microsoft.com`, which is the most common day-of failure. |
-| 2 | 15 | The Tool Layer | [`replay_mcp_server.py`](empowering-soc-teams/02-natural-language-triage/replay_mcp_server.py) | A real MCP server over stdio serving synthetic tenant data through an analogous (not identical) tool surface to the hosted Sentinel MCP server. `--self-test` asserts 13 guardrails: read-only, table allow-list, row cap, untrusted-data wrapping. |
+| 2 | 15 | The Tool Layer | [`replay_mcp_server.py`](empowering-soc-teams/02-natural-language-triage/replay_mcp_server.py) | A real MCP server over stdio serving synthetic tenant data through an analogous (not identical) tool surface to the hosted Sentinel MCP server. `--self-test` asserts 25 guardrails: read-only, table allow-list, row cap, untrusted-data wrapping, and the preview graph tools. |
 | 3 | 15 | Ask Like an Analyst | [`triage_walkthrough.py`](empowering-soc-teams/02-natural-language-triage/triage_walkthrough.py) | Mission 1 replayed as a transcript. The model discovers tables, writes the KQL, then declines to answer until it has the UEBA baseline — which is what separates the real compromise from the VPN false positive. |
 | 4 | 16–18 | Auto-Triage + Human on the Trigger | [`soc_triage_agent.py`](empowering-soc-teams/03-triage-agent-hitl/soc_triage_agent.py) | The six-stage loop with an approval gate the agent cannot pass without a recorded human decision — enforced in `AgentIdentity.check()`, not by convention. `--reject` shows the re-plan. |
 | 5 | 20 | Prove the Guardrails Hold | [`test_injection_defense.py`](empowering-soc-teams/04-guardrails-injection-test/test_injection_defense.py) | Ten prompt-injection payloads and two benign controls, scored on detected / acted-on / reported. Reports one payload it does **not** detect, on purpose. |
@@ -61,7 +61,7 @@ beats the live demo does.
 
 | Recording | Mission | Length |
 |-----------|---------|--------|
-| [demo-08-mission1-triage.mp4](../web/public/video/demo-08-mission1-triage.mp4) | SOC Mission 1 | 0:50 |
+| [demo-08-mission1-triage.mp4](../web/public/video/demo-08-mission1-triage.mp4) | SOC Mission 1 | 1:09 |
 | [demo-09-triage-agent-hitl.mp4](../web/public/video/demo-09-triage-agent-hitl.mp4) | SOC Mission 2 — clean run **and** the rejection | 2:02 |
 | [demo-10-hypothesis-hunt.mp4](../web/public/video/demo-10-hypothesis-hunt.mp4) | Hunt Mission 1 — includes the decoy | 1:06 |
 | [demo-11-anomaly-to-detection.mp4](../web/public/video/demo-11-anomaly-to-detection.mp4) | Hunt Mission 2 | 1:03 |

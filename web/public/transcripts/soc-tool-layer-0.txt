@@ -14,6 +14,18 @@ replay_mcp_server self-test
   [ok  ] run_kql enforces the table allow-list
   [ok  ] free text is returned inside an untrusted-data marker   (see ../04-guardrails-injection-test/)
   [ok  ] authoring notes are stripped from tool output
+  [ok  ] get_graph_context advertises labels and the UPN rule   (8 labels)
+  [ok  ] graph identity lookup rejects a UPN, as the hosted tools do
+  [ok  ] find_blastradius reaches both SOX crown jewels   (sql-sox-reporting-01, stcontosofinarchive)
+  [ok  ] find_blastradius excludes the PIM-gated key vault from the live radius
+  [ok  ] find_blastradius still SHOWS the blocked path, with the reason
+  [ok  ] find_blastradius leads with revoking the grant, not resetting the password
+  [ok  ] find_walkable_paths marks the key vault unreachable right now   (0 walkable)
+  [ok  ] find_exposure_perimeter finds BOTH doors into the mailbox   (Contoso Doc Sync, Jordan Doe)
+  [ok  ] find_nodes filters on a property
+  [ok  ] find_nodes rejects an unsupported label
+  [ok  ] find_connected_nodes selects by label, not by name
+  [ok  ] graph output carries no authoring notes
 --------------------------------------------------------------------
-  13/13 passed
+  25/25 passed
 

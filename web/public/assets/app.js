@@ -7,6 +7,7 @@
  *
  * Playback pauses automatically at the beats the demos already mark:
  *   - every ">> STAGE NOTE:" line          (talk about what just happened)
+ *   - graph path rows and tool errors    (steps mode; the blast-radius beat)
  *   - before each "STAGE n/6" / "STEP n/5" (talk about what is coming)
  * Space continues. That is the whole stage-control model.
  */
@@ -532,6 +533,8 @@
     return /^\s*\[\s*(PASS|FAIL|ok|SKIP|WARN)\s*\]/i.test(plain) ||   // harness results
            /^\s*\[(yes|no)\s*\]/i.test(plain) ||                       // benign checks
            /^\s*(INJ|HUNT-INJ|LEAK|BENIGN)-\d+/.test(plain) ||          // scorecard rows
+           /^\s*\[(REACHABLE|BLOCKED|IN)\s*\]/.test(plain) ||          // graph paths
+           /^\s{2,}\[!\]\s/.test(plain) ||                            // tool errors
            /^\s{2,}\[tool\]/.test(plain);                              // agent tool calls
   }
 
@@ -560,6 +563,9 @@
     if (b) return 'benign check (' + b[1].trim() + ')  ·  ' + b[2].trim();
     var s2 = plain.match(/^\s*((?:INJ|HUNT-INJ|LEAK|BENIGN)-\d+)\s+(.{0,40})/);
     if (s2) return s2[1] + '  ·  ' + s2[2].trim();
+    var g = plain.match(/^\s*\[(REACHABLE|BLOCKED|IN)\s*\]\s*(.{0,48})/);
+    if (g) return 'graph path (' + g[1].toLowerCase() + ')  ·  ' + g[2].trim();
+    if (/^\s{2,}\[!\]\s/.test(plain)) return 'tool error  ·  read it out';
     var tool = plain.match(/\[tool\]\s*(\w+)/);
     if (tool) return 'tool call  ·  ' + tool[1];
     return 'step';

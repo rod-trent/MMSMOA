@@ -1,6 +1,6 @@
 {
   "mission": "Mission 1 - natural-language investigation",
-  "generated_utc": "2026-10-16T21:22:43+00:00",
+  "generated_utc": "2026-10-16T22:05:38+00:00",
   "tenant": "CONTOSO-PROD",
   "analyst_identity": "analyst@contoso.com",
   "analyst_role": "Security Reader",
@@ -25,6 +25,32 @@
       "why": "Destination country IE and AS8075 are both inside the account's 90-day UEBA baseline. AS8075 is the Contoso Azure VPN egress in the asset inventory. Investigation priority 2."
     }
   ],
+  "graph": {
+    "source": {
+      "label": "Identity",
+      "name": "Jordan Doe"
+    },
+    "critical_assets_reachable_now": [
+      "sql-sox-reporting-01",
+      "stcontosofinarchive"
+    ],
+    "paths_blocked": [
+      {
+        "route": "Jordan Doe -> FIN-SOX-Approvers -> kv-contoso-fin-prod",
+        "blocked_by": "PIM activation requires approval plus MFA; no activation in the last 90 days."
+      }
+    ],
+    "mailbox_entry_points": [
+      "Contoso Doc Sync",
+      "Jordan Doe"
+    ],
+    "containment_order": [
+      "Revoke the Contoso Doc Sync OAuth grant and its refresh tokens",
+      "Reset the credential and revoke sessions",
+      "Review FIN-Reporting-Readers membership - one group carried both crown jewels"
+    ],
+    "preview_note": "Graph tools are in PREVIEW and bill against the Sentinel graph meter, separately from the data lake."
+  },
   "evidence": [
     {
       "table": "SecurityIncident",
@@ -65,6 +91,11 @@
       "table": "IdentityInfo",
       "filter": "AccountUPN == 'j.doe@contoso.com'",
       "rows": 1
+    },
+    {
+      "table": "SentinelGraph",
+      "filter": "blast radius from identity 'Jordan Doe'",
+      "rows": 3
     }
   ],
   "timeline": [
@@ -96,7 +127,7 @@
     }
   ],
   "next_pivots": [
-    "Revoke refresh tokens for j.doe and the Contoso Doc Sync service principal",
+    "Revoke the Contoso Doc Sync grant BEFORE resetting the credential - the graph shows offline_access survives the reset",
     "Enumerate every other consent grant to app id b17c9a02-4d5e-4a11-9f7b-2c8813ee0d55",
     "Check for inbox rules created on j.doe's mailbox after 02:58",
     "Confirm no other account signed in from AS33771 in the last 30 days"

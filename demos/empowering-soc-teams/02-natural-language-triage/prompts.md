@@ -131,6 +131,43 @@ Save the output. Mission 2 in the *Modern Threat Detection* session picks it up.
 
 ---
 
+## Step 7 — Blast radius, in the graph
+
+Preview tools. Three rules the docs give you, all of which matter live:
+
+1. Add **"in my graph"** to scope a prompt to the graph.
+2. **Identity lookups do not accept UPNs.** Use the display name or object ID.
+3. When you name an entity type, **put the type before the name** — "user Jordan Doe".
+
+```
+It is a true positive. In my graph, what is the blast radius of user Jordan Doe?
+```
+
+Expect: two SOX-scoped critical assets reachable through one group membership,
+and the key vault shown as **blocked** because the PIM edge is eligibility, not
+activation. If the model puts the key vault in the blast radius, it counted the
+edge instead of reading it — that is the teaching moment, so let it happen.
+
+```
+If I reset her password right now, am I done?
+```
+
+Expect `find_exposure_perimeter` on the mailbox and **two** entry points: the
+account itself, and the Contoso Doc Sync OAuth grant with `offline_access`. The
+password closes one door. Revoke the grant first, then reset.
+
+Optional, if the room is engaged:
+
+```
+List all paths from user Jordan Doe to kv-contoso-fin-prod.
+What is the exposure perimeter of my critical SQL servers?
+```
+
+> **Cost note, if asked:** graph tools bill against the Sentinel graph meter,
+> separately from the data lake, and they are prerelease.
+
+---
+
 ## If someone asks "can it write?"
 
 Good question to get. Answer it live:
@@ -153,8 +190,16 @@ account is Security Reader. Show the refusal — it is worth more than the slide
 | Review the KQL | 1.0 |
 | Pivot + UEBA baseline | 2.5 |
 | Benign check | 1.0 |
+| Blast radius in the graph | 2.0 |
 | Record + audit view | 1.5 |
-| **Total** | **~9** |
+| **Total** | **~11** |
 
-Slide 14 budgets 8 minutes. If you are running long, cut the "can it write?"
-detour and keep the benign check.
+Slide 14 budgets 8 minutes, so this no longer fits end to end. Pick one:
+
+- **Short version (~9 min):** cut the "can it write?" detour and the optional
+  graph prompts. Keep the blast radius and the two-doors answer.
+- **Graph-led version (~9 min):** cut the KQL review step instead. The graph
+  beat lands harder with a mixed-seniority room than reading KQL does.
+
+If the tenant is not cooperating, the graph beat is the first thing to drop —
+it is preview, and it is the newest thing in the demo.

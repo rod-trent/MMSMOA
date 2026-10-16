@@ -399,6 +399,110 @@ def run(pacer: Pacer) -> dict[str, Any]:
     )
     pacer.beat()
 
+    # --- Step 7: blast radius, in the graph -------------------------------
+
+    rule("Step 7 - Ask the graph what the account can reach")
+    analyst("It is a true positive. What can that account actually reach?")
+
+    model(
+        "Switching from the data lake to the Sentinel graph. Different tools,\n"
+        "same connection - these are the preview graph tools in the data\n"
+        "exploration collection."
+    )
+
+    # The documented constraint, hit on purpose. It is the single most common
+    # first-try failure with these tools, so show it rather than hide it.
+    attempt = call_tool("find_blastradius", {"sourceName": "j.doe@contoso.com"})
+    toolcall("find_blastradius", {"sourceName": "j.doe@contoso.com"})
+    toolresult("error")
+    print(c(f"           [!] {attempt['error']}", RED))
+
+    model(
+        "Graph identity lookups do not take UPNs. Getting the display name\n"
+        "first, then asking again."
+    )
+    pacer.beat()
+
+    ids = call_tool("find_nodes", {"validNodeLabel": "Identity"})
+    toolcall("find_nodes", {"validNodeLabel": "Identity"})
+    toolresult(f"{ids['match_count']} identity node(s)")
+
+    blast = call_tool("find_blastradius", {"sourceName": "user Jordan Doe"})
+    toolcall("find_blastradius", {"sourceName": "user Jordan Doe"})
+    toolresult(
+        f"{len(blast['critical_assets_reachable_now'])} critical asset(s) reachable, "
+        f"{len(blast['paths_blocked'])} path blocked"
+    )
+    record("SentinelGraph", "blast radius from identity 'Jordan Doe'",
+           len(blast["paths_to_critical_assets"]) + len(blast["paths_blocked"]))
+
+    print()
+    for path in blast["paths_to_critical_assets"]:
+        print(c(f"             [{c('REACHABLE', RED)}{c(']', DIM)} {path['route']}", DIM))
+    for path in blast["paths_blocked"]:
+        print(c(f"             [{c('BLOCKED  ', GREEN)}{c(']', DIM)} {path['route']}", DIM))
+        print(c(f"                         why: {path['blocked_by']}", DIM))
+
+    model(
+        "Two SOX-scoped crown jewels are reachable now, both through one\n"
+        "group membership: FIN-Reporting-Readers.\n"
+        "\n"
+        "The key vault is NOT in the blast radius. The edge exists - Jordan is\n"
+        "PIM-eligible for FIN-SOX-Approvers - but eligibility is not activation.\n"
+        "It needs approval plus MFA, and there has been no activation in 90 days."
+    )
+    note("This is the moment to slow down. A tool that counted edges would have "
+         "put the key vault in the blast radius and sent you to wake up the "
+         "vault owner at 3am. Reading the edge instead of counting it is the "
+         "difference. Say the word 'eligible, not active' out loud.")
+    pacer.beat()
+
+    analyst("If I reset her password right now, am I done?")
+
+    perimeter = call_tool("find_exposure_perimeter",
+                          {"targetName": "Jordan Doe mailbox"})
+    toolcall("find_exposure_perimeter", {"targetName": "Jordan Doe mailbox"})
+    toolresult(f"{len(perimeter['entry_points_now'])} entry points")
+
+    print()
+    for path in perimeter["paths"]:
+        print(c(f"             [{c('IN', RED)}{c(']', DIM)} {path['entry_point']}"
+                f"  ({path['entry_label']})", DIM))
+        print(c(f"                  {path['edges'][0].get('detail', '')}", DIM))
+
+    model(
+        "No. There are two doors into that mailbox and the password only\n"
+        "closes one of them.\n"
+        "\n"
+        "  Jordan Doe        -> her own mailbox. Closed by a credential reset.\n"
+        "  Contoso Doc Sync  -> the OAuth grant from 03:09, with offline_access.\n"
+        "                       That refresh token is not tied to the password.\n"
+        "\n"
+        "Revoke the grant first, then reset. The other order leaves the\n"
+        "attacker reading mail through an app you already know about."
+    )
+    note("If you take one thing from the graph tools, take this. Containment "
+         "order is a graph question, and getting it backwards is how incidents "
+         "come back three days later.")
+    pacer.beat()
+
+    graph_finding = {
+        "source": blast["source"],
+        "critical_assets_reachable_now": blast["critical_assets_reachable_now"],
+        "paths_blocked": [
+            {"route": p["route"], "blocked_by": p["blocked_by"]}
+            for p in blast["paths_blocked"]
+        ],
+        "mailbox_entry_points": perimeter["entry_points_now"],
+        "containment_order": [
+            "Revoke the Contoso Doc Sync OAuth grant and its refresh tokens",
+            "Reset the credential and revoke sessions",
+            "Review FIN-Reporting-Readers membership - one group carried both crown jewels",
+        ],
+        "preview_note": blast["preview_note"],
+    }
+
+
     timeline = [
         "2026-10-28T02:17:09Z  Normal sign-in, Columbus US, compliant device, MFA satisfied",
         "2026-10-28T02:58:41Z  Sign-in from Nairobi KE - first-time country and ASN, high risk",
@@ -443,11 +547,13 @@ def run(pacer: Pacer) -> dict[str, Any]:
                 ),
             }
         ],
+        "graph": graph_finding,
         "evidence": evidence,
         "timeline": timeline,
         "benign_explanations_checked": benign_checks,
         "next_pivots": [
-            "Revoke refresh tokens for j.doe and the Contoso Doc Sync service principal",
+            "Revoke the Contoso Doc Sync grant BEFORE resetting the credential - "
+            "the graph shows offline_access survives the reset",
             "Enumerate every other consent grant to app id b17c9a02-4d5e-4a11-9f7b-2c8813ee0d55",
             "Check for inbox rules created on j.doe's mailbox after 02:58",
             "Confirm no other account signed in from AS33771 in the last 30 days",
@@ -464,8 +570,8 @@ def run(pacer: Pacer) -> dict[str, Any]:
     for line in timeline:
         print(f"  {line}")
     print()
-    print(c(f"  Evidence: {len(evidence)} queries across "
-            f"{len({e['table'] for e in evidence})} tables", DIM))
+    print(c(f"  Evidence: {len(evidence)} tool calls across "
+            f"{len({e['table'] for e in evidence})} sources", DIM))
     print(c(f"  Verdict:  true positive, high confidence", DIM))
     print(c(f"  Actions:  none - this connection is read-only", DIM))
 

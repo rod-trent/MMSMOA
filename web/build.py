@@ -100,11 +100,13 @@ DEMOS_MANIFEST: list[dict] = [
         "subtitle": "Mission 1 · slide 15",
         "blurb": "An analyst asks in plain language. The model discovers tables, writes "
                  "the KQL, and refuses to answer until it has the UEBA baseline — which "
-                 "is what separates the real compromise from the VPN false positive.",
+                 "is what separates the real compromise from the VPN false positive. "
+                 "Then step 7 asks the preview graph tools what the account can actually "
+                 "reach, and why a password reset alone would not close it.",
         "kind": "run",
         "script": f"{SOC}/02-natural-language-triage/triage_walkthrough.py",
         "video": "video/demo-08-mission1-triage.mp4",
-        "videoLength": "0:50",
+        "videoLength": "1:09",
         "variants": [
             {"label": "Run the mission", "args": ["--fast"], "primary": True},
             {"label": "Record only (JSON)", "args": ["--json"]},

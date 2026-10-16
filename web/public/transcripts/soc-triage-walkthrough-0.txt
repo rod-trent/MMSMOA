@@ -130,6 +130,61 @@
 [36mCLAUDE [0m[2m |  [0mAll three fail. Nothing benign explains this. Producing the record.
 
 [2m==========================================================================[0m
+[1m Step 7 - Ask the graph what the account can reach[0m
+[2m==========================================================================[0m
+
+[32mANALYST[0m[2m  >  [0mIt is a true positive. What can that account actually reach?
+
+[36mCLAUDE [0m[2m |  [0mSwitching from the data lake to the Sentinel graph. Different tools,
+[36mCLAUDE [0m[2m |  [0msame connection - these are the preview graph tools in the data
+[36mCLAUDE [0m[2m |  [0mexploration collection.
+[35m           [tool] find_blastradius(sourceName='j.doe@contoso.com')[0m
+[2m           [<--] error[0m
+[31m           [!] sourceName='j.doe@contoso.com' looks like a user principal name. Graph identity lookups do not accept UPNs - use the display name or the object ID. Try find_nodes(validNodeLabel='Identity') to list them.[0m
+
+[36mCLAUDE [0m[2m |  [0mGraph identity lookups do not take UPNs. Getting the display name
+[36mCLAUDE [0m[2m |  [0mfirst, then asking again.
+[35m           [tool] find_nodes(validNodeLabel='Identity')[0m
+[2m           [<--] 1 identity node(s)[0m
+[35m           [tool] find_blastradius(sourceName='user Jordan Doe')[0m
+[2m           [<--] 2 critical asset(s) reachable, 1 path blocked[0m
+
+[2m             [[31mREACHABLE[0m[2m][0m Jordan Doe -> FIN-Reporting-Readers -> stcontosofinarchive[0m
+[2m             [[31mREACHABLE[0m[2m][0m Jordan Doe -> FIN-Reporting-Readers -> sql-sox-reporting-01[0m
+[2m             [[32mBLOCKED  [0m[2m][0m Jordan Doe -> FIN-SOX-Approvers -> kv-contoso-fin-prod[0m
+[2m                         why: PIM activation requires approval plus MFA; no activation in the last 90 days.[0m
+
+[36mCLAUDE [0m[2m |  [0mTwo SOX-scoped crown jewels are reachable now, both through one
+[36mCLAUDE [0m[2m |  [0mgroup membership: FIN-Reporting-Readers.
+[36mCLAUDE [0m[2m |  [0m
+[36mCLAUDE [0m[2m |  [0mThe key vault is NOT in the blast radius. The edge exists - Jordan is
+[36mCLAUDE [0m[2m |  [0mPIM-eligible for FIN-SOX-Approvers - but eligibility is not activation.
+[36mCLAUDE [0m[2m |  [0mIt needs approval plus MFA, and there has been no activation in 90 days.
+
+[33m  >> STAGE NOTE: This is the moment to slow down. A tool that counted edges would have put the key vault in the blast radius and sent you to wake up the vault owner at 3am. Reading the edge instead of counting it is the difference. Say the word 'eligible, not active' out loud.[0m
+
+[32mANALYST[0m[2m  >  [0mIf I reset her password right now, am I done?
+[35m           [tool] find_exposure_perimeter(targetName='Jordan Doe mailbox')[0m
+[2m           [<--] 2 entry points[0m
+
+[2m             [[31mIN[0m[2m][0m Jordan Doe  (Identity)[0m
+[2m                  The account's own mailbox. This route closes when the credential is reset.[0m
+[2m             [[31mIN[0m[2m][0m Contoso Doc Sync  (ServicePrincipal)[0m
+[2m                  Delegated grant with offline_access. Survives a password reset - the refresh token is not tied to the credential.[0m
+
+[36mCLAUDE [0m[2m |  [0mNo. There are two doors into that mailbox and the password only
+[36mCLAUDE [0m[2m |  [0mcloses one of them.
+[36mCLAUDE [0m[2m |  [0m
+[36mCLAUDE [0m[2m |  [0m  Jordan Doe        -> her own mailbox. Closed by a credential reset.
+[36mCLAUDE [0m[2m |  [0m  Contoso Doc Sync  -> the OAuth grant from 03:09, with offline_access.
+[36mCLAUDE [0m[2m |  [0m                       That refresh token is not tied to the password.
+[36mCLAUDE [0m[2m |  [0m
+[36mCLAUDE [0m[2m |  [0mRevoke the grant first, then reset. The other order leaves the
+[36mCLAUDE [0m[2m |  [0mattacker reading mail through an app you already know about.
+
+[33m  >> STAGE NOTE: If you take one thing from the graph tools, take this. Containment order is a graph question, and getting it backwards is how incidents come back three days later.[0m
+
+[2m==========================================================================[0m
 [1m THE RECORD[0m
 [2m==========================================================================[0m
 
@@ -140,7 +195,7 @@
   2026-10-28T03:09:55Z  OAuth consent to unverified 'Contoso Doc Sync' with offline_access
   2026-10-28T03:11:40Z  218 mail items read by that app from the Nairobi address
 
-[2m  Evidence: 8 queries across 6 tables[0m
+[2m  Evidence: 9 tool calls across 7 sources[0m
 [2m  Verdict:  true positive, high confidence[0m
 [2m  Actions:  none - this connection is read-only[0m
 

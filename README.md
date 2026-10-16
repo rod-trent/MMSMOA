@@ -156,7 +156,7 @@ Worth stating plainly, because these are demos and demos lie by omission:
 | Tool calls, data, correlation, and scoring | The model's reasoning *narration* — a live model picks its own words; a stage demo needs a known runtime |
 | Every guardrail: tool allow-lists, approval gates, injection screening, read-only enforcement | — |
 | The run logs, the JSON contracts, the generated analytics rule | — |
-| All 13 self-test suites, which assert behaviour rather than output | — |
+| All 13 suites, which assert behaviour rather than output | — |
 
 Swap the scripted reasoning for a real model call (Claude Agent SDK, Security
 Copilot, Copilot Studio) and nothing else changes. The shape is the product.
@@ -244,7 +244,7 @@ show the same output the code produces — not a re-enactment.
 
 | Video | Mission | Length |
 |-------|---------|--------|
-| [`demo-08-mission1-triage.mp4`](web/public/video/demo-08-mission1-triage.mp4) | SOC Mission 1 — hypothesis to evidence in plain language | 0:50 |
+| [`demo-08-mission1-triage.mp4`](web/public/video/demo-08-mission1-triage.mp4) | SOC Mission 1 — hypothesis to evidence in plain language | 1:09 |
 | [`demo-09-triage-agent-hitl.mp4`](web/public/video/demo-09-triage-agent-hitl.mp4) | SOC Mission 2 — the clean run **and** the rejection re-plan | 2:02 |
 | [`demo-10-hypothesis-hunt.mp4`](web/public/video/demo-10-hypothesis-hunt.mp4) | Hunt Mission 1 — including the decoy being dismissed | 1:06 |
 | [`demo-11-anomaly-to-detection.mp4`](web/public/video/demo-11-anomaly-to-detection.mp4) | Hunt Mission 2 — anomalies to a validated detection rule | 1:03 |

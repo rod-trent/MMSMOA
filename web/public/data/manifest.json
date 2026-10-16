@@ -95,11 +95,11 @@
       "session": "soc",
       "title": "Ask Like an Analyst",
       "subtitle": "Mission 1 \u00b7 slide 15",
-      "blurb": "An analyst asks in plain language. The model discovers tables, writes the KQL, and refuses to answer until it has the UEBA baseline \u2014 which is what separates the real compromise from the VPN false positive.",
+      "blurb": "An analyst asks in plain language. The model discovers tables, writes the KQL, and refuses to answer until it has the UEBA baseline \u2014 which is what separates the real compromise from the VPN false positive. Then step 7 asks the preview graph tools what the account can actually reach, and why a password reset alone would not close it.",
       "kind": "run",
       "script": "empowering-soc-teams/02-natural-language-triage/triage_walkthrough.py",
       "video": "video/demo-08-mission1-triage.mp4",
-      "videoLength": "0:50",
+      "videoLength": "1:09",
       "variants": [
         {
           "label": "Run the mission",
