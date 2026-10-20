@@ -105,8 +105,15 @@ The two MOA decks are unchanged: they already carry the full
 
 - Slide 12 of *Modern Threat Detection* is the one the room photographs. It is
   also in the repo as pasteable text: [`hunting-prompt-template.md`](../demos/modern-threat-detection/01-prompt-patterns/hunting-prompt-template.md). Give them the URL.
-- Statistics cited in both Midway decks (Vectra 2026, Microsoft/Omdia 2026,
-  Prophet Security 2026, CrowdStrike 2026, SANS 2025) should be re-verified the
-  week of the conference.
+- Statistics in both Midway decks were verified on 20 October 2026 against
+  primary sources. Thirteen of fifteen held. Two did not and were corrected:
+  the SANS card on SOC slide 6 claimed "70% of junior analysts leave within
+  three years", which appears nowhere in the 2025 SOC Survey - that report
+  gives 62% lacking confidence in retention efforts and 3-5 years as the most
+  common tenure; and Modern Threat Detection slide 9 read CrowdStrike's 2.5x
+  as a yield per detection when it is a growth *rate* of AI agent-triggered
+  leads against human-triggered ones. Re-check the rest the week of the
+  conference; the 70/56-minute Cybersecurity Insiders figures rest on
+  secondary coverage only.
 - Hosted Sentinel MCP endpoint URLs have changed before. Re-check against
   Microsoft Learn before Mission 1.
