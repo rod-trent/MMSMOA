@@ -60,10 +60,16 @@ for name, url in [("qr-demo-site-soc.png",  "https://go.rodtrent.com/go/8sxe66m"
         name, scale=24, border=3, dark="#011230", light="#FFFFFF")
 ```
 
-The **printed** URL on both slides stays `mms-midway-demos.vercel.app`.
-It is a character shorter than the go.rodtrent.com link and far easier to
-remember off a projected screen, so the short links are used only in the
-QRs, where nobody reads the URL anyway. Both routes reach the same site.
+*Takeaways* prints the same per-session short link, so both URLs on that
+line read the same way:
+
+    Every demo runs in your browser:  go.rodtrent.com/go/8sxe66m
+       ·  Demo code:  go.rodtrent.com/go/eje7vdj
+
+*Live Missions* still prints `mms-midway-demos.vercel.app` under its QR -
+that caption sits beside a code people scan rather than type, so the
+readable domain earns its place there. Switch it if you want the decks
+uniform.
 
 `qr-demo-site.png` is the original session-neutral, untracked code. No
 slide uses it any more; it is kept for when you want a plain one.
