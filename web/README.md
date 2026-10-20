@@ -49,9 +49,12 @@ can talk over them:
 | `+` / `-` | text size up / down, for the back of the room |
 | `0` | text size back to 100% |
 
-The `A-` / `A+` control in the header does the same thing, and clicking the
-percentage between them goes straight back to 100%. The level sticks across
-reloads. It scales the whole page, terminal included.
+The `A-` / `A+` control does the same thing, and clicking the percentage
+between them goes straight back to 100%. It appears twice - in the page
+header and in the demo window's control bar, because the runner is a
+full-viewport overlay and the header copy is behind it. The two are the
+same control and stay in step. The level sticks across reloads, and it
+scales the whole page, terminal included.
 
 Untick **animate** to render instantly while still honouring the pause points.
 

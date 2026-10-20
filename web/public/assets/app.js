@@ -724,50 +724,62 @@
 
   var SCALES = [1, 1.25, 1.5, 1.8];
 
+  /* One definition, rendered into every .scale slot: the header's copy is
+   * behind the runner overlay, so the demo window needs its own. */
+  var SCALE_HTML =
+    '<button class="ghost scale-step scale-down" type="button"' +
+    ' title="Smaller \u2014 or press -" aria-label="Decrease text size">A&#8722;</button>' +
+    '<button class="lvl" type="button" title="Back to 100% \u2014 or press 0">100%</button>' +
+    '<button class="ghost scale-step scale-up" type="button"' +
+    ' title="Larger \u2014 or press +" aria-label="Increase text size">A+</button>';
+
+  function eachScale(fn) {
+    Array.prototype.forEach.call(document.querySelectorAll('.scale'), fn);
+  }
+
   function applyScale(i, save) {
     i = Math.max(0, Math.min(SCALES.length - 1, i));
     state.scale = i;
     document.documentElement.style.setProperty('--ui-scale', SCALES[i]);
-    var group = document.getElementById('ui-scale');
-    if (group) {
-      var pct = Math.round(SCALES[i] * 100);
-      group.setAttribute('data-on', i > 0 ? '1' : '0');
-      group.setAttribute('aria-label', 'Text size ' + pct + ' percent');
-      var lvl = document.getElementById('ui-scale-lvl');
+    var pct = Math.round(SCALES[i] * 100);
+    eachScale(function (g) {
+      var lvl = g.querySelector('.lvl');
+      if (!lvl) return;                   // not rendered yet
+      g.setAttribute('data-on', i > 0 ? '1' : '0');
+      g.setAttribute('aria-label', 'Text size ' + pct + ' percent');
       lvl.textContent = pct + '%';
       lvl.setAttribute('aria-label',
         'Text size ' + pct + ' percent' + (i ? ', reset to 100 percent' : ''));
       /* Clamp rather than wrap: a + that jumped back to 100% mid-talk
        * would be a trap, and the ends should be visible. */
-      document.getElementById('ui-scale-down').disabled = (i === 0);
-      document.getElementById('ui-scale-up').disabled = (i === SCALES.length - 1);
+      g.querySelector('.scale-down').disabled = (i === 0);
+      g.querySelector('.scale-up').disabled = (i === SCALES.length - 1);
       lvl.disabled = (i === 0);           // already there; nothing to reset to
-    }
+    });
     if (save) { try { localStorage.setItem('mms-scale', i); } catch (e) {} }
   }
 
   function initScale() {
-    var group = document.getElementById('ui-scale');
     /* Firefox only got element zoom in 126. Without it the control would
      * be buttons that do nothing, so do not offer them. */
-    if (group && window.CSS && CSS.supports && !CSS.supports('zoom', '1.5')) {
-      group.hidden = true;
+    if (window.CSS && CSS.supports && !CSS.supports('zoom', '1.5')) {
+      eachScale(function (g) { g.hidden = true; });
       return;
     }
+    eachScale(function (g) { g.innerHTML = SCALE_HTML; });
+
     var saved = 0;
     try { saved = parseInt(localStorage.getItem('mms-scale'), 10) || 0; } catch (e) {}
     applyScale(saved, false);
-    if (group) {
-      document.getElementById('ui-scale-down').addEventListener('click', function () {
-        applyScale(state.scale - 1, true);
-      });
-      document.getElementById('ui-scale-up').addEventListener('click', function () {
-        applyScale(state.scale + 1, true);
-      });
-      document.getElementById('ui-scale-lvl').addEventListener('click', function () {
-        applyScale(0, true);
-      });
-    }
+
+    /* Delegated, so both copies are live off one listener. */
+    document.addEventListener('click', function (e) {
+      var t = e.target;
+      if (!t || !t.closest || !t.closest('.scale')) return;
+      if (t.classList.contains('scale-down')) applyScale(state.scale - 1, true);
+      else if (t.classList.contains('scale-up')) applyScale(state.scale + 1, true);
+      else if (t.classList.contains('lvl')) applyScale(0, true);
+    });
   }
 
   /* ------------------------------------------------------------------ *
