@@ -733,11 +733,15 @@
       var pct = Math.round(SCALES[i] * 100);
       group.setAttribute('data-on', i > 0 ? '1' : '0');
       group.setAttribute('aria-label', 'Text size ' + pct + ' percent');
-      document.getElementById('ui-scale-lvl').textContent = pct + '%';
+      var lvl = document.getElementById('ui-scale-lvl');
+      lvl.textContent = pct + '%';
+      lvl.setAttribute('aria-label',
+        'Text size ' + pct + ' percent' + (i ? ', reset to 100 percent' : ''));
       /* Clamp rather than wrap: a + that jumped back to 100% mid-talk
        * would be a trap, and the ends should be visible. */
       document.getElementById('ui-scale-down').disabled = (i === 0);
       document.getElementById('ui-scale-up').disabled = (i === SCALES.length - 1);
+      lvl.disabled = (i === 0);           // already there; nothing to reset to
     }
     if (save) { try { localStorage.setItem('mms-scale', i); } catch (e) {} }
   }
@@ -759,6 +763,9 @@
       });
       document.getElementById('ui-scale-up').addEventListener('click', function () {
         applyScale(state.scale + 1, true);
+      });
+      document.getElementById('ui-scale-lvl').addEventListener('click', function () {
+        applyScale(0, true);
       });
     }
   }

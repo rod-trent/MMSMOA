@@ -169,10 +169,17 @@ body::after {
 
 .scale { display: inline-flex; align-items: center; gap: 6px; }
 .scale[hidden] { display: none; }        /* beats inline-flex, where zoom is unsupported */
+/* Reads as the current level; also the way back to 100%. */
 .scale .lvl {
   font-family: var(--mono); font-size: 11.5px; color: var(--ink-faint);
-  min-width: 4ch; text-align: center;    /* so stepping does not jog the header */
+  min-width: 5ch; text-align: center;    /* so stepping does not jog the header */
+  background: none; border: 1px solid transparent; border-radius: 7px;
+  padding: 4px 5px; cursor: pointer;
 }
+.scale .lvl:hover:not(:disabled) {
+  color: var(--ink); background: var(--panel-2); border-color: var(--line);
+}
+.scale .lvl:disabled { cursor: default; }
 .scale-step {
   font-family: var(--display); font-weight: 700; font-size: 14px;
   padding: 4px 10px; line-height: 1.15;
