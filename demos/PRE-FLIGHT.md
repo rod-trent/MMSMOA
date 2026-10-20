@@ -280,11 +280,28 @@ python run-all-tests.py        # expect: all 13 suites passed
 python web/build.py --check    # expect: up to date
 ```
 
-Then open <https://mms-midway-demos.vercel.app>, set the pause mode to **every
-step**, and walk both sessions once end to end. Rehearse Mission 1 step 7 twice —
-it is the newest material and the one with a scripted error in it.
+```bash
+# 3. Presenter companion — the notes you read while the demo runs
+python build-companion.py      # -> presenter-companion.epub
+```
 
-*Review run 16 October 2026. Re-read the
+Email that to your Send-to-Kindle address. It carries the deck speaker notes,
+each demo's stage direction, the run commands and the fallbacks, ordered the way
+the sessions run — including the direction that used to print on screen in
+yellow. **Rebuild it rather than reusing an old copy:** it is generated from the
+decks and the demo READMEs, so a stale one is wrong without looking wrong.
+
+Then open <https://mms-midway-demos.vercel.app> and **hard-reload once**
+(`Ctrl+Shift+R`) on every machine you will present from. The service worker
+serves cache-first for anything it cached before 20 October 2026, so a browser
+that visited during rehearsal will otherwise show you the previous build the
+first time it loads. Then set the pause mode to **every step** and walk both
+sessions once end to end. Rehearse Mission 1 step 7 twice — it is the newest
+material and the one with a scripted error in it.
+
+*Review run 16 October 2026; cited statistics re-verified against primary
+sources 20 October 2026 (two were wrong and were corrected — see
+[`SlideDecks/Readme.md`](../SlideDecks/Readme.md)). Re-read the
 [connector article](https://learn.microsoft.com/azure/sentinel/datalake/sentinel-mcp-chatgpt-claude-connector)
 the morning of the 26th — it is prerelease and it is the part most likely to
 move.*
