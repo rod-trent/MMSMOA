@@ -41,14 +41,32 @@ Both decks carry **[mms-midway-demos.vercel.app](https://mms-midway-demos.vercel
 on two slides: the *Live Missions* section header (with a QR, so the room can
 follow along on their own laptops while you present) and *Takeaways*.
 
-`qr-demo-site.png` is that QR — 33 modules at error-correction level Q, so it
-survives projector glare and a keystoned screen. Regenerate with:
+Each deck's QR carries its **own session's** tracked short link, so a scan
+lands straight on that session's tab rather than the chooser:
+
+| Deck | QR file | Short link | Lands on |
+|------|---------|------------|----------|
+| Empowering SOC Teams | `qr-demo-site-soc.png` | `go.rodtrent.com/go/8sxe66m` | `/?s=soc` |
+| Modern Threat Detection | `qr-demo-site-hunt.png` | `go.rodtrent.com/go/c638n85` | `/?s=hunt` |
+
+33 modules at error-correction level Q, so they survive projector glare and
+a keystoned screen. Regenerate with:
 
 ```python
 import segno
-segno.make("https://mms-midway-demos.vercel.app", error="q").save(
-    "qr-demo-site.png", scale=24, border=3, dark="#011230", light="#FFFFFF")
+for name, url in [("qr-demo-site-soc.png",  "https://go.rodtrent.com/go/8sxe66m"),
+                  ("qr-demo-site-hunt.png", "https://go.rodtrent.com/go/c638n85")]:
+    segno.make(url, error="q").save(
+        name, scale=24, border=3, dark="#011230", light="#FFFFFF")
 ```
+
+The **printed** URL on both slides stays `mms-midway-demos.vercel.app`.
+It is a character shorter than the go.rodtrent.com link and far easier to
+remember off a projected screen, so the short links are used only in the
+QRs, where nobody reads the URL anyway. Both routes reach the same site.
+
+`qr-demo-site.png` is the original session-neutral, untracked code. No
+slide uses it any more; it is kept for when you want a plain one.
 
 ### The repo short link
 
