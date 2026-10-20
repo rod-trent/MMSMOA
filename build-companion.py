@@ -148,6 +148,16 @@ Space continues, right-arrow skips to the end, and `+` / `-` change the text
 size for the back of the room.
 """)
 
+# --- pre-flight: done at a laptop, before any of the rest matters ----------
+ch("Before the day — pre-flight", """
+The repo-level checklist, from `demos/PRE-FLIGHT.md`. This one is done sitting
+down, at a laptop, before the session — not from this device while a demo runs.
+
+Each session also has its own pre-flight, in its session chapter.
+
+%s
+""" % section("PRE-FLIGHT.md", "Monday morning checklist"))
+
 # --- fallbacks first: the thing you need when something is already wrong ----
 ch("Fallbacks at a glance", """
 If a live demo dies, every mission has a silent recorded run baked from the
@@ -502,10 +512,12 @@ li { margin: 0.25em 0; }
 /* Kindle will not scroll sideways: force long commands to wrap. */
 pre, code, kbd {
   font-family: monospace;
+  /* Kindle will not scroll sideways. pre-wrap keeps the line structure,
+     break-word wraps at spaces first and only splits inside a token when
+     one genuinely cannot fit - break-all would chop every line mid-word. */
   white-space: pre-wrap;
   word-wrap: break-word;
   overflow-wrap: break-word;
-  word-break: break-all;
 }
 pre {
   font-size: 0.8em; line-height: 1.35;
