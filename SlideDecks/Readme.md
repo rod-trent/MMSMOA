@@ -50,6 +50,27 @@ segno.make("https://mms-midway-demos.vercel.app", error="q").save(
     "qr-demo-site.png", scale=24, border=3, dark="#011230", light="#FFFFFF")
 ```
 
+### The repo short link
+
+**[go.rodtrent.com/go/eje7vdj](https://go.rodtrent.com/go/eje7vdj)** redirects
+to this repository and carries UTM tags, so scans and clicks are countable.
+Both Midway decks carry it on *Takeaways*, on the same line as the demo site.
+The demo site's own *Source* and footer links point at it too, while still
+reading as `rod-trent/MMSMOA` so the destination stays visible.
+
+`qr-repo.png` is the matching QR — same recipe and styling as the demo-site
+one, so the two can sit side by side. It is not on a slide yet. Regenerate
+with:
+
+```python
+import segno
+segno.make("https://go.rodtrent.com/go/eje7vdj", error="q").save(
+    "qr-repo.png", scale=24, border=3, dark="#011230", light="#FFFFFF")
+```
+
+The two MOA decks are unchanged: they already carry the full
+`github.com/rod-trent/MMSMOA` URL on their demo and resources slides.
+
 ---
 
 ### Before you present
