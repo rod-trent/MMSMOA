@@ -66,10 +66,8 @@ line read the same way:
     Every demo runs in your browser:  go.rodtrent.com/go/8sxe66m
        ·  Demo code:  go.rodtrent.com/go/eje7vdj
 
-*Live Missions* still prints `mms-midway-demos.vercel.app` under its QR -
-that caption sits beside a code people scan rather than type, so the
-readable domain earns its place there. Switch it if you want the decks
-uniform.
+*Live Missions* prints the same link under its QR, so every URL a Midway
+deck shows is a tracked short link and the two slides read alike.
 
 `qr-demo-site.png` is the original session-neutral, untracked code. No
 slide uses it any more; it is kept for when you want a plain one.
