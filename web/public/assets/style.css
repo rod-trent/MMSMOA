@@ -167,12 +167,22 @@ body::after {
 }
 .ghost:hover { color: var(--ink); border-color: #33405f; background: var(--panel-2); }
 
-.scale-btn { display: inline-flex; align-items: baseline; gap: 7px; }
-.scale-btn .glyph { font-family: var(--display); font-weight: 700; font-size: 15px; }
-.scale-btn .lvl { font-family: var(--mono); font-size: 11.5px; color: var(--ink-faint); }
+.scale { display: inline-flex; align-items: center; gap: 6px; }
+.scale[hidden] { display: none; }        /* beats inline-flex, where zoom is unsupported */
+.scale .lvl {
+  font-family: var(--mono); font-size: 11.5px; color: var(--ink-faint);
+  min-width: 4ch; text-align: center;    /* so stepping does not jog the header */
+}
+.scale-step {
+  font-family: var(--display); font-weight: 700; font-size: 14px;
+  padding: 4px 10px; line-height: 1.15;
+}
+.scale-step:disabled { opacity: .38; cursor: default; }
+.scale-step:disabled:hover {
+  color: var(--ink-dim); border-color: var(--line); background: var(--panel);
+}
 /* Lit while the room, not the laptop, is the audience. */
-.scale-btn[data-on="1"] { color: var(--ink); border-color: var(--hunt); }
-.scale-btn[data-on="1"] .lvl { color: var(--hunt); }
+.scale[data-on="1"] .lvl { color: var(--hunt); font-weight: 700; }
 
 /* ---------- lede ---------- */
 

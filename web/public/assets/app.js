@@ -5,7 +5,7 @@
  * transcript baked at build time from the same code. The audience cannot tell
  * the difference; the status pill tells you.
  *
- * The UI scale control (top right, or + / - / 0) zooms the whole page for
+ * The A- / A+ control (top right, or + / - / 0) zooms the whole page for
  * projection, and remembers the level.
  *
  * Playback pauses automatically at the beats the demos already mark:
@@ -728,30 +728,37 @@
     i = Math.max(0, Math.min(SCALES.length - 1, i));
     state.scale = i;
     document.documentElement.style.setProperty('--ui-scale', SCALES[i]);
-    var btn = document.getElementById('ui-scale');
-    if (btn) {
-      btn.setAttribute('data-on', i > 0 ? '1' : '0');
-      btn.setAttribute('aria-label', 'Text size ' + Math.round(SCALES[i] * 100) + ' percent');
-      document.getElementById('ui-scale-lvl').textContent =
-        Math.round(SCALES[i] * 100) + '%';
+    var group = document.getElementById('ui-scale');
+    if (group) {
+      var pct = Math.round(SCALES[i] * 100);
+      group.setAttribute('data-on', i > 0 ? '1' : '0');
+      group.setAttribute('aria-label', 'Text size ' + pct + ' percent');
+      document.getElementById('ui-scale-lvl').textContent = pct + '%';
+      /* Clamp rather than wrap: a + that jumped back to 100% mid-talk
+       * would be a trap, and the ends should be visible. */
+      document.getElementById('ui-scale-down').disabled = (i === 0);
+      document.getElementById('ui-scale-up').disabled = (i === SCALES.length - 1);
     }
     if (save) { try { localStorage.setItem('mms-scale', i); } catch (e) {} }
   }
 
   function initScale() {
-    var btn = document.getElementById('ui-scale');
+    var group = document.getElementById('ui-scale');
     /* Firefox only got element zoom in 126. Without it the control would
-     * be a button that does nothing, so do not offer one. */
-    if (btn && window.CSS && CSS.supports && !CSS.supports('zoom', '1.5')) {
-      btn.hidden = true;
+     * be buttons that do nothing, so do not offer them. */
+    if (group && window.CSS && CSS.supports && !CSS.supports('zoom', '1.5')) {
+      group.hidden = true;
       return;
     }
     var saved = 0;
     try { saved = parseInt(localStorage.getItem('mms-scale'), 10) || 0; } catch (e) {}
     applyScale(saved, false);
-    if (btn) {
-      btn.addEventListener('click', function () {
-        applyScale((state.scale + 1) % SCALES.length, true);
+    if (group) {
+      document.getElementById('ui-scale-down').addEventListener('click', function () {
+        applyScale(state.scale - 1, true);
+      });
+      document.getElementById('ui-scale-up').addEventListener('click', function () {
+        applyScale(state.scale + 1, true);
       });
     }
   }

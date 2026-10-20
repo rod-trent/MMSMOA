@@ -24,9 +24,13 @@
       <span id="engine" class="pill pill-wait" title="Python runtime status">
         <span class="dot"></span><span id="engine-text">starting…</span>
       </span>
-      <button class="ghost scale-btn" id="ui-scale" type="button"
-              title="Text size for projecting — + and - to step, 0 to reset"
-              aria-label="Text size"><span class="glyph" aria-hidden="true">A</span><span class="lvl" id="ui-scale-lvl">100%</span></button>
+      <span class="scale" id="ui-scale" role="group" aria-label="Text size">
+        <button class="ghost scale-step" id="ui-scale-down" type="button"
+                title="Smaller — or press -" aria-label="Decrease text size">A&#8722;</button>
+        <span class="lvl" id="ui-scale-lvl">100%</span>
+        <button class="ghost scale-step" id="ui-scale-up" type="button"
+                title="Larger — or press + (0 resets)" aria-label="Increase text size">A+</button>
+      </span>
       <a class="ghost" href="https://go.rodtrent.com/go/eje7vdj" target="_blank" rel="noopener">Source</a>
     </div>
   </div>

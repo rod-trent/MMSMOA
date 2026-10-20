@@ -46,6 +46,11 @@ can talk over them:
 | `r` | re-run the current variant |
 | `1`–`9` | jump to that variant |
 | `esc` | close |
+| `+` / `-` | text size up / down, for the back of the room |
+| `0` | text size back to 100% |
+
+The `A-` / `A+` control in the header does the same thing, and the level
+sticks across reloads. It scales the whole page, terminal included.
 
 Untick **animate** to render instantly while still honouring the pause points.
 
