@@ -59,7 +59,8 @@ The demo site's own *Source* and footer links point at it too, while still
 reading as `rod-trent/MMSMOA` so the destination stays visible.
 
 `qr-repo.png` is the matching QR — same recipe and styling as the demo-site
-one, so the two can sit side by side. It is not on a slide yet. Regenerate
+one. Both Midway decks carry the pair side by side on *Live Missions*:
+demo site left, repo right, each with its own two-line caption. Regenerate
 with:
 
 ```python
