@@ -103,11 +103,42 @@ def whole(md_path):
 SOC, MTD = deck_notes(SOC_DECK), deck_notes(MTD_DECK)
 
 
-def from_deck(notes, slides):
+SLIDE_ISSUES = []
+
+
+def _norm(s):
+    return " ".join(str(s).split()).casefold()
+
+
+def from_deck(notes, want, deck=""):
+    """Speaker notes for the given slides.
+
+    `want` maps slide number -> a distinctive fragment of that slide's
+    title. Addressing slides by number alone is not safe: insert a slide
+    ahead of a demo and every later number still resolves, so the wrong
+    notes come through and nothing complains. The fragment is checked
+    against the live deck and a mismatch fails the build.
+
+    A fragment rather than the whole title, so rewording a title does not
+    break the build - only the slide moving does.
+    """
     out = []
-    for n in slides:
+    for n in sorted(want):
+        fragment = want[n]
+        if n not in notes:
+            SLIDE_ISSUES.append(
+                "%s slide %d does not exist (deck has %d slides); expected %r"
+                % (deck, n, len(notes), fragment))
+            continue
         title, body = notes[n]
+        if _norm(fragment) not in _norm(title):
+            SLIDE_ISSUES.append(
+                "%s slide %d is %r, expected it to contain %r"
+                % (deck, n, title or "(no title)", fragment))
+            continue
         if not body:
+            SLIDE_ISSUES.append("%s slide %d (%s) has no speaker notes"
+                                % (deck, n, title))
             continue
         out.append("### Slide %d — %s\n\n%s" % (n, title or "(no title)", body))
     return "\n\n".join(out)
@@ -201,7 +232,7 @@ Monday 26 October, 3:00pm PDT, Seaport H. With Rod Trent and Ken Goossens.
 %s
 """ % (section("empowering-soc-teams/README.md", "Stage running order"),
        section("empowering-soc-teams/README.md", "Pre-flight"),
-       from_deck(SOC, [13])))
+       from_deck(SOC, {13: "Live Missions"}, "SOC")))
 
 ch("SOC Demo 1 — Wire the Model", """
 Slide 14. Register the app, point the assistant at the Sentinel MCP server.
@@ -221,7 +252,7 @@ Slide 14. Register the app, point the assistant at the Sentinel MCP server.
 ## If it breaks
 
 %s
-""" % (from_deck(SOC, [14]),
+""" % (from_deck(SOC, {14: "Wire the Model"}, "SOC"),
        section("empowering-soc-teams/01-mcp-connection/README.md", "Run it"),
        section("empowering-soc-teams/01-mcp-connection/README.md", "Stage notes"),
        section("empowering-soc-teams/01-mcp-connection/README.md", "If it breaks")))
@@ -248,7 +279,7 @@ Slide 15. The Mission 1 walkthrough: natural language to evidence, no KQL.
 ## If it breaks
 
 %s
-""" % (from_deck(SOC, [15]),
+""" % (from_deck(SOC, {15: "Mission 1 Walkthrough"}, "SOC"),
        section("empowering-soc-teams/02-natural-language-triage/README.md", "The scenario"),
        section("empowering-soc-teams/02-natural-language-triage/README.md", "Run it"),
        section("empowering-soc-teams/02-natural-language-triage/README.md", "Stage notes"),
@@ -272,7 +303,8 @@ Slides 16 to 18. The agent runs the loop; the analyst keeps the trigger.
 ## The stage sequence
 
 %s
-""" % (from_deck(SOC, [16, 17, 18]),
+""" % (from_deck(SOC, {16: "Anatomy of a Triage Agent",
+                       17: "Mission 2", 18: "Mission 2 Walkthrough"}, "SOC"),
        section("empowering-soc-teams/03-triage-agent-hitl/README.md", "Run it"),
        section("empowering-soc-teams/03-triage-agent-hitl/README.md", "The stage sequence")))
 
@@ -290,7 +322,7 @@ Slide 20. The prompt-injection defence, tested rather than asserted.
 ## Beats to narrate
 
 %s
-""" % (from_deck(SOC, [20]),
+""" % (from_deck(SOC, {20: "Human-in-the-Loop"}, "SOC"),
        section("empowering-soc-teams/04-guardrails-injection-test/README.md", "Run it"),
        section("empowering-soc-teams/04-guardrails-injection-test/README.md", "Stage note")))
 
@@ -308,7 +340,7 @@ Slides 21 and 22. Instrument first, automate second.
 ## Beats to narrate
 
 %s
-""" % (from_deck(SOC, [21, 22]),
+""" % (from_deck(SOC, {21: "Measuring ROI", 22: "Scaling the Agentic SOC"}, "SOC"),
        section("empowering-soc-teams/05-roi-baseline/README.md", "Run it"),
        section("empowering-soc-teams/05-roi-baseline/README.md", "Stage note")))
 
@@ -332,7 +364,7 @@ Tuesday 27 October, 10:00am PDT, Seaport G. With Rod Trent and Chris Sires.
 """ % (section("modern-threat-detection/README.md", "Stage running order"),
        section("modern-threat-detection/README.md", "The three lines that carry the session"),
        section("modern-threat-detection/README.md", "Pre-flight for the live version"),
-       from_deck(MTD, [14])))
+       from_deck(MTD, {14: "Live Missions"}, "MTD")))
 
 ch("Hunt Demo 1 — Prompt Patterns", """
 Slides 11 and 12. The hypothesis linter, and the anatomy of a hunting prompt.
@@ -348,7 +380,8 @@ Slides 11 and 12. The hypothesis linter, and the anatomy of a hunting prompt.
 ## Beats to narrate
 
 %s
-""" % (from_deck(MTD, [11, 12, 13]),
+""" % (from_deck(MTD, {11: "Five Patterns", 12: "Anatomy of a Hunting Prompt",
+                       13: "Your Best Hunts Become Tools"}, "MTD"),
        section("modern-threat-detection/01-prompt-patterns/README.md", "Run it"),
        section("modern-threat-detection/01-prompt-patterns/README.md", "Stage note")))
 
@@ -382,7 +415,8 @@ Slides 15 and 16. Hypothesis to evidence with no hand-written KQL.
 ## If it breaks
 
 %s
-""" % (from_deck(MTD, [15, 16]),
+""" % (from_deck(MTD, {15: "Speed the Investigation",
+                       16: "Mission 1 Walkthrough"}, "MTD"),
        section("modern-threat-detection/02-hypothesis-hunt/README.md", "The hypothesis"),
        section("modern-threat-detection/02-hypothesis-hunt/README.md",
                "What makes this demo work: the decoy"),
@@ -418,7 +452,8 @@ Slides 17 and 18. Anomalies first, alerts second, ending in a detection rule.
 ## About that threshold
 
 %s
-""" % (from_deck(MTD, [17, 18]),
+""" % (from_deck(MTD, {17: "What the Rules Missed",
+                       18: "Mission 2 Walkthrough"}, "MTD"),
        section("modern-threat-detection/03-anomaly-to-detection/README.md", "The finding"),
        section("modern-threat-detection/03-anomaly-to-detection/README.md", "Run it"),
        section("modern-threat-detection/03-anomaly-to-detection/README.md", "The five steps"),
@@ -449,7 +484,7 @@ Slides 19 and 20. A model finding is a lead until a human makes it evidence.
 ## Beats to narrate
 
 %s
-""" % (from_deck(MTD, [19, 20]),
+""" % (from_deck(MTD, {19: "Blind-Trust", 20: "Validate Before You Believe"}, "MTD"),
        section("modern-threat-detection/04-validation-harness/README.md", "The claim being tested"),
        section("modern-threat-detection/04-validation-harness/README.md", "Run it"),
        section("modern-threat-detection/04-validation-harness/README.md",
@@ -474,7 +509,7 @@ Slide 21. Why a hunt needs its own threat model.
 ## The honest conclusion
 
 %s
-""" % (from_deck(MTD, [21]),
+""" % (from_deck(MTD, {21: "Guardrails"}, "MTD"),
        section("modern-threat-detection/05-injection-redteam/README.md",
                "Why a hunt needs its own threat model"),
        section("modern-threat-detection/05-injection-redteam/README.md", "Run it"),
@@ -583,6 +618,13 @@ PAGE = ('<?xml version="1.0" encoding="utf-8"?>\n'
         '<head><meta charset="utf-8"/><title>%s</title>'
         '<link rel="stylesheet" type="text/css" href="style.css"/></head>\n'
         '<body>\n<h1>%s</h1>\n%s\n</body>\n</html>\n')
+
+if SLIDE_ISSUES:
+    print("Slide mapping is out of date - the decks have moved under this script:\n")
+    for problem in SLIDE_ISSUES:
+        print("  " + problem)
+    print("\nFix the slide numbers in build-companion.py, then re-run.")
+    raise SystemExit(1)
 
 if args.list:
     for i, (title, _) in enumerate(chapters, 1):
