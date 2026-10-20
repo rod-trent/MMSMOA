@@ -36,6 +36,15 @@
 
 html { color-scheme: dark; }
 
+/* Projection scale.
+ *
+ * Every size in this file is px, tuned for reading at a desk, which is far
+ * too small on a projector at the back of a session room. `zoom` scales the
+ * whole UI - terminal included - and unlike transform: scale() the page
+ * still reflows and scrolls normally. app.js persists the setting, so it
+ * survives the reloads between sessions. */
+html { zoom: var(--ui-scale, 1); }
+
 body {
   margin: 0;
   background: var(--bg);
@@ -158,6 +167,13 @@ body::after {
 }
 .ghost:hover { color: var(--ink); border-color: #33405f; background: var(--panel-2); }
 
+.scale-btn { display: inline-flex; align-items: baseline; gap: 7px; }
+.scale-btn .glyph { font-family: var(--display); font-weight: 700; font-size: 15px; }
+.scale-btn .lvl { font-family: var(--mono); font-size: 11.5px; color: var(--ink-faint); }
+/* Lit while the room, not the laptop, is the audience. */
+.scale-btn[data-on="1"] { color: var(--ink); border-color: var(--hunt); }
+.scale-btn[data-on="1"] .lvl { color: var(--hunt); }
+
 /* ---------- lede ---------- */
 
 .lede { padding: 32px 0 8px; max-width: 720px; }
@@ -263,7 +279,11 @@ body::after {
 }
 .runner[hidden] { display: none; }
 .runner-box {
-  width: min(1180px, 100%); max-height: 92vh;
+  width: min(1180px, 100%);
+  /* vh resolves against the viewport and does NOT participate in the root
+   * zoom chain, so a bare 92vh cap gets multiplied by the scale and pushes
+   * the header and footer off screen. Divide it back out. */
+  max-height: calc(92vh / var(--ui-scale, 1));
   background: var(--bg-2); border: 1px solid var(--line);
   border-radius: 14px; display: flex; flex-direction: column; overflow: hidden;
   box-shadow: 0 24px 70px rgba(0,0,0,.6);
@@ -306,7 +326,7 @@ body::after {
 
 .term {
   margin: 0; padding: 20px 22px; overflow: auto; flex: 1; min-height: 340px;
-  background: #00091c; font-family: var(--mono); font-size: 13px; line-height: 1.5;
+  background: #00091c; font-family: var(--mono); font-size: 14.5px; line-height: 1.5;
   white-space: pre-wrap; word-break: break-word; color: var(--ink-dim);
 }
 .term:focus { outline: none; }
@@ -340,7 +360,7 @@ body::after {
   padding: 10px 20px; border-top: 1px solid var(--line);
   background: var(--panel); font-size: 12px; flex-wrap: wrap;
 }
-.cmd { font-family: var(--mono); color: var(--ink-faint); font-size: 11.5px; }
+.cmd { font-family: var(--mono); color: var(--ink-faint); font-size: 12px; }
 
 /* ANSI */
 .a-dim    { color: var(--ink-faint); }
@@ -365,8 +385,8 @@ body::after {
   .wrap { padding: 0 16px; }
   .lede { padding-top: 30px; }
   .runner { padding: 0; }
-  .runner-box { max-height: 100vh; border-radius: 0; border: none; }
-  .term { font-size: 11.5px; padding: 14px; }
+  .runner-box { max-height: calc(100vh / var(--ui-scale, 1)); border-radius: 0; border: none; }
+  .term { font-size: 12.5px; padding: 14px; }
   .top .wrap { flex-direction: column; align-items: flex-start; }
 }
 

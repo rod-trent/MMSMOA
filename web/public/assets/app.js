@@ -5,6 +5,9 @@
  * transcript baked at build time from the same code. The audience cannot tell
  * the difference; the status pill tells you.
  *
+ * The UI scale control (top right, or + / - / 0) zooms the whole page for
+ * projection, and remembers the level.
+ *
  * Playback pauses automatically at the beats the demos already mark:
  *   - every ">> WHY THIS MATTERS:" line    (talk about what just happened)
  *   - graph path rows and tool errors    (steps mode; the blast-radius beat)
@@ -24,7 +27,8 @@
     session: null,       // which session tab is showing
     demo: null,
     variantIndex: 0,
-    player: null
+    player: null,
+    scale: 0            // index into SCALES; the projection zoom level
   };
 
   /* ------------------------------------------------------------------ *
@@ -65,6 +69,7 @@
       }
     });
 
+    initScale();
     document.addEventListener('keydown', onKey);
   });
 
@@ -710,10 +715,67 @@
   }
 
   /* ------------------------------------------------------------------ *
+   * Projection scale
+   *
+   * One control for the whole page, because the room has to read both the
+   * cards and the terminal. Levels rather than free zoom: on a lectern you
+   * want to hit it twice and start talking, not tune it.
+   * ------------------------------------------------------------------ */
+
+  var SCALES = [1, 1.25, 1.5, 1.8];
+
+  function applyScale(i, save) {
+    i = Math.max(0, Math.min(SCALES.length - 1, i));
+    state.scale = i;
+    document.documentElement.style.setProperty('--ui-scale', SCALES[i]);
+    var btn = document.getElementById('ui-scale');
+    if (btn) {
+      btn.setAttribute('data-on', i > 0 ? '1' : '0');
+      btn.setAttribute('aria-label', 'Text size ' + Math.round(SCALES[i] * 100) + ' percent');
+      document.getElementById('ui-scale-lvl').textContent =
+        Math.round(SCALES[i] * 100) + '%';
+    }
+    if (save) { try { localStorage.setItem('mms-scale', i); } catch (e) {} }
+  }
+
+  function initScale() {
+    var btn = document.getElementById('ui-scale');
+    /* Firefox only got element zoom in 126. Without it the control would
+     * be a button that does nothing, so do not offer one. */
+    if (btn && window.CSS && CSS.supports && !CSS.supports('zoom', '1.5')) {
+      btn.hidden = true;
+      return;
+    }
+    var saved = 0;
+    try { saved = parseInt(localStorage.getItem('mms-scale'), 10) || 0; } catch (e) {}
+    applyScale(saved, false);
+    if (btn) {
+      btn.addEventListener('click', function () {
+        applyScale((state.scale + 1) % SCALES.length, true);
+      });
+    }
+  }
+
+  /* ------------------------------------------------------------------ *
    * Keys
    * ------------------------------------------------------------------ */
 
   function onKey(e) {
+    /* Scale keys work anywhere, including on the cards. Ctrl/Cmd versions
+     * belong to the browser's own zoom - leave those alone. */
+    if (!e.ctrlKey && !e.metaKey && !e.altKey &&
+        !/^(INPUT|SELECT|TEXTAREA)$/.test((e.target || {}).tagName || '')) {
+      if (e.key === '+' || e.key === '=') {
+        e.preventDefault(); applyScale(state.scale + 1, true); return;
+      }
+      if (e.key === '-' || e.key === '_') {
+        e.preventDefault(); applyScale(state.scale - 1, true); return;
+      }
+      if (e.key === '0') {
+        e.preventDefault(); applyScale(0, true); return;
+      }
+    }
+
     var open = !document.getElementById('runner').hidden;
     if (!open) return;
 
