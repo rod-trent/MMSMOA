@@ -35,7 +35,7 @@ if the network dies mid-session.
 Playback pauses at the beats the demos already mark in their own output, so you
 can talk over them:
 
-- at every `>> STAGE NOTE:` — the thing that just happened
+- at every `>> WHY THIS MATTERS:` — the thing that just happened
 - before each `STAGE n/6` or `STEP n/5` — the thing about to happen
 - before the agent's approval-gate JSON, and before a verdict
 

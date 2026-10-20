@@ -111,7 +111,7 @@ def warn(text: str) -> None:
 
 def note(text: str) -> None:
     print()
-    print(c(f"  >> STAGE NOTE: {text}", YELLOW))
+    print(c(f"  >> WHY THIS MATTERS: {text}", YELLOW))
 
 
 # ---------------------------------------------------------------------------
@@ -383,8 +383,8 @@ class TriageAgent:
                 "and it will not be allowed to select a tool. Continuing the\n"
                 "investigation on the actual evidence."
             )
-            note("This is the prompt-injection defence from slide 20, firing for "
-                 "real. Demo 4 is the test harness that proves it.")
+            note("That is the prompt-injection defence firing for real. Demo 4 is "
+                 "the test harness that proves it holds across a whole corpus.")
 
         print()
         print(f"  {c('Incident', BOLD)}  {incident['incident_number']}  "
@@ -751,7 +751,7 @@ class ApprovalGate:
         print(c("  " + "-" * 70, YELLOW))
 
         note("The analyst is reviewing a finished investigation, not starting "
-             "one. That is the whole pitch. Let it sit on screen for a beat.")
+             "one. That is the whole shift.")
 
         if self.mode == "auto":
             print()
@@ -851,9 +851,9 @@ def run_agent(
 
     # A rejection sends it back to Reason. This is the moment on stage.
     if decision["outcome"] == "rejected":
-        note("The analyst rejected it. Watch what happens: the agent re-plans, "
-             "logs the override, and comes back with a different disposition. "
-             "It does not argue and it does not act.")
+        note("The analyst rejected it. The agent re-plans, logs the override, and "
+             "comes back with a different disposition. It does not argue, and it "
+             "does not act.")
         proposal = agent.reason(incident, correlated, enriched,
                                 prior_rejection=decision["comment"])
         gate2 = ApprovalGate("auto" if gate_mode == "reject" else gate_mode)
@@ -902,9 +902,9 @@ def run_agent(
     print(f"  Actions taken     {len(record.actions_taken)}")
     print()
     print(c(f"  Run written to {path.name}", DIM))
-    note("In production this run record goes to a custom Sentinel table. That "
-         "is what you query for the ROI numbers on slide 21, and it is what an "
-         "auditor asks for when they want to know who approved what.")
+    note("In production this run record goes to a custom Sentinel table. It is "
+         "what the ROI numbers are queried from, and what an auditor asks for "
+         "when they want to know who approved what.")
 
     return output
 

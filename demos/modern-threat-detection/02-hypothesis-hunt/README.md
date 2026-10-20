@@ -37,7 +37,7 @@ change record and the known ASN that do it.
 
 | File | What it does |
 |------|--------------|
-| `hunt_service_accounts.py` | The six steps from slide 16, replayed deterministically with stage notes inline. |
+| `hunt_service_accounts.py` | The six steps from slide 16, replayed deterministically with "why this matters" commentary inline. |
 | `sample_hunt_data.json` | Synthetic CONTOSO-PROD hunting data. Both seeded scenarios, the decoy, and one injection payload. Shared with Demos 3–5. |
 | `kql/mission1-hunt.kql` | The queries the model produces, plus the benign checks and the seed-known-bad test. |
 

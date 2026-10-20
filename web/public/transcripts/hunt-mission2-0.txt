@@ -30,7 +30,7 @@
 [36mCLAUDE[0m[2m |  [0masked for - silence. An injection that makes a hunt return nothing is
 [36mCLAUDE[0m[2m |  [0mmore useful to an attacker than one that makes it return noise.
 
-[33m  >> STAGE NOTE: This is not a bonus. A poisoned record in your anomaly table is a live prompt-injection vector, and 'return nothing' is the payload you would never notice. Demo 5 is the full harness.[0m
+[33m  >> WHY THIS MATTERS: A poisoned record in an anomaly table is a live prompt-injection vector, and 'return nothing' is the payload nobody notices. Demo 5 is the full harness.[0m
 
 [36mCLAUDE[0m[2m |  [0m1 anomaly has a matching incident, so someone is already on it.
 [36mCLAUDE[0m[2m |  [0m7 do not. Those are the interesting ones - behaviour the
@@ -48,7 +48,7 @@
 [36mCLAUDE[0m[2m |  [0mThe Persistence cluster is where I am going. UEBA only scored some of
 [36mCLAUDE[0m[2m |  [0mthese - the AuditLogs table will have the full set.
 
-[33m  >> STAGE NOTE: Step 1 flips the usual flow: anomalies first, alerts second. Everything in the Persistence cluster is below every alerting threshold you have. That is why it is still here on day eight.[0m
+[33m  >> WHY THIS MATTERS: Step 1 flips the usual flow: anomalies first, alerts second. Everything in the Persistence cluster is below every alerting threshold you have. That is why it is still here on day eight.[0m
 
 [2m==========================================================================[0m
 [1m STEP 2/5  Let the model propose[0m
@@ -68,7 +68,7 @@
 [36mCLAUDE[0m[2m |  [0mmixed evidence and false confidence, and H2 is really a question about
 [36mCLAUDE[0m[2m |  [0mwhether two confirmed findings share a root, which is worth its own hunt.
 
-[33m  >> STAGE NOTE: One hypothesis per thread. This is pattern 4 from slide 11 and it is the one people skip.[0m
+[33m  >> WHY THIS MATTERS: One hypothesis per thread. It is pattern 4, and it is the one most hunts skip.[0m
 
 [2m==========================================================================[0m
 [1m STEP 3/5  Hunt it with the template[0m
@@ -128,7 +128,7 @@
 [36mCLAUDE[0m[2m |  [0m
 [36mCLAUDE[0m[2m |  [0mNow it is evidence. Before this step it was a lead.
 
-[33m  >> STAGE NOTE: Narrate every validation move out loud. The difference between AI-assisted hunting and blind trust is entirely in this step, and the room needs to watch you do it slowly.[0m
+[33m  >> WHY THIS MATTERS: The difference between AI-assisted hunting and blind trust is entirely in this step - every assumption checked, in the open, one at a time.[0m
 
 [2m==========================================================================[0m
 [1m STEP 5/5  Operationalise[0m
@@ -153,8 +153,6 @@
 [36mCLAUDE[0m[2m |  [0mDo not ship that number because I chose it. Backtest it over 90 days
 [36mCLAUDE[0m[2m |  [0min your own tenant first - it is the difference between a detection
 [36mCLAUDE[0m[2m |  [0mand a new source of alert fatigue.
-
-[33m  >> STAGE NOTE: If you are short on time, skip the rule generation and show the pre-generated file in generated/. The threshold conversation is worth more than watching JSON print.[0m
 
 [2m==========================================================================[0m
 [1m THE RECORD[0m
@@ -194,5 +192,5 @@
 [2m      logic: Microsoft-classified anonymiser IP ranges[0m
 [2m      miss:  45.129.14.201 is bulletproof hosting, not a Tor exit or a known VPN. Not on the list yet.[0m
 
-[33m  >> STAGE NOTE: 'benign_explanations_checked' is the field that makes this defensible. Point at it. It is what you show the person who asks how you know.[0m
+[33m  >> WHY THIS MATTERS: 'benign_explanations_checked' is the field that makes this defensible. It is the answer to anyone who asks how you know.[0m
 

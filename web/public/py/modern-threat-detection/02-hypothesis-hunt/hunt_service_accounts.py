@@ -140,7 +140,7 @@ def result(text: str) -> None:
 
 def note(text: str) -> None:
     print()
-    print(c(f"  >> STAGE NOTE: {text}", YELLOW))
+    print(c(f"  >> WHY THIS MATTERS: {text}", YELLOW))
 
 
 # ---------------------------------------------------------------------------
@@ -197,7 +197,7 @@ def run(pacer: Pacer) -> dict[str, Any]:
     )
     result(f"{len(TENANT['tables'])} tables in the workspace")
     note("The model named its own weakest assumption before it ran anything. "
-         "That is what you want, and it is the thing to point at.")
+         "That is the behaviour worth demanding from a hunting tool.")
     pacer.beat()
 
     # --- Step 3 -----------------------------------------------------------
@@ -233,8 +233,8 @@ SigninLogs
         "\n"
         "I would not treat an empty result from this query as 'no compromise'."
     )
-    note('Say the line: "I never run a query I have not read." It comes back '
-         'in the guardrails section and it answers half the Q&A.')
+    note("The rule behind this step: never run a query you have not read. It is "
+         "the same principle the guardrails section is built on.")
     pacer.beat()
 
     hunter("Run it.")
@@ -374,10 +374,9 @@ SigninLogs
             t_pri=target["priority"],
         )
     )
-    note("This is the highest-value 30 seconds in the session. The model just "
-         "declined to report a finding that matched the hypothesis, because the "
-         "boring explanation held. A hunt that cannot do this generates work "
-         "instead of removing it.")
+    note("The model just declined to report a finding that matched the "
+         "hypothesis, because the boring explanation held. A hunt that cannot do "
+         "this generates work instead of removing it.")
     pacer.beat()
 
     # --- Step 4 -----------------------------------------------------------
@@ -455,9 +454,9 @@ SigninLogs
             "account. Recommend a second hunt on that application, in its own\n"
             "thread."
         )
-        note("One hypothesis per thread. Park this and come back to it - that "
-             "is exactly what Mission 2 does, and it is why the two demos are "
-             "one story.")
+        note("One hypothesis per thread. This one gets parked and picked up "
+             "later - which is exactly what Mission 2 does, and why the two "
+             "demos are one story.")
         pacer.beat()
 
     # --- Step 6 -----------------------------------------------------------
@@ -542,8 +541,8 @@ SigninLogs
     for line in timeline:
         print(f"    {line}")
 
-    note("Save this record. Mission 2 starts from it - the application that "
-         "shows up in the last pivot is what the analytics rules missed.")
+    note("Mission 2 starts from this record - the application that shows up in "
+         "the last pivot is what the analytics rules missed.")
 
     return record
 

@@ -23,7 +23,7 @@ web/build.py bakes by running the real demo scripts with colour forced on, and
 which CI re-checks on every push. So the video shows the same output the code
 produces - not a re-enactment.
 
-Playback pauses on the same beats the live runner does: every ">> STAGE NOTE:",
+Playback pauses on the same beats the live runner does: every ">> WHY THIS MATTERS:",
 and before each STAGE/STEP header. That is what makes it usable as a stand-in
 if the live demo dies - it has the same rhythm you would have talked over.
 
@@ -203,7 +203,7 @@ _STEP_BEFORE = (
 
 def pause_after(text: str):
     """Seconds to hold after printing this line, or None."""
-    if "STAGE NOTE:" in text:
+    if "WHY THIS MATTERS:" in text:
         return 2.6                             # the big "talk here" moments
     if MODE != "steps":
         return None
@@ -314,7 +314,7 @@ def build_frames(rec):
 
             hold_s = pause_after(text)
             if hold_s:
-                note = ("stage note  ·  talk here" if "STAGE NOTE:" in text
+                note = ("why this matters" if "WHY THIS MATTERS:" in text
                         else re.sub(r"\s+", " ", text).strip()[:70])
                 hold = frame(rec, cmd, shown[-VISIBLE:], note=note)
                 for _ in range(int(FPS * hold_s)):

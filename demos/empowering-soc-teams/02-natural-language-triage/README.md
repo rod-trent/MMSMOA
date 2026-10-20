@@ -24,7 +24,7 @@ Slide 12's **Level 2 — Connected**. The two moments that matter on stage:
 |------|--------------|
 | `sample_tenant.json` | Synthetic CONTOSO-PROD data. One true positive, one VPN false positive, four pieces of noise, one prompt-injection payload. Shared by Demos 3 and 4. |
 | `replay_mcp_server.py` | A real MCP server over stdio serving that data. Its tools are *analogous* to the hosted server's, not identically named — see the mapping below. Offline fallback and rehearsal rig. |
-| `triage_walkthrough.py` | Deterministic replay of the Mission 1 conversation as a terminal transcript, with stage notes inline. |
+| `triage_walkthrough.py` | Deterministic replay of the Mission 1 conversation as a terminal transcript, with "why this matters" commentary inline. |
 | `prompts.md` | The exact prompts, in order, with what to watch for and timing. |
 | `kql/mission1-queries.kql` | The queries the model produces. Read them before the session; paste them into the portal if auth dies. |
 
@@ -157,7 +157,8 @@ self-test proves each one:
 - **Zoom It.** Tool call lines are the smallest text on screen and the back
   rows will not see them. Slide 2 tells the room to yell; mean it.
 - The `--step` flag exists so you can rehearse with the same beats you will use
-  live. The stage notes printed in yellow are the things worth saying out loud.
+  live. The yellow "why this matters" lines are written for the room to read,
+  not as cues for you — they mark the beats worth expanding on.
 - Close on the audit view (query 10 in the KQL file). The compliance people in
   the room came for that, not for the investigation.
 - Budget 8 minutes (slide 14). The transcript runs ~9 with narration. Cut the

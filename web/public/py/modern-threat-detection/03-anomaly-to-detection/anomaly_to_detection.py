@@ -100,7 +100,7 @@ def result(text: str) -> None:
 
 def note(text: str) -> None:
     print()
-    print(c(f"  >> STAGE NOTE: {text}", YELLOW))
+    print(c(f"  >> WHY THIS MATTERS: {text}", YELLOW))
 
 
 def warn(text: str) -> None:
@@ -203,9 +203,9 @@ def run(pacer: Pacer, skip_validation: bool = False) -> dict[str, Any]:
             "asked for - silence. An injection that makes a hunt return nothing is\n"
             "more useful to an attacker than one that makes it return noise."
         )
-        note("This is not a bonus. A poisoned record in your anomaly table is a "
-             "live prompt-injection vector, and 'return nothing' is the payload "
-             "you would never notice. Demo 5 is the full harness.")
+        note("A poisoned record in an anomaly table is a live prompt-injection "
+             "vector, and 'return nothing' is the payload nobody notices. "
+             "Demo 5 is the full harness.")
         pacer.beat()
 
     persistence = by_tactic.get("Persistence", [])
@@ -281,8 +281,8 @@ def run(pacer: Pacer, skip_validation: bool = False) -> dict[str, Any]:
         "mixed evidence and false confidence, and H2 is really a question about\n"
         "whether two confirmed findings share a root, which is worth its own hunt."
     )
-    note("One hypothesis per thread. This is pattern 4 from slide 11 and it is "
-         "the one people skip.")
+    note("One hypothesis per thread. It is pattern 4, and it is the one most "
+         "hunts skip.")
     pacer.beat()
 
     # --- Step 3 -----------------------------------------------------------
@@ -468,9 +468,9 @@ def run(pacer: Pacer, skip_validation: bool = False) -> dict[str, Any]:
             "\n"
             "Now it is evidence. Before this step it was a lead."
         )
-        note("Narrate every validation move out loud. The difference between "
-             "AI-assisted hunting and blind trust is entirely in this step, and "
-             "the room needs to watch you do it slowly.")
+        note("The difference between AI-assisted hunting and blind trust is "
+             "entirely in this step - every assumption checked, in the open, "
+             "one at a time.")
         pacer.beat()
 
     # --- Step 5 -----------------------------------------------------------
@@ -515,9 +515,6 @@ def run(pacer: Pacer, skip_validation: bool = False) -> dict[str, Any]:
             "in your own tenant first - it is the difference between a detection\n"
             "and a new source of alert fatigue."
         )
-        note("If you are short on time, skip the rule generation and show the "
-             "pre-generated file in generated/. The threshold conversation is "
-             "worth more than watching JSON print.")
 
     # --- The record --------------------------------------------------------
 
@@ -580,7 +577,7 @@ def run(pacer: Pacer, skip_validation: bool = False) -> dict[str, Any]:
         print(c(f"      miss:  {r['why_it_missed']}", DIM))
 
     note("'benign_explanations_checked' is the field that makes this defensible. "
-         "Point at it. It is what you show the person who asks how you know.")
+         "It is the answer to anyone who asks how you know.")
 
     return record
 

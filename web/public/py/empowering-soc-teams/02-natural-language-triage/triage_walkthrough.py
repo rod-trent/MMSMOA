@@ -122,7 +122,7 @@ def toolresult(summary: str) -> None:
 
 def note(text: str) -> None:
     print()
-    print(c(f"  >> STAGE NOTE: {text}", YELLOW))
+    print(c(f"  >> WHY THIS MATTERS: {text}", YELLOW))
 
 
 # ---------------------------------------------------------------------------
@@ -166,8 +166,8 @@ def run(pacer: Pacer) -> dict[str, Any]:
             n=len(result["tables"]), ws=TENANT["tenant"]["workspace"]
         )
     )
-    note("This is the moment to say it: no KQL yet, no schema knowledge required. "
-         "The model just told you what a new analyst spends a month learning.")
+    note("No KQL, and no schema knowledge required. The model just laid out "
+         "what a new analyst normally spends a month learning.")
     pacer.beat()
 
     # --- Step 4: ask like an analyst --------------------------------------
@@ -247,9 +247,9 @@ def run(pacer: Pacer) -> dict[str, Any]:
         "Before I call either one impossible travel, I want the behavioural\n"
         "baseline. A VPN egress looks exactly like this in the raw logs."
     )
-    note("Do not rush past this. The model just declined to answer the question "
-         "it was asked, because the raw logs are not sufficient. That instinct is "
-         "the whole session.")
+    note("The model just declined to answer the question it was asked, because "
+         "the raw logs are not sufficient to answer it. That instinct is the "
+         "whole point.")
     pacer.beat()
 
     for upn, _ in candidates:
@@ -451,10 +451,10 @@ def run(pacer: Pacer) -> dict[str, Any]:
         "PIM-eligible for FIN-SOX-Approvers - but eligibility is not activation.\n"
         "It needs approval plus MFA, and there has been no activation in 90 days."
     )
-    note("This is the moment to slow down. A tool that counted edges would have "
-         "put the key vault in the blast radius and sent you to wake up the "
-         "vault owner at 3am. Reading the edge instead of counting it is the "
-         "difference. Say the word 'eligible, not active' out loud.")
+    note("A tool that counted edges would have put the key vault in the blast "
+         "radius, and woken the vault owner at 3am for nothing. The assignment "
+         "is eligible, not active. Reading the edge instead of counting it is "
+         "the whole difference.")
     pacer.beat()
 
     analyst("If I reset her password right now, am I done?")
@@ -481,9 +481,8 @@ def run(pacer: Pacer) -> dict[str, Any]:
         "Revoke the grant first, then reset. The other order leaves the\n"
         "attacker reading mail through an app you already know about."
     )
-    note("If you take one thing from the graph tools, take this. Containment "
-         "order is a graph question, and getting it backwards is how incidents "
-         "come back three days later.")
+    note("Containment order is a graph question. Getting it backwards is how "
+         "incidents come back three days later.")
     pacer.beat()
 
     graph_finding = {
@@ -575,9 +574,9 @@ def run(pacer: Pacer) -> dict[str, Any]:
     print(c(f"  Verdict:  true positive, high confidence", DIM))
     print(c(f"  Actions:  none - this connection is read-only", DIM))
 
-    note("Close by opening the Sentinel audit view. Every tool call you just "
-         "watched is in there, attributed to analyst@contoso.com, evaluated "
-         "against Security Reader. Same RBAC as the portal.")
+    note("Every tool call in this run is in the Sentinel audit log, attributed "
+         "to analyst@contoso.com and evaluated against Security Reader. Same "
+         "RBAC as the portal.")
 
     return record_out
 

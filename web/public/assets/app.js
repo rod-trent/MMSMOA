@@ -6,7 +6,7 @@
  * the difference; the status pill tells you.
  *
  * Playback pauses automatically at the beats the demos already mark:
- *   - every ">> STAGE NOTE:" line          (talk about what just happened)
+ *   - every ">> WHY THIS MATTERS:" line    (talk about what just happened)
  *   - graph path rows and tool errors    (steps mode; the blast-radius beat)
  *   - before each "STAGE n/6" / "STEP n/5" (talk about what is coming)
  * Space continues. That is the whole stage-control model.
@@ -527,7 +527,7 @@
   function pauseAfter(plain) {
     var mode = pauseMode();
     if (mode === 'off') return false;
-    if (/STAGE NOTE:/.test(plain)) return true;
+    if (/WHY THIS MATTERS:/.test(plain)) return true;
     if (mode !== 'steps') return false;
 
     return /^\s*\[\s*(PASS|FAIL|ok|SKIP|WARN)\s*\]/i.test(plain) ||   // harness results
@@ -553,10 +553,10 @@
            /^\s*###\s/.test(plain);
   }
 
-  /* What we actually stopped on, for the footer. "stage note" for everything
+  /* What we actually stopped on, for the footer. One label for everything
    * was misleading once step mode started pausing on results and tool calls. */
   function labelAfter(plain) {
-    if (/STAGE NOTE:/.test(plain)) return 'stage note  ·  talk here';
+    if (/WHY THIS MATTERS:/.test(plain)) return 'why this matters';
     var t = plain.match(/^\s*\[\s*(PASS|FAIL|ok|SKIP|WARN)\s*\]\s*(.{0,52})/i);
     if (t) return t[1].toUpperCase().trim() + '  ·  ' + t[2].trim();
     var b = plain.match(/^\s*\[(yes|no)\s*\]\s*(.{0,52})/i);
@@ -576,7 +576,7 @@
     if (m) return 'next: ' + m[1].trim().slice(0, 54);
     if (/REQUIRES HUMAN APPROVAL/.test(plain)) return 'next: the approval gate';
     if (/^\s*VERDICT:/.test(plain)) return 'next: the verdict';
-    return 'stage note';
+    return 'next up';
   }
 
   function play(text, mode) {

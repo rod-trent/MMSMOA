@@ -10,7 +10,7 @@
 
 [32mHUNTER[0m[2m  >  [0mService accounts should never sign in interactively. Show me any that did in the last 7 days and what they touched afterward.
 
-[33m  >> STAGE NOTE: That is a hypothesis, not a question. It can come back empty, and empty would be a real answer. Build-HuntPrompt.py in Demo 1 is the linter that enforces the difference.[0m
+[33m  >> WHY THIS MATTERS: That is a hypothesis, not a question. It can come back empty, and empty would be a real answer. Build-HuntPrompt.py in Demo 1 is the linter that enforces the difference.[0m
 
 [2m==========================================================================[0m
 [1m STEP 2/6  Watch table discovery[0m
@@ -32,7 +32,7 @@
 [36mCLAUDE[0m[2m |  [0min this hunt.
 [2m        -> 10 tables in the workspace[0m
 
-[33m  >> STAGE NOTE: The model named its own weakest assumption before it ran anything. That is what you want, and it is the thing to point at.[0m
+[33m  >> WHY THIS MATTERS: The model named its own weakest assumption before it ran anything. That is the behaviour worth demanding from a hunting tool.[0m
 
 [2m==========================================================================[0m
 [1m STEP 3/6  Review the KQL - the first validation checkpoint[0m
@@ -67,7 +67,7 @@
 [36mCLAUDE[0m[2m |  [0m
 [36mCLAUDE[0m[2m |  [0mI would not treat an empty result from this query as 'no compromise'.
 
-[33m  >> STAGE NOTE: Say the line: "I never run a query I have not read." It comes back in the guardrails section and it answers half the Q&A.[0m
+[33m  >> WHY THIS MATTERS: The rule behind this step: never run a query you have not read. It is the same principle the guardrails section is built on.[0m
 
 [32mHUNTER[0m[2m  >  [0mRun it.
 [2m        -> 3 rows[0m
@@ -115,7 +115,7 @@
 [36mCLAUDE[0m[2m |  [0m
 [36mCLAUDE[0m[2m |  [0mFollowing the second one.
 
-[33m  >> STAGE NOTE: This is the highest-value 30 seconds in the session. The model just declined to report a finding that matched the hypothesis, because the boring explanation held. A hunt that cannot do this generates work instead of removing it.[0m
+[33m  >> WHY THIS MATTERS: The model just declined to report a finding that matched the hypothesis, because the boring explanation held. A hunt that cannot do this generates work instead of removing it.[0m
 
 [2m==========================================================================[0m
 [1m STEP 4/6  Pivot on the hit - what did it touch afterward?[0m
@@ -150,7 +150,7 @@
 [36mCLAUDE[0m[2m |  [0maccount. Recommend a second hunt on that application, in its own
 [36mCLAUDE[0m[2m |  [0mthread.
 
-[33m  >> STAGE NOTE: One hypothesis per thread. Park this and come back to it - that is exactly what Mission 2 does, and it is why the two demos are one story.[0m
+[33m  >> WHY THIS MATTERS: One hypothesis per thread. This one gets parked and picked up later - which is exactly what Mission 2 does, and why the two demos are one story.[0m
 
 [2m==========================================================================[0m
 [1m STEP 6/6  Produce the record[0m
@@ -174,5 +174,5 @@
     2026-10-26T22:01:19Z  Graph GET /directoryRoles (18,422 bytes)
     2026-10-26T22:04:55Z  Graph GET /applications (220,481 bytes)
 
-[33m  >> STAGE NOTE: Save this record. Mission 2 starts from it - the application that shows up in the last pivot is what the analytics rules missed.[0m
+[33m  >> WHY THIS MATTERS: Mission 2 starts from this record - the application that shows up in the last pivot is what the analytics rules missed.[0m
 
