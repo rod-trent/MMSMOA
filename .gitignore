@@ -8,6 +8,8 @@ venv/
 demos/empowering-soc-teams/03-triage-agent-hitl/runs/
 roi.json
 mission1-record.json
+presenter-companion.epub
+*.epub
 
 # Local environment
 .env

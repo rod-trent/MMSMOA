@@ -9,3 +9,5 @@ web/README.md
 *.md
 LICENSE
 run-all-tests.py
+record-demos.py
+build-companion.py

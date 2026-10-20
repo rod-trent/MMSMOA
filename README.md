@@ -268,6 +268,26 @@ python web/build.py        # re-bake the transcripts
 python record-demos.py     # re-render all four
 ```
 
+## Presenter companion
+
+The notes you read *while* presenting - deck speaker notes, each demo's stage
+direction, run commands and fallbacks - are scattered across two .pptx files
+and nine demo folders. `build-companion.py` pulls them into one reflowable
+EPUB, ordered the way the sessions run, for a Kindle or a phone:
+
+```bash
+python build-companion.py            # -> presenter-companion.epub
+python build-companion.py --list     # chapters only
+```
+
+This is also where the stage direction lives now. The demo runners used to
+print it on screen in yellow, which meant the room read the speaker's cues off
+the projector; those lines were rewritten as audience-facing commentary
+(`>> WHY THIS MATTERS:`) and the direction moved into the companion.
+
+Re-run it after editing a deck's notes or a demo README. It only reads the
+repo - it never edits the decks or the demos.
+
 ---
 
 ## Repository structure
@@ -276,6 +296,7 @@ python record-demos.py     # re-render all four
 MMSMOA/
 ├── README.md
 ├── run-all-tests.py                    ← runs all 13 Midway demo suites offline
+├── build-companion.py                  ← presenter notes + stage direction as an EPUB
 │
 ├── SlideDecks/
 │   ├── Empowering SOC Teams - MMS Midway 2026.pptx
