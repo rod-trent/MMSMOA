@@ -69,6 +69,11 @@ line read the same way:
 *Live Missions* prints the same link under its QR, so every URL a Midway
 deck shows is a tracked short link and the two slides read alike.
 
+Because of that, nothing on screen says where the links go. The speaker
+notes on both slides spell it out - which short link is which, what each
+resolves to, and the plain `mms-midway-demos.vercel.app` to give anyone
+who asks.
+
 `qr-demo-site.png` is the original session-neutral, untracked code. No
 slide uses it any more; it is kept for when you want a plain one.
 
