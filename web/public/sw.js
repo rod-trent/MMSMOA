@@ -5,11 +5,20 @@
  * transcript, and the Pyodide runtime. If the network dies mid-session the
  * demos keep working.
  *
- * Strategy: cache-first for our own assets (they are versioned by CACHE below
- * and rebuilt on deploy), stale-while-revalidate for the Pyodide CDN.
+ * Strategy: network-first with a short timeout for our own assets, falling
+ * back to cache; cache-first for the Pyodide CDN.
+ *
+ * Our assets change on every deploy, and the cache-first version this used
+ * to run handed a returning visitor the PREVIOUS build unless CACHE was
+ * bumped by hand - which was forgotten, and is exactly the wrong failure
+ * when you open the site in the room. Network-first removes the footgun:
+ * whatever is deployed is what you get. The timeout keeps bad venue Wi-Fi
+ * from costing more than NET_TIMEOUT per asset, and a dead network falls
+ * straight through to the cache, so the offline guarantee is unchanged.
  */
 
-var CACHE = 'mms-midway-v2';
+var CACHE = 'mms-midway-v3';   // bumped: evicts the stale v2 caches
+var NET_TIMEOUT = 1500;        // ms before we stop waiting and use the cache
 
 var CORE = [
   './',
@@ -60,6 +69,38 @@ self.addEventListener('activate', function (e) {
   );
 });
 
+function keep(req, res) {
+  if (res && (res.ok || res.type === 'opaque')) {
+    var copy = res.clone();
+    caches.open(CACHE).then(function (c) { c.put(req, copy); });
+  }
+  return res;
+}
+
+/* Resolve from the network, but give up waiting after `ms`. A response that
+ * arrives late is still cached - it just does not hold up the page. */
+function fromNetwork(req, ms) {
+  return new Promise(function (resolve, reject) {
+    var settled = false;
+    var timer = setTimeout(function () {
+      if (!settled) { settled = true; reject(new Error('slow')); }
+    }, ms);
+
+    fetch(req).then(function (res) {
+      keep(req, res);
+      if (settled) return;                 // too late to be used, now cached
+      settled = true;
+      clearTimeout(timer);
+      resolve(res);
+    }).catch(function (err) {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      reject(err);
+    });
+  });
+}
+
 self.addEventListener('fetch', function (e) {
   var req = e.request;
   if (req.method !== 'GET') return;
@@ -70,19 +111,26 @@ self.addEventListener('fetch', function (e) {
 
   if (!isOurs && !isPyodide) return;
 
-  e.respondWith(
-    caches.match(req).then(function (hit) {
-      var net = fetch(req).then(function (res) {
-        if (res && (res.ok || res.type === 'opaque')) {
-          var copy = res.clone();
-          caches.open(CACHE).then(function (c) { c.put(req, copy); });
-        }
-        return res;
-      }).catch(function () { return hit; });
+  // Pyodide is big and immutable per version: serve from cache, refresh in
+  // the background.
+  if (isPyodide) {
+    e.respondWith(
+      caches.match(req).then(function (hit) {
+        var net = fetch(req)
+          .then(function (res) { return keep(req, res); })
+          .catch(function () { return hit; });
+        return hit || net;
+      })
+    );
+    return;
+  }
 
-      // Pyodide is big and immutable-per-version: serve from cache, refresh
-      // in the background. Our own assets: cache-first, same idea.
-      return hit || net;
+  // Ours: whatever is deployed wins, with the cache as the safety net.
+  e.respondWith(
+    fromNetwork(req, NET_TIMEOUT).catch(function () {
+      return caches.match(req).then(function (hit) {
+        return hit || Response.error();
+      });
     })
   );
 });
