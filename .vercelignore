@@ -2,6 +2,7 @@
 # need uploading on every deploy - the slide decks and demo videos alone are
 # ~18MB.
 demos/
+Ken/
 SlideDecks/
 .github/
 web/build.py

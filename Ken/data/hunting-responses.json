@@ -1,0 +1,300 @@
+{
+  "_comment": [
+    "Canned POST /security/runHuntingQuery responses.",
+    "",
+    "Each entry has a 'match' array of lowercase substrings. The mock server",
+    "lowercases the incoming Query and returns the first entry whose substrings",
+    "ALL appear. That is deliberately crude - it is a fixture matcher, not a KQL",
+    "engine. Add entries as your agent learns new queries.",
+    "",
+    "The 'response' object is the real huntingQueryResults shape: a 'schema'",
+    "array of {name,type} and a 'results' array of row objects keyed by column",
+    "name.",
+    "",
+    "TABLE AVAILABILITY - this is the part that bites in a real tenant:",
+    "  SigninLogs, AuditLogs       Sentinel Analytics-tier tables. Reachable from",
+    "                              advanced hunting ONLY when the workspace is",
+    "                              onboarded to the Defender portal, and only",
+    "                              inside the Analytics retention window.",
+    "  CloudAppEvents, IdentityInfo  Native Defender XDR tables. Always available",
+    "                              with ThreatHunting.Read.All.",
+    "  BehaviorAnalytics           Sentinel UEBA. Analytics tier, same caveat as",
+    "                              SigninLogs.",
+    "",
+    "Synthetic data. No real tenant, no real people."
+  ],
+
+  "queries": [
+    {
+      "name": "signins-for-jdoe",
+      "match": ["signinlogs", "j.doe"],
+      "tableTier": "sentinel-analytics",
+      "response": {
+        "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#microsoft.graph.security.huntingQueryResults",
+        "schema": [
+          { "name": "TimeGenerated", "type": "DateTime" },
+          { "name": "UserPrincipalName", "type": "String" },
+          { "name": "IPAddress", "type": "String" },
+          { "name": "Location", "type": "String" },
+          { "name": "City", "type": "String" },
+          { "name": "AutonomousSystemNumber", "type": "Int32" },
+          { "name": "AppDisplayName", "type": "String" },
+          { "name": "ResultType", "type": "String" },
+          { "name": "AuthenticationRequirement", "type": "String" },
+          { "name": "RiskLevelDuringSignIn", "type": "String" }
+        ],
+        "results": [
+          {
+            "TimeGenerated": "2026-10-28T02:17:09Z",
+            "UserPrincipalName": "j.doe@contoso.com",
+            "IPAddress": "73.114.22.9",
+            "Location": "US",
+            "City": "Columbus",
+            "AutonomousSystemNumber": 10796,
+            "AppDisplayName": "Office 365 Exchange Online",
+            "ResultType": "0",
+            "AuthenticationRequirement": "multiFactorAuthentication",
+            "RiskLevelDuringSignIn": "none"
+          },
+          {
+            "TimeGenerated": "2026-10-28T02:58:41Z",
+            "UserPrincipalName": "j.doe@contoso.com",
+            "IPAddress": "196.207.14.88",
+            "Location": "KE",
+            "City": "Nairobi",
+            "AutonomousSystemNumber": 33771,
+            "AppDisplayName": "Microsoft Office",
+            "ResultType": "0",
+            "AuthenticationRequirement": "multiFactorAuthentication",
+            "RiskLevelDuringSignIn": "high"
+          },
+          {
+            "TimeGenerated": "2026-10-28T03:06:12Z",
+            "UserPrincipalName": "j.doe@contoso.com",
+            "IPAddress": "196.207.14.88",
+            "Location": "KE",
+            "City": "Nairobi",
+            "AutonomousSystemNumber": 33771,
+            "AppDisplayName": "Microsoft Graph Command Line Tools",
+            "ResultType": "0",
+            "AuthenticationRequirement": "singleFactorAuthentication",
+            "RiskLevelDuringSignIn": "high"
+          }
+        ]
+      }
+    },
+    {
+      "name": "signins-for-okafor",
+      "match": ["signinlogs", "m.okafor"],
+      "tableTier": "sentinel-analytics",
+      "response": {
+        "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#microsoft.graph.security.huntingQueryResults",
+        "schema": [
+          { "name": "TimeGenerated", "type": "DateTime" },
+          { "name": "UserPrincipalName", "type": "String" },
+          { "name": "IPAddress", "type": "String" },
+          { "name": "Location", "type": "String" },
+          { "name": "City", "type": "String" },
+          { "name": "AutonomousSystemNumber", "type": "Int32" },
+          { "name": "AppDisplayName", "type": "String" },
+          { "name": "ResultType", "type": "String" },
+          { "name": "RiskLevelDuringSignIn", "type": "String" }
+        ],
+        "results": [
+          {
+            "TimeGenerated": "2026-10-28T00:51:03Z",
+            "UserPrincipalName": "m.okafor@contoso.com",
+            "IPAddress": "73.114.22.41",
+            "Location": "US",
+            "City": "Columbus",
+            "AutonomousSystemNumber": 10796,
+            "AppDisplayName": "Office 365 Exchange Online",
+            "ResultType": "0",
+            "RiskLevelDuringSignIn": "none"
+          },
+          {
+            "TimeGenerated": "2026-10-28T01:13:47Z",
+            "UserPrincipalName": "m.okafor@contoso.com",
+            "IPAddress": "20.51.14.203",
+            "Location": "IE",
+            "City": "Dublin",
+            "AutonomousSystemNumber": 8075,
+            "AppDisplayName": "Office 365 Exchange Online",
+            "ResultType": "0",
+            "RiskLevelDuringSignIn": "medium"
+          }
+        ]
+      }
+    },
+    {
+      "name": "audit-mfa-and-consent",
+      "match": ["auditlogs"],
+      "tableTier": "sentinel-analytics",
+      "response": {
+        "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#microsoft.graph.security.huntingQueryResults",
+        "schema": [
+          { "name": "TimeGenerated", "type": "DateTime" },
+          { "name": "OperationName", "type": "String" },
+          { "name": "Category", "type": "String" },
+          { "name": "Result", "type": "String" },
+          { "name": "InitiatedBy", "type": "String" },
+          { "name": "TargetDisplayName", "type": "String" },
+          { "name": "PublisherVerified", "type": "Boolean" },
+          { "name": "Permissions", "type": "String" }
+        ],
+        "results": [
+          {
+            "TimeGenerated": "2026-10-28T03:02:30Z",
+            "OperationName": "User registered security info",
+            "Category": "UserManagement",
+            "Result": "success",
+            "InitiatedBy": "j.doe@contoso.com",
+            "TargetDisplayName": "Microsoft Authenticator app",
+            "PublisherVerified": null,
+            "Permissions": null
+          },
+          {
+            "TimeGenerated": "2026-10-28T03:09:55Z",
+            "OperationName": "Consent to application",
+            "Category": "ApplicationManagement",
+            "Result": "success",
+            "InitiatedBy": "j.doe@contoso.com",
+            "TargetDisplayName": "Contoso Doc Sync",
+            "PublisherVerified": false,
+            "Permissions": "Mail.Read,Files.Read.All,offline_access"
+          },
+          {
+            "TimeGenerated": "2026-10-27T16:44:02Z",
+            "OperationName": "Consent to application",
+            "Category": "ApplicationManagement",
+            "Result": "success",
+            "InitiatedBy": "it-admin@contoso.com",
+            "TargetDisplayName": "Adobe Acrobat Sign",
+            "PublisherVerified": true,
+            "Permissions": "Files.Read"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ueba-baseline",
+      "match": ["behavioranalytics"],
+      "tableTier": "sentinel-analytics",
+      "response": {
+        "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#microsoft.graph.security.huntingQueryResults",
+        "schema": [
+          { "name": "UserPrincipalName", "type": "String" },
+          { "name": "InvestigationPriority", "type": "Int32" },
+          { "name": "BaselineWindowDays", "type": "Int32" },
+          { "name": "UsualCountries", "type": "String" },
+          { "name": "UsualASNs", "type": "String" },
+          { "name": "FirstTimeCountry", "type": "Boolean" },
+          { "name": "FirstTimeASN", "type": "Boolean" },
+          { "name": "ActivityInsights", "type": "String" }
+        ],
+        "results": [
+          {
+            "UserPrincipalName": "j.doe@contoso.com",
+            "InvestigationPriority": 8,
+            "BaselineWindowDays": 90,
+            "UsualCountries": "US",
+            "UsualASNs": "10796,7018",
+            "FirstTimeCountry": true,
+            "FirstTimeASN": true,
+            "ActivityInsights": "FirstTimeUserConnectedFromCountry,FirstTimeUserUsedApp,UncommonUserAgent"
+          },
+          {
+            "UserPrincipalName": "m.okafor@contoso.com",
+            "InvestigationPriority": 2,
+            "BaselineWindowDays": 90,
+            "UsualCountries": "US,IE",
+            "UsualASNs": "10796,8075",
+            "FirstTimeCountry": false,
+            "FirstTimeASN": false,
+            "ActivityInsights": ""
+          }
+        ]
+      }
+    },
+    {
+      "name": "cloudappevents-mass-download",
+      "match": ["cloudappevents"],
+      "tableTier": "defender-xdr",
+      "response": {
+        "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#microsoft.graph.security.huntingQueryResults",
+        "schema": [
+          { "name": "Timestamp", "type": "DateTime" },
+          { "name": "AccountUpn", "type": "String" },
+          { "name": "Application", "type": "String" },
+          { "name": "ActionType", "type": "String" },
+          { "name": "IPAddress", "type": "String" },
+          { "name": "ObjectCount", "type": "Int32" }
+        ],
+        "results": [
+          {
+            "Timestamp": "2026-10-28T03:12:44Z",
+            "AccountUpn": "j.doe@contoso.com",
+            "Application": "Contoso Doc Sync",
+            "ActionType": "MailItemsAccessed",
+            "IPAddress": "196.207.14.88",
+            "ObjectCount": 218
+          },
+          {
+            "Timestamp": "2026-10-27T11:18:31Z",
+            "AccountUpn": "p.nakamura@contoso.com",
+            "Application": "Microsoft SharePoint Online",
+            "ActionType": "FileDownloaded",
+            "IPAddress": "73.114.22.61",
+            "ObjectCount": 1204
+          }
+        ]
+      }
+    },
+    {
+      "name": "identityinfo-enrichment",
+      "match": ["identityinfo"],
+      "tableTier": "defender-xdr",
+      "response": {
+        "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#microsoft.graph.security.huntingQueryResults",
+        "schema": [
+          { "name": "AccountUPN", "type": "String" },
+          { "name": "AccountDisplayName", "type": "String" },
+          { "name": "Department", "type": "String" },
+          { "name": "JobTitle", "type": "String" },
+          { "name": "Manager", "type": "String" },
+          { "name": "AssignedRoles", "type": "String" },
+          { "name": "AssetCriticality", "type": "String" }
+        ],
+        "results": [
+          {
+            "AccountUPN": "j.doe@contoso.com",
+            "AccountDisplayName": "Jordan Doe",
+            "Department": "Finance",
+            "JobTitle": "Treasury Analyst",
+            "Manager": "s.patel@contoso.com",
+            "AssignedRoles": "",
+            "AssetCriticality": "High"
+          },
+          {
+            "AccountUPN": "m.okafor@contoso.com",
+            "AccountDisplayName": "Maya Okafor",
+            "Department": "Engineering",
+            "JobTitle": "Platform Engineer",
+            "Manager": "d.chen@contoso.com",
+            "AssignedRoles": "",
+            "AssetCriticality": "Medium"
+          }
+        ]
+      }
+    }
+  ],
+
+  "default": {
+    "_note": "Returned when no 'match' entry fits. An empty result set is the honest answer - it makes the agent say 'no data' rather than hallucinate rows.",
+    "response": {
+      "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#microsoft.graph.security.huntingQueryResults",
+      "schema": [],
+      "results": []
+    }
+  }
+}
