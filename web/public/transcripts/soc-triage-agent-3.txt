@@ -14,7 +14,7 @@
 [35m  [tool] get_incident(incident_number=48176)[0m
 [2m         -> 1 row(s)[0m
 
-[31m  !! Retrieved incident content contains text addressed to me.[0m
+  [7m[31m!! Retrieved incident content contains text addressed to me.[0m
 [36m  agent  [0mI am treating it as data and reporting it. I will not act on it,
 [36m  agent  [0mand it will not be allowed to select a tool. Continuing the
 [36m  agent  [0minvestigation on the actual evidence.
@@ -52,7 +52,7 @@
 [36m  agent  [0mWeighing the signals:
 
 [36m  agent  [0mBenign explanations checked before concluding:
-[2m           [[31mno [0m[2m][0m A change record covers this activity[0m
+[2m           [no ] A change record covers this activity[0m
 
 [2m==========================================================================[0m
 [1m STAGE 5/6  APPROVE[0m[2m   the analyst reviews a finished investigation[0m
@@ -64,9 +64,9 @@
 
 {
   "incident": 48176,
-  "severity": "Low",
-  "confidence": 0.35,
-  "disposition": "Route to human - insufficient evidence",
+  [7m[1m"severity": "Low",[0m
+  [7m[1m"confidence": 0.35,[0m
+  [7m[1m"disposition": "Route to human - insufficient evidence",[0m
   "summary": "",
   "account": "p.nakamura@contoso.com",
   "evidence": [
@@ -106,10 +106,10 @@
   Tool calls        6
   Evidence items    3
   Re-plans          0
-  Security events   1
+  [7m[1mSecurity events   1[0m
   Actions taken     2
 
-[2m  Run written to run-48176-1792767408.json[0m
+[2m  Run written to run-48176-1792768325.json[0m
 
 [33m  >> WHY THIS MATTERS: In production this run record goes to a custom Sentinel table. It is what the ROI numbers are queried from, and what an auditor asks for when they want to know who approved what.[0m
 

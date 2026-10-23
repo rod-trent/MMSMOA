@@ -71,12 +71,27 @@ RUN_LOG = Path(__file__).parent / "runs"
 
 RESET, DIM, BOLD = "\033[0m", "\033[2m", "\033[1m"
 CYAN, GREEN, YELLOW, MAGENTA, RED = "\033[36m", "\033[32m", "\033[33m", "\033[35m", "\033[31m"
+REV = "\033[7m"
 
 _color = sys.stdout.isatty()
 
 
 def c(text: str, code: str) -> str:
     return f"{code}{text}{RESET}" if _color else text
+
+
+def hi(text: str) -> str:
+    """The highlight the presenter points at.
+
+    Reverse video, used only for what changes between the four runs: the
+    disposition the agent reaches, a benign explanation that came back yes,
+    a re-plan, an injection attempt, and the two counters those produce.
+    Everything else stays plain, or the highlight stops meaning anything.
+
+    web/public/assets/ansi.js and record-demos.py both render SGR 7, so the
+    page and the MP4 show the same marks as the terminal.
+    """
+    return c(text, REV + BOLD)
 
 
 def plain(value: Any) -> Any:
@@ -106,12 +121,28 @@ def tool(name: str, args: dict[str, Any], summary: str) -> None:
 
 def warn(text: str) -> None:
     print()
-    print(c(f"  !! {text}", RED))
+    print("  " + c(f"!! {text}", REV + RED))
 
 
 def note(text: str) -> None:
     print()
     print(c(f"  >> WHY THIS MATTERS: {text}", YELLOW))
+
+
+# The three fields that differ between the four runs. Everything else in the
+# proposal is the same shape every time, which is itself the point.
+VERDICT_FIELDS = ("severity", "confidence", "disposition")
+
+
+def emit_proposal(payload: dict[str, Any]) -> None:
+    """Print the proposal JSON with the verdict fields highlighted."""
+    for line in json.dumps(payload, indent=2).split("\n"):
+        body = line.lstrip()
+        field = body.split('"')[1] if body.startswith('"') else ""
+        if field in VERDICT_FIELDS:
+            print(line[:len(line) - len(body)] + hi(body))
+        else:
+            print(line)
 
 
 # ---------------------------------------------------------------------------
@@ -473,8 +504,9 @@ class TriageAgent:
         stage(4, "REASON", "score it, and check the boring explanation first")
 
         if prior_rejection:
-            think(f"Re-planning. The analyst rejected the previous disposition:\n"
-                  f'  "{prior_rejection}"\n'
+            print(c("  agent  ", CYAN)
+                  + hi("RE-PLAN - the analyst rejected the previous disposition"))
+            think(f'  "{prior_rejection}"\n'
                   f"Re-weighting and producing a new one.")
             self.record.replans += 1
 
@@ -623,8 +655,10 @@ class TriageAgent:
         print()
         think("Benign explanations checked before concluding:")
         for b in benign_checks:
-            mark = c("yes", GREEN) if b["result"] == "yes" else c("no ", RED)
-            print(c(f"           [{mark}{c(']', DIM)} {b['explanation']}", DIM))
+            if b["result"] == "yes":
+                print("           " + hi(f"[yes] {b['explanation']}"))
+            else:
+                print(c(f"           [no ] {b['explanation']}", DIM))
 
         summary_bits = []
         if primary:
@@ -739,15 +773,16 @@ class ApprovalGate:
         print(c("   AGENT PROPOSAL - REQUIRES HUMAN APPROVAL", YELLOW + BOLD))
         print(c("  " + "-" * 70, YELLOW))
         print()
-        print(json.dumps(
-            {k: v for k, v in proposal.items() if k not in ("benign_explanations_checked", "risk_score")},
-            indent=2,
-        ))
+        emit_proposal({k: v for k, v in proposal.items()
+                       if k not in ("benign_explanations_checked", "risk_score")})
         print()
         print(c("   Benign explanations the agent checked before proposing this:", DIM))
         for b in proposal["benign_explanations_checked"]:
-            mark = "yes" if b["result"] == "yes" else "no "
-            print(c(f"     [{mark}] {b['explanation']} - {b['detail']}", DIM))
+            row = f"{b['explanation']} - {b['detail']}"
+            if b["result"] == "yes":
+                print("     " + hi(f"[yes] {row}"))
+            else:
+                print(c(f"     [no ] {row}", DIM))
         print(c("  " + "-" * 70, YELLOW))
 
         note("The analyst is reviewing a finished investigation, not starting "
@@ -895,11 +930,15 @@ def run_agent(
     print(c(" RUN LOG", BOLD) + c("   observability is not optional", DIM))
     print(c("=" * 74, DIM))
     print()
-    print(f"  Tool calls        {len(record.tool_calls)}")
-    print(f"  Evidence items    {len(record.evidence)}")
-    print(f"  Re-plans          {record.replans}")
-    print(f"  Security events   {len(record.security_events)}")
-    print(f"  Actions taken     {len(record.actions_taken)}")
+    def counter(label: str, value: int, mark: bool = False) -> None:
+        row = f"{label:<18}{value}"
+        print("  " + (hi(row) if mark and value else row))
+
+    counter("Tool calls", len(record.tool_calls))
+    counter("Evidence items", len(record.evidence))
+    counter("Re-plans", record.replans, mark=True)
+    counter("Security events", len(record.security_events), mark=True)
+    counter("Actions taken", len(record.actions_taken))
     print()
     print(c(f"  Run written to {path.name}", DIM))
     note("In production this run record goes to a custom Sentinel table. It is "

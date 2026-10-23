@@ -389,6 +389,19 @@ body::after {
 .a-magenta{ color: #c084fc; }
 .a-cyan   { color: #22d3ee; }
 .a-white  { color: #f1f5f9; }
+/* Reverse video: the demos' highlight on whatever changes between runs.
+   Each pairing is spelled out because currentColor would resolve to the
+   foreground this rule has already replaced. */
+.a-rev           { background: var(--ink-dim);   color: #00091c; border-radius: 2px; }
+.a-rev.a-dim     { background: var(--ink-faint); color: #00091c; }
+.a-rev.a-bold    { background: #fff;             color: #00091c; }
+.a-rev.a-red     { background: var(--bad);       color: #00091c; }
+.a-rev.a-green   { background: var(--ok);        color: #00091c; }
+.a-rev.a-yellow  { background: var(--warn);      color: #00091c; }
+.a-rev.a-blue    { background: #60a5fa;          color: #00091c; }
+.a-rev.a-magenta { background: #c084fc;          color: #00091c; }
+.a-rev.a-cyan    { background: #22d3ee;          color: #00091c; }
+.a-rev.a-white   { background: #f1f5f9;          color: #00091c; }
 
 /* ---------- footer ---------- */
 

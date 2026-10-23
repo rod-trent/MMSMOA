@@ -75,6 +75,25 @@ It also plays from this demo's card on the
 [demo site](https://mms-midway-demos.vercel.app/?demo=soc-triage-agent). Re-render it with
 `python record-demos.py` from the repo root after changing this demo.
 
+## What the highlight marks
+
+Each run reverses out the lines that differ from the other three, so you can
+point at a difference instead of describing where to look. Nothing else is
+marked — the highlight only means something while it stays rare.
+
+| Highlighted | Shows up in | What you say |
+|-------------|-------------|--------------|
+| `severity`, `confidence`, `disposition` in the proposal | every run | The verdict. Same three fields every time, different values — that *is* the comparison. |
+| A benign explanation that came back `[yes]` | runs 1 and 3 | The one check that resolves is the whole reason 48201 closes. |
+| `RE-PLAN` | run 3 | It changed its answer because a human said no, not because it found new evidence. |
+| The `!!` injection notice | the injection run | Retrieved text addressed the model. It reported it and carried on. |
+| `Re-plans` and `Security events`, when non-zero | runs 3 and 4 | The run record counted what happened. An auditor can query that. |
+
+It is SGR 7 (reverse video), so it survives every surface this output is shown
+on: the terminal, the player on the demo site, and the MP4. If you add a new
+highlight, add it to `ansi.js` and `record-demos.py` too, or the page and the
+recording will quietly disagree with the terminal.
+
 ## The stage sequence
 
 Run it **three times**. Each run makes a different point, and together they

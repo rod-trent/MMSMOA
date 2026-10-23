@@ -117,6 +117,10 @@ COLORS = {
 SGR = {1: "bold", 2: "dim", 31: "red", 32: "green", 33: "yellow",
        34: "blue", 35: "magenta", 36: "cyan", 37: "white"}
 
+# SGR 7. The demos highlight whatever changes between runs with it; drawn as a
+# filled block so the recording marks the same lines the terminal does.
+REVERSE = 7
+
 FONT_DIR = Path("C:/Windows/Fonts")
 FONT_SIZE = 21
 LINE_H = 29
@@ -149,23 +153,26 @@ VISIBLE = (H - TOP - BOTTOM) // LINE_H
 # ---------------------------------------------------------------------------
 
 
-def parse(text: str) -> list[list[tuple[str, tuple, bool]]]:
-    """Split ANSI text into lines of (text, rgb, bold) spans."""
-    lines: list[list[tuple[str, tuple, bool]]] = []
-    colour, bold, dim = INK, False, False
+def parse(text: str) -> list[list[tuple[str, tuple, bool, bool]]]:
+    """Split ANSI text into lines of (text, rgb, bold, reverse) spans."""
+    lines: list[list[tuple[str, tuple, bool, bool]]] = []
+    colour, bold, dim, rev = INK, False, False, False
 
     for raw in text.replace("\r\n", "\n").split("\n"):
-        spans: list[tuple[str, tuple, bool]] = []
+        spans: list[tuple[str, tuple, bool, bool]] = []
         pos = 0
         for m in ANSI.finditer(raw):
             chunk = raw[pos:m.start()]
             if chunk:
-                spans.append((chunk, COLORS["dim"] if dim and colour is INK else colour, bold))
+                spans.append((chunk, COLORS["dim"] if dim and colour is INK else colour,
+                              bold, rev))
             pos = m.end()
             codes = [int(c) for c in m.group(1).split(";") if c != ""] or [0]
             for c in codes:
                 if c == 0:
-                    colour, bold, dim = INK, False, False
+                    colour, bold, dim, rev = INK, False, False, False
+                elif c == REVERSE:
+                    rev = True
                 elif c == 1:
                     bold = True
                     colour = COLORS["bold"]
@@ -175,7 +182,8 @@ def parse(text: str) -> list[list[tuple[str, tuple, bool]]]:
                     colour = COLORS[SGR[c]]
         tail = raw[pos:]
         if tail:
-            spans.append((tail, COLORS["dim"] if dim and colour is INK else colour, bold))
+            spans.append((tail, COLORS["dim"] if dim and colour is INK else colour,
+                          bold, rev))
         lines.append(spans)
     return lines
 
@@ -249,9 +257,13 @@ def frame(rec, cmd, window, note=None) -> Image.Image:
     y = TOP
     for spans in window:
         x = PAD_X
-        for text, rgb, bold in spans:
-            d.text((x, y), text, font=MONO_B if bold else MONO, fill=rgb)
-            x += CHAR_W * len(text)
+        for text, rgb, bold, rev in spans:
+            w = CHAR_W * len(text)
+            if rev:
+                d.rectangle([x - 2, y - 3, x + w + 2, y + LINE_H - 6], fill=rgb)
+            d.text((x, y), text, font=MONO_B if bold else MONO,
+                   fill=BG if rev else rgb)
+            x += w
         y += LINE_H
 
     # Footer

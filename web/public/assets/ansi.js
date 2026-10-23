@@ -1,7 +1,8 @@
 /* ansi.js — minimal ANSI SGR to HTML.
  *
- * The demos emit exactly the codes in `MAP` below (reset, dim, bold, and the
- * eight basic foreground colours). This is not a general terminal emulator and
+ * The demos emit exactly the codes in `MAP` below (reset, dim, bold, reverse,
+ * and the eight basic foreground colours). Reverse is the highlight the demos
+ * put on whatever changes between runs. This is not a general terminal emulator and
  * does not try to be; anything it does not recognise is dropped rather than
  * printed as garbage.
  */
@@ -11,6 +12,7 @@
   var MAP = {
     1: 'a-bold',
     2: 'a-dim',
+    7: 'a-rev',
     31: 'a-red',
     32: 'a-green',
     33: 'a-yellow',
@@ -57,7 +59,7 @@
         } else if (MAP[c]) {
           // Only one colour at a time; bold/dim may stack with a colour.
           if (c >= 30) state.classes = state.classes.filter(function (k) {
-            return k === 'a-bold' || k === 'a-dim';
+            return k === 'a-bold' || k === 'a-dim' || k === 'a-rev';
           });
           if (state.classes.indexOf(MAP[c]) === -1) state.classes.push(MAP[c]);
         }
