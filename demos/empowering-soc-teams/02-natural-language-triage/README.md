@@ -1,6 +1,6 @@
 # Demo 2 — Ask Like an Analyst
 
-**Mission 1, part B** · Session: *Empowering SOC Teams* · Slide 15, steps 2–6
+**Mission 1, part B** · Session: *Empowering SOC Teams* · Slide 15, steps 2–7
 
 An analyst asks a question in plain language. The model discovers tables,
 writes the KQL, pivots across sign-in, audit, and cloud app data, checks the

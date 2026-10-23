@@ -106,7 +106,7 @@ DEMOS_MANIFEST: list[dict] = [
         "kind": "run",
         "script": f"{SOC}/02-natural-language-triage/triage_walkthrough.py",
         "video": "video/demo-08-mission1-triage.mp4",
-        "videoLength": "1:09",
+        "videoLength": "1:18",
         "variants": [
             {"label": "Run the mission", "args": ["--fast"], "primary": True},
             {"label": "Record only (JSON)", "args": ["--json"]},

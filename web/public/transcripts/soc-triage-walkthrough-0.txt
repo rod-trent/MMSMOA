@@ -48,6 +48,47 @@
 [36mCLAUDE [0m[2m |  [0mChecking sign-in history for both travel candidates.
 
 [2m==========================================================================[0m
+[1m Step 3 (done here) - Review the KQL[0m
+[2m==========================================================================[0m
+
+[32mANALYST[0m[2m  >  [0mShow me the KQL first. Explain what it matches and, more importantly, what it would miss.
+
+[36mCLAUDE [0m[2m |  [0mHere is the location-change query. On its own it decides nothing - it
+[36mCLAUDE [0m[2m |  [0mis the raw signal, not the verdict:
+
+[35m           let window = 24h;[0m
+[35m           SigninLogs[0m
+[35m           | where TimeGenerated > ago(window)[0m
+[35m           | where ResultType == 0                      // successful sign-ins only[0m
+[35m           | project TimeGenerated, UserPrincipalName, Location,[0m
+[35m                     ASN = tostring(AutonomousSystemNumber), RiskLevelDuringSignIn[0m
+[35m           | sort by UserPrincipalName asc, TimeGenerated asc[0m
+[35m           | extend PrevLocation = prev(Location), PrevASN = prev(ASN),[0m
+[35m                    PrevTime = prev(TimeGenerated), PrevUser = prev(UserPrincipalName)[0m
+[35m           | where PrevUser == UserPrincipalName        // stay inside one account[0m
+[35m           | where PrevLocation != Location[0m
+[35m           | extend MinutesBetween = datetime_diff('minute', TimeGenerated, PrevTime)[0m
+[35m           | where MinutesBetween <= 60[0m
+[35m           | order by MinutesBetween asc[0m
+
+[36mCLAUDE [0m[2m |  [0mWhat it matches: two consecutive successful sign-ins for the same
+[36mCLAUDE [0m[2m |  [0maccount, less than an hour apart, from different countries.
+[36mCLAUDE [0m[2m |  [0m
+[36mCLAUDE [0m[2m |  [0mWhat it would miss, and that is the longer list:
+[36mCLAUDE [0m[2m |  [0m  * prev() only compares a row with the one before it. One ordinary
+[36mCLAUDE [0m[2m |  [0m    sign-in from the home city in between and the pair never forms.
+[36mCLAUDE [0m[2m |  [0m  * ResultType == 0 drops failures, so a password spray that preceded
+[36mCLAUDE [0m[2m |  [0m    the success is invisible here.
+[36mCLAUDE [0m[2m |  [0m  * Location is country-level. Dublin to Belfast trips this; Nairobi
+[36mCLAUDE [0m[2m |  [0m    to Mombasa does not.
+[36mCLAUDE [0m[2m |  [0m  * Refresh-token activity lands in AADNonInteractiveUserSignInLogs,
+[36mCLAUDE [0m[2m |  [0m    a table this query never touches.
+[36mCLAUDE [0m[2m |  [0m  * Nothing in it knows what is normal for the account. A corporate
+[36mCLAUDE [0m[2m |  [0m    VPN egress produces exactly this row.
+
+[33m  >> WHY THIS MATTERS: The query is not the deliverable - the limits are. And the last one is why the next step exists: this cannot tell a VPN from a stolen session, and the model says so before you have to ask.[0m
+
+[2m==========================================================================[0m
 [1m Step 5 - Watch it pivot[0m
 [2m==========================================================================[0m
 [35m           [tool] get_signin_activity(upn='j.doe@contoso.com', lookback_hours=24)[0m

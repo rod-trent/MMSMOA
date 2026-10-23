@@ -120,13 +120,20 @@ def toolresult(summary: str) -> None:
     print(c(f"           [<--] {summary}", DIM))
 
 
+def kql(query: str) -> None:
+    """Print a query the model wrote, for the analyst to read before it runs."""
+    print()
+    for line in query.strip().split("\n"):
+        print(c(f"           {line}", MAGENTA))
+
+
 def note(text: str) -> None:
     print()
     print(c(f"  >> WHY THIS MATTERS: {text}", YELLOW))
 
 
 # ---------------------------------------------------------------------------
-# The walkthrough - slide 15, steps 2 through 6
+# The walkthrough - slide 15, steps 2 through 7
 # ---------------------------------------------------------------------------
 
 
@@ -205,6 +212,63 @@ def run(pacer: Pacer) -> dict[str, Any]:
             a=48209, b=48213, c=48201
         )
     )
+    pacer.beat()
+
+    # --- Step 3: review the KQL -------------------------------------------
+    #
+    # Slide 15 numbers this one 3, but it lands here: you interrupt after the
+    # plan and before anything executes. prompts.md calls it "Step 3, done
+    # here" for the same reason.
+
+    rule("Step 3 (done here) - Review the KQL")
+    analyst(
+        "Show me the KQL first. Explain what it matches and, more importantly, "
+        "what it would miss."
+    )
+
+    model(
+        "Here is the location-change query. On its own it decides nothing - it\n"
+        "is the raw signal, not the verdict:"
+    )
+
+    kql(
+        """
+let window = 24h;
+SigninLogs
+| where TimeGenerated > ago(window)
+| where ResultType == 0                      // successful sign-ins only
+| project TimeGenerated, UserPrincipalName, Location,
+          ASN = tostring(AutonomousSystemNumber), RiskLevelDuringSignIn
+| sort by UserPrincipalName asc, TimeGenerated asc
+| extend PrevLocation = prev(Location), PrevASN = prev(ASN),
+         PrevTime = prev(TimeGenerated), PrevUser = prev(UserPrincipalName)
+| where PrevUser == UserPrincipalName        // stay inside one account
+| where PrevLocation != Location
+| extend MinutesBetween = datetime_diff('minute', TimeGenerated, PrevTime)
+| where MinutesBetween <= 60
+| order by MinutesBetween asc
+"""
+    )
+
+    model(
+        "What it matches: two consecutive successful sign-ins for the same\n"
+        "account, less than an hour apart, from different countries.\n"
+        "\n"
+        "What it would miss, and that is the longer list:\n"
+        "  * prev() only compares a row with the one before it. One ordinary\n"
+        "    sign-in from the home city in between and the pair never forms.\n"
+        "  * ResultType == 0 drops failures, so a password spray that preceded\n"
+        "    the success is invisible here.\n"
+        "  * Location is country-level. Dublin to Belfast trips this; Nairobi\n"
+        "    to Mombasa does not.\n"
+        "  * Refresh-token activity lands in AADNonInteractiveUserSignInLogs,\n"
+        "    a table this query never touches.\n"
+        "  * Nothing in it knows what is normal for the account. A corporate\n"
+        "    VPN egress produces exactly this row."
+    )
+    note("The query is not the deliverable - the limits are. And the last one "
+         "is why the next step exists: this cannot tell a VPN from a stolen "
+         "session, and the model says so before you have to ask.")
     pacer.beat()
 
     # --- Step 5: watch it pivot -------------------------------------------
