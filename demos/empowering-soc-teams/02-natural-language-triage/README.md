@@ -148,7 +148,7 @@ self-test proves each one:
 - **Row cap** — 200 rows per call
 - **Data is not instructions** — free-text fields come back wrapped in
   `<untrusted-data source="tenant-record">…</untrusted-data>`, so a client can
-  render content without obeying it (slide 20)
+  render content without obeying it (slide 25)
 - **No answer leakage** — `_ground_truth` and authoring notes are stripped
   before anything reaches the model
 

@@ -1,8 +1,8 @@
 # Demo 5 — Instrument, Then Automate
 
-**Take-home / bonus** · Session: *Empowering SOC Teams* · Slides 21–22
+**Take-home / bonus** · Session: *Empowering SOC Teams* · Slides 26–27
 
-The four metrics from slide 21, the query that picks which alert class to
+The four metrics from slide 26, the query that picks which alert class to
 automate first, and an ROI model that survives contact with a CFO.
 
 ---
@@ -34,7 +34,7 @@ let them run.
 
 ## The four metrics
 
-| Metric | Definition | Industry baseline (slide 21) |
+| Metric | Definition | Industry baseline (slide 26) |
 |--------|-----------|------------------------------|
 | Mean time to triage | Alert created → first disposition | ~56 min to first action |
 | Uninvestigated rate | % of alerts no analyst ever touched | 42% |
@@ -52,7 +52,7 @@ Two things worth saying about how these are computed:
 
 ## Picking the first class
 
-Slide 22: one high-volume, **low-risk** class. The opportunity score is volume
+Slide 27: one high-volume, **low-risk** class. The opportunity score is volume
 discounted by how often the class is genuinely High severity.
 
 ```
@@ -121,7 +121,7 @@ Demo 3 writes those run records. `SOCAgentRuns_CL` is where they land.
 
 ## Stage note
 
-Slide 21 is a talk slide, not a demo slide. If you have 90 seconds, run
+Slide 26 is a talk slide, not a demo slide. If you have 90 seconds, run
 `.\Measure-SocRoi.ps1` in sample mode and let the room read the cost table —
 particularly the human review line. It reframes the conversation from "will AI
 replace analysts" to "what is review time worth", which is the conversation you

@@ -15,9 +15,9 @@ requirements and fallback plans for each live mission.
 | Deck | Slide | Demo |
 |------|-------|------|
 | Empowering SOC Teams | 14–15 (Mission 1) | [`01-mcp-connection`](../demos/empowering-soc-teams/01-mcp-connection/), [`02-natural-language-triage`](../demos/empowering-soc-teams/02-natural-language-triage/) |
-| Empowering SOC Teams | 16–18 (Mission 2) | [`03-triage-agent-hitl`](../demos/empowering-soc-teams/03-triage-agent-hitl/) |
-| Empowering SOC Teams | 20 (guardrails) | [`04-guardrails-injection-test`](../demos/empowering-soc-teams/04-guardrails-injection-test/) |
-| Empowering SOC Teams | 21–22 (ROI, 30/60/90) | [`05-roi-baseline`](../demos/empowering-soc-teams/05-roi-baseline/) |
+| Empowering SOC Teams | 16–23 (Mission 2) | [`03-triage-agent-hitl`](../demos/empowering-soc-teams/03-triage-agent-hitl/) |
+| Empowering SOC Teams | 25 (guardrails) | [`04-guardrails-injection-test`](../demos/empowering-soc-teams/04-guardrails-injection-test/) |
+| Empowering SOC Teams | 26–27 (ROI, 30/60/90) | [`05-roi-baseline`](../demos/empowering-soc-teams/05-roi-baseline/) |
 | Modern Threat Detection | 11–12 (prompt patterns) | [`01-prompt-patterns`](../demos/modern-threat-detection/01-prompt-patterns/) |
 | Modern Threat Detection | 14–15 (Mission 1) | [`02-hypothesis-hunt`](../demos/modern-threat-detection/02-hypothesis-hunt/) |
 | Modern Threat Detection | 16–17 (Mission 2) | [`03-anomaly-to-detection`](../demos/modern-threat-detection/03-anomaly-to-detection/) |

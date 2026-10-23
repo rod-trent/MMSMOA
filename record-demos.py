@@ -64,7 +64,7 @@ RECORDINGS = [
         "id": "soc-m2",
         "title": "Mission 2 — Auto-Triage + Human on the Trigger",
         "session": "Empowering SOC Teams",
-        "slides": "slides 16–18",
+        "slides": "slides 16–23",
         # The stage sequence is both runs: the clean one, then the rejection.
         "parts": [
             ("python soc_triage_agent.py --incident 48213", "soc-triage-agent-1"),

@@ -115,7 +115,7 @@ def note(text: str) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Guardrails (slide 16 bottom row, slide 20)
+# Guardrails (slide 16 bottom row, slide 25)
 # ---------------------------------------------------------------------------
 
 # The agent's own identity. Read tools are always allowed; write tools are
@@ -303,7 +303,7 @@ class TriageAgent:
         """Scan retrieved content for instructions aimed at the agent.
 
         Returns True if something was found. The agent reports it and keeps
-        going; it never obeys it and never lets it pick a tool. Slide 20.
+        going; it never obeys it and never lets it pick a tool. Slide 25.
         """
         found = False
 
@@ -724,7 +724,7 @@ class TriageAgent:
 class ApprovalGate:
     """Nothing reaches Act without passing through here.
 
-    Slide 20: 'Read-only by default. Any write needs an explicit human approval
+    Slide 25: 'Read-only by default. Any write needs an explicit human approval
     with the evidence in view. No silent production actions, ever.'
     """
 
@@ -756,7 +756,7 @@ class ApprovalGate:
         if self.mode == "auto":
             print()
             print(c("  [--auto-approve] approving without a human. Do not do this in "
-                    "production until accuracy earns it (slide 21).", DIM))
+                    "production until accuracy earns it (slide 26).", DIM))
             return {"outcome": "approved", "by": "automation", "comment": "--auto-approve"}
 
         if self.mode == "reject":

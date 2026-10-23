@@ -1,6 +1,6 @@
 # Demo 3 — Auto-Triage with a Human on the Trigger
 
-**Mission 2** · Session: *Empowering SOC Teams* · Slides 16–18
+**Mission 2** · Session: *Empowering SOC Teams* · Slides 16–23
 
 An agent works an unassigned incident end to end — correlate, enrich, reason —
 and then stops. It proposes a disposition with cited evidence and waits. A
@@ -177,4 +177,4 @@ Worth saying out loud rather than being asked:
 - `run_kql` in the replay layer is a small evaluator, not a KQL engine. It handles
   the queries this demo makes and refuses everything dangerous.
 - Auto-approve exists for CI. The config disables it by default and documents
-  what would have to be true first (slide 21's accuracy gate).
+  what would have to be true first (slide 26's accuracy gate).

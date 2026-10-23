@@ -290,7 +290,7 @@ ch("SOC Demo 2 — the prompts, verbatim",
    whole("empowering-soc-teams/02-natural-language-triage/prompts.md"))
 
 ch("SOC Demo 3 — Auto-Triage and the Human Trigger", """
-Slides 16 to 18. The agent runs the loop; the analyst keeps the trigger.
+Slides 16 to 23. The agent runs the loop; the analyst keeps the trigger.
 
 ## From the deck
 
@@ -304,12 +304,15 @@ Slides 16 to 18. The agent runs the loop; the analyst keeps the trigger.
 
 %s
 """ % (from_deck(SOC, {16: "Anatomy of a Triage Agent",
-                       17: "Mission 2", 18: "Mission 2 Walkthrough"}, "SOC"),
+                       17: "Mission 2", 18: "Mission 2 Walkthrough",
+                       19: "Four Runs", 20: "The Easy One",
+                       21: "The Real One", 22: "Reject It on Purpose",
+                       23: "Injection Payload"}, "SOC"),
        section("empowering-soc-teams/03-triage-agent-hitl/README.md", "Run it"),
        section("empowering-soc-teams/03-triage-agent-hitl/README.md", "The stage sequence")))
 
 ch("SOC Demo 4 — Guardrails and Injection", """
-Slide 20. The prompt-injection defence, tested rather than asserted.
+Slide 25. The prompt-injection defence, tested rather than asserted.
 
 ## From the deck
 
@@ -322,12 +325,12 @@ Slide 20. The prompt-injection defence, tested rather than asserted.
 ## Beats to narrate
 
 %s
-""" % (from_deck(SOC, {20: "Human-in-the-Loop"}, "SOC"),
+""" % (from_deck(SOC, {25: "Human-in-the-Loop"}, "SOC"),
        section("empowering-soc-teams/04-guardrails-injection-test/README.md", "Run it"),
        section("empowering-soc-teams/04-guardrails-injection-test/README.md", "Stage note")))
 
 ch("SOC Demo 5 — Measuring ROI", """
-Slides 21 and 22. Instrument first, automate second.
+Slides 26 and 27. Instrument first, automate second.
 
 ## From the deck
 
@@ -340,7 +343,7 @@ Slides 21 and 22. Instrument first, automate second.
 ## Beats to narrate
 
 %s
-""" % (from_deck(SOC, {21: "Measuring ROI", 22: "Scaling the Agentic SOC"}, "SOC"),
+""" % (from_deck(SOC, {26: "Measuring ROI", 27: "Scaling the Agentic SOC"}, "SOC"),
        section("empowering-soc-teams/05-roi-baseline/README.md", "Run it"),
        section("empowering-soc-teams/05-roi-baseline/README.md", "Stage note")))
 

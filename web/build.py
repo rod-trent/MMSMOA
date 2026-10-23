@@ -116,7 +116,7 @@ DEMOS_MANIFEST: list[dict] = [
         "id": "soc-triage-agent",
         "session": "soc",
         "title": "Auto-Triage + Human on the Trigger",
-        "subtitle": "Mission 2 · slides 16–18",
+        "subtitle": "Mission 2 · slides 16–23",
         "blurb": "The six-stage loop, with an approval gate the agent cannot get past. "
                  "Run it clean, then reject it on purpose and watch it re-plan.",
         "kind": "run",
@@ -139,7 +139,7 @@ DEMOS_MANIFEST: list[dict] = [
         "id": "soc-injection",
         "session": "soc",
         "title": "Prove the Guardrails Hold",
-        "subtitle": "Slide 20",
+        "subtitle": "Slide 25",
         "blurb": "Ten prompt-injection payloads and two benign controls, scored. "
                  "Reports one payload it does not detect, on purpose.",
         "kind": "run",
@@ -154,7 +154,7 @@ DEMOS_MANIFEST: list[dict] = [
         "id": "soc-roi",
         "session": "soc",
         "title": "Instrument, Then Automate",
-        "subtitle": "Slides 21–22",
+        "subtitle": "Slides 26–27",
         "blurb": "The four baseline metrics, which alert class to automate first, and an "
                  "ROI model that includes human review time — the largest cost line.",
         "kind": "playback",
@@ -263,7 +263,7 @@ DEMOS_MANIFEST: list[dict] = [
 #   download  GitHub's raw endpoint
 #   open      the ms-powerpoint: URI, which hands it to desktop PowerPoint
 #
-# Verified: the raw URL 200s, and the viewer renders the deck to "SLIDE 1 OF 25".
+# Verified: the raw URL 200s, and the viewer renders the deck to "SLIDE 1 OF 30".
 
 import urllib.parse
 
@@ -394,7 +394,7 @@ PS_ROI_TRANSCRIPT = """\033[2m
 \033[33m  SAMPLE MODE. No -WorkspaceId supplied, so these are illustrative
   numbers, not your tenant. Pass -WorkspaceId to measure for real.\033[0m
 
-\033[1m The four metrics (slide 21)\033[0m
+\033[1m The four metrics (slide 26)\033[0m
 \033[2m--------------------------------------------------------------------------\033[0m
   Mean time to triage        \033[31m68.4 min\033[0m        \033[2mindustry ~56 min to first action\033[0m
     p50 / p90                41 / 187 min    \033[2mp90 is where the pain actually is\033[0m
@@ -402,7 +402,7 @@ PS_ROI_TRANSCRIPT = """\033[2m
   Auto-disposition accuracy  no data         \033[2mno rows in SOCAgentRuns_CL yet - expected pre-agent\033[0m
   Analyst hours reclaimed    0 (baseline)    \033[2mtarget: 10 hrs/week into hunting\033[0m
 
-\033[1m Where to start (slide 22: one high-volume, low-risk class)\033[0m
+\033[1m Where to start (slide 27: one high-volume, low-risk class)\033[0m
 \033[2m--------------------------------------------------------------------------\033[0m
 \033[2m  Alert class                                  Volume  High sev  Opportunity\033[0m
   Atypical travel                                1842      4.1%        38863
@@ -447,7 +447,7 @@ PS_ROI_TRANSCRIPT = """\033[2m
   Human review is a real, recurring cost. Any ROI model that
   omits it is selling something.\033[0m
 
-\033[1m Scaling gate (slide 21)\033[0m
+\033[1m Scaling gate (slide 26)\033[0m
 \033[2m--------------------------------------------------------------------------\033[0m
 
   No agent runs yet. That is correct for a baseline.

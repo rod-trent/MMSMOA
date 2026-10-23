@@ -22,9 +22,9 @@ close enough to recover with.
 |---|------|---------|:---:|
 | 1 | [Wire the Model](01-mcp-connection/) | Mission 1, slides 14–15 | ✅ |
 | 2 | [Ask Like an Analyst](02-natural-language-triage/) | Mission 1, slide 15 | ✅ |
-| 3 | [Auto-Triage with a Human on the Trigger](03-triage-agent-hitl/) | Mission 2, slides 16–18 | ✅ |
-| 4 | [Prove the Guardrails Hold](04-guardrails-injection-test/) | Slide 20 | ✅ |
-| 5 | [Instrument, Then Automate](05-roi-baseline/) | Slides 21–22 | ✅ |
+| 3 | [Auto-Triage with a Human on the Trigger](03-triage-agent-hitl/) | Mission 2, slides 16–23 | ✅ |
+| 4 | [Prove the Guardrails Hold](04-guardrails-injection-test/) | Slide 25 | ✅ |
+| 5 | [Instrument, Then Automate](05-roi-baseline/) | Slides 26–27 | ✅ |
 
 Demos 1–3 are the stage content. Demos 4–5 are the take-home answers to the two
 questions that always come up in Q&A: *how do you keep it safe* and *how do you

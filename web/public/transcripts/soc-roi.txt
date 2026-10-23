@@ -5,7 +5,7 @@
 [33m  SAMPLE MODE. No -WorkspaceId supplied, so these are illustrative
   numbers, not your tenant. Pass -WorkspaceId to measure for real.[0m
 
-[1m The four metrics (slide 21)[0m
+[1m The four metrics (slide 26)[0m
 [2m--------------------------------------------------------------------------[0m
   Mean time to triage        [31m68.4 min[0m        [2mindustry ~56 min to first action[0m
     p50 / p90                41 / 187 min    [2mp90 is where the pain actually is[0m
@@ -13,7 +13,7 @@
   Auto-disposition accuracy  no data         [2mno rows in SOCAgentRuns_CL yet - expected pre-agent[0m
   Analyst hours reclaimed    0 (baseline)    [2mtarget: 10 hrs/week into hunting[0m
 
-[1m Where to start (slide 22: one high-volume, low-risk class)[0m
+[1m Where to start (slide 27: one high-volume, low-risk class)[0m
 [2m--------------------------------------------------------------------------[0m
 [2m  Alert class                                  Volume  High sev  Opportunity[0m
   Atypical travel                                1842      4.1%        38863
@@ -58,7 +58,7 @@
   Human review is a real, recurring cost. Any ROI model that
   omits it is selling something.[0m
 
-[1m Scaling gate (slide 21)[0m
+[1m Scaling gate (slide 26)[0m
 [2m--------------------------------------------------------------------------[0m
 
   No agent runs yet. That is correct for a baseline.

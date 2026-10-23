@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Baselines the four SOC metrics from slide 21 and models the ROI of
+    Baselines the four SOC metrics from slide 26 and models the ROI of
     automating one alert class.
 
 .DESCRIPTION
@@ -8,7 +8,7 @@
     Session:    Empowering SOC Teams
     Conference: MMS 2026 Midway Edition - San Diego, October 25-28 2026
 
-    Slide 21 makes one demand: you cannot claim ROI without a baseline. This
+    Slide 26 makes one demand: you cannot claim ROI without a baseline. This
     script captures it.
 
     The four metrics:
@@ -29,14 +29,14 @@
     what the output looks like.
 
 .PARAMETER Days
-    Baseline window. Default 30. Slide 21 says 30 days before go-live.
+    Baseline window. Default 30. Slide 26 says 30 days before go-live.
 
 .PARAMETER LoadedAnalystRate
     Fully loaded hourly cost of a Tier-1 analyst - salary, benefits, overhead,
     tooling. Default 65 USD. Use your own; finance will ask where it came from.
 
 .PARAMETER AlertClass
-    The alert class you plan to automate first. Slide 22 says pick one
+    The alert class you plan to automate first. Slide 27 says pick one
     high-volume, low-risk class. Default: all classes, ranked by opportunity.
 
 .PARAMETER AgentRunTable
@@ -109,7 +109,7 @@ $Queries = @{
 
     MeanTimeToTriage = @"
 // Metric 1: mean time to triage. Created -> first disposition.
-// Industry baseline on slide 21: ~56 minutes to first action.
+// Industry baseline on slide 26: ~56 minutes to first action.
 SecurityIncident
 | where TimeGenerated > ago({0}d)
 | summarize arg_max(TimeGenerated, *) by IncidentNumber
@@ -127,7 +127,7 @@ SecurityIncident
 
     UninvestigatedRate = @"
 // Metric 2: what fraction of alerts nobody ever opened.
-// Industry baseline on slide 21: 42%.
+// Industry baseline on slide 26: 42%.
 let window = {0}d;
 let total = SecurityAlert | where TimeGenerated > ago(window) | count;
 SecurityAlert
@@ -147,7 +147,7 @@ SecurityAlert
 "@
 
     OpportunityByClass = @"
-// Which alert class to automate first (slide 22: high volume, low risk).
+// Which alert class to automate first (slide 27: high volume, low risk).
 // Opportunity = volume x mean handling time, weighted down by severity.
 SecurityAlert
 | where TimeGenerated > ago({0}d)
@@ -163,7 +163,7 @@ SecurityAlert
 "@
 
     AgentAccuracy = @"
-// Metric 3: auto-disposition accuracy. Slide 21 gate: >95% before you widen scope.
+// Metric 3: auto-disposition accuracy. Slide 26 gate: >95% before you widen scope.
 // Reads the run records the agent writes (Demo 3).
 {1}
 | where TimeGenerated > ago({0}d)
@@ -284,7 +284,7 @@ else {
 # Report: the four metrics
 # ---------------------------------------------------------------------------
 
-Write-Head 'The four metrics (slide 21)'
+Write-Head 'The four metrics (slide 26)'
 
 $mtttVerdict = if ($b.MeanMinutesToTriage -le 30) { 'good' }
                elseif ($b.MeanMinutesToTriage -le 56) { 'watch' } else { 'bad' }
@@ -312,7 +312,7 @@ Write-Metric 'Analyst hours reclaimed' $(if ($b.AgentRuns -gt 0) { 'see model be
 # Report: where to start
 # ---------------------------------------------------------------------------
 
-Write-Head 'Where to start (slide 22: one high-volume, low-risk class)'
+Write-Head 'Where to start (slide 27: one high-volume, low-risk class)'
 
 Write-Host ''
 Write-Host ('  {0,-42} {1,8} {2,9} {3,12}' -f 'Alert class', 'Volume', 'High sev', 'Opportunity') -ForegroundColor DarkGray
@@ -409,7 +409,7 @@ Write-Host '  omits it is selling something.' -ForegroundColor DarkGray
 # Gate check
 # ---------------------------------------------------------------------------
 
-Write-Head 'Scaling gate (slide 21)'
+Write-Head 'Scaling gate (slide 26)'
 
 Write-Host ''
 if ($b.AgentRuns -eq 0) {

@@ -179,7 +179,7 @@ IdentityInfo
 
 
 // ----------------------------------------------------------------------------
-// 9. The benign check (slide 20 / Mission 1 step 6)
+// 9. The benign check (slide 25 / Mission 1 step 6)
 //
 //    Before you call it malicious, prove the boring explanation is wrong.
 //    If your organisation keeps known egress ranges in a watchlist, this is

@@ -10,7 +10,7 @@ verbatim so the demo is reproducible and so the room can steal them.
 ## Before anything: the system prompt
 
 Paste this once, at the top of the conversation. It is the read-only, data-is-
-not-instructions posture from slide 20, and everything after it depends on it.
+not-instructions posture from slide 25, and everything after it depends on it.
 
 ```
 You are assisting a Tier-1 SOC analyst in the CONTOSO-PROD tenant.
@@ -31,7 +31,7 @@ RULES
   5. If you do not have the evidence, say so. Do not fill the gap.
 ```
 
-> The room will ask why rule 3 is worded that way. Slide 20, prompt injection.
+> The room will ask why rule 3 is worded that way. Slide 25, prompt injection.
 > Demo 4 is the test that proves it works.
 
 ---

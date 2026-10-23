@@ -127,12 +127,12 @@
   },
 
   "approval_gate": {
-    "_comment": "Slide 20. Read-only by default; every write needs an explicit human approval with the evidence in view.",
+    "_comment": "Slide 25. Read-only by default; every write needs an explicit human approval with the evidence in view.",
     "required_for": ["any write action"],
     "outcomes": ["approved", "approved_with_edit", "rejected"],
     "on_reject": "re-plan with the analyst's reason as input, log the override, propose again",
     "auto_approve_allowed_when": {
-      "_comment": "Do not enable any of this until the metrics on slide 21 earn it.",
+      "_comment": "Do not enable any of this until the metrics on slide 26 earn it.",
       "enabled": false,
       "alert_class_accuracy_over_30_days": 0.95,
       "minimum_runs_reviewed": 200,
@@ -142,7 +142,7 @@
   },
 
   "observability": {
-    "_comment": "Slide 16 and slide 21. If it is not logged you cannot audit it and you cannot prove ROI.",
+    "_comment": "Slide 16 and slide 26. If it is not logged you cannot audit it and you cannot prove ROI.",
     "log_destination": "Sentinel custom table: SOCAgentRuns_CL",
     "logged_per_run": [
       "agent identity and role",

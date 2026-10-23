@@ -1,10 +1,10 @@
 // ============================================================================
-// The four baseline metrics - slide 21
+// The four baseline metrics - slide 26
 //
 // Session:    Empowering SOC Teams
 // Conference: MMS 2026 Midway Edition - San Diego, October 25-28 2026
 //
-// Run these for 30 days BEFORE your first agent goes live. Slide 21's
+// Run these for 30 days BEFORE your first agent goes live. Slide 26's
 // demand is simple: you cannot claim ROI without a baseline, and a number
 // you produced after the fact is a number nobody believes.
 //
@@ -16,7 +16,7 @@
 // ----------------------------------------------------------------------------
 // METRIC 1 - Mean time to triage
 // Alert created -> first disposition.
-// Industry baseline on slide 21: ~56 minutes elapse before anyone acts.
+// Industry baseline on slide 26: ~56 minutes elapse before anyone acts.
 //
 // Watch p90, not the mean. The mean is dragged down by the alerts someone
 // happened to be looking at. p90 is what your queue actually feels like.
@@ -55,7 +55,7 @@ SecurityIncident
 // ----------------------------------------------------------------------------
 // METRIC 2 - Uninvestigated alert rate
 // The share of alerts that no analyst ever opened.
-// Industry baseline on slide 21: 42%.
+// Industry baseline on slide 26: 42%.
 //
 // This is the number that makes the room uncomfortable, and it is the one
 // agents improve fastest, because an agent has no queue.
@@ -82,7 +82,7 @@ SecurityAlert
 // ----------------------------------------------------------------------------
 // METRIC 3 - Auto-disposition accuracy
 // Verdicts a human confirmed, with no later reopen.
-// Slide 21 gate: >95% before you widen the agent's scope.
+// Slide 26 gate: >95% before you widen the agent's scope.
 //
 // Reads the run records the agent writes (Demo 3). Before an agent exists,
 // this returns nothing, and that is the correct answer.
@@ -127,7 +127,7 @@ SecurityIncident
 
 // ----------------------------------------------------------------------------
 // METRIC 4 - Analyst hours reclaimed
-// Time moved out of triage. Slide 21 target: 10 hrs/week into hunting.
+// Time moved out of triage. Slide 26 target: 10 hrs/week into hunting.
 //
 // MinutesSavedPerAlert must be YOUR measured handling time for the class,
 // not a vendor's. Measure it during the 30-day baseline.
@@ -142,7 +142,7 @@ SOCAgentRuns_CL
 
 
 // ----------------------------------------------------------------------------
-// WHERE TO START - slide 22 says one high-volume, low-risk class
+// WHERE TO START - slide 27 says one high-volume, low-risk class
 //
 // Opportunity = volume, discounted by how often the class is genuinely High.
 // You want the boring, noisy, well-understood class. Not the scary one.

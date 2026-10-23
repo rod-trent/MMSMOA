@@ -1,8 +1,8 @@
 # Demo 4 — Prove the Guardrails Hold
 
-**Take-home / bonus** · Session: *Empowering SOC Teams* · Slide 20
+**Take-home / bonus** · Session: *Empowering SOC Teams* · Slide 25
 
-Slide 20 says: *"Treat alert titles, emails, and file names as hostile input.
+Slide 25 says: *"Treat alert titles, emails, and file names as hostile input.
 Strip instructions from data before the model sees it; never let data pick
 tools."* This is the test that proves you actually did it.
 
@@ -133,6 +133,6 @@ questions, and keep the benign controls. Then:
 
 ## Stage note
 
-Slide 20's speaker notes suggest showing this if time allows. It runs in under a
+Slide 25's speaker notes suggest showing this if time allows. It runs in under a
 second. If you are tight, run `--tool-test` alone — six lines, and it makes the
 point better than the scorecard does.

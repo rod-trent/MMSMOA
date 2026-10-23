@@ -46,7 +46,7 @@ Mirrors the Data Exploration collection closely enough for the demo:
     get_audit_activity       directory audit events for a user
     get_ueba_baseline        UEBA baseline and deviations for a user
 
-Guardrails (slide 20), enforced here the same way you would enforce them
+Guardrails (slide 25), enforced here the same way you would enforce them
 against the real server:
 
   * Read-only. There is no tool that writes anything.
@@ -137,7 +137,7 @@ def _wrap_untrusted(obj: Any) -> Any:
     """Mark free-text fields so a client can tell content from instructions.
 
     This is the concrete form of 'separate the instruction channel from the
-    data channel' on slide 20. The marker is not magic - it works because the
+    data channel' on slide 25. The marker is not magic - it works because the
     system prompt tells the model that anything inside it is content to be
     reported, never a directive to follow.
     """

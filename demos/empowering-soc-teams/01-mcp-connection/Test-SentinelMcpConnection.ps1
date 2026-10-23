@@ -221,7 +221,7 @@ else {
             Add-Result 'Demo account privilege' 'WARN' "Holds elevated role(s): $($privileged -join ', ')"
         }
         elseif ($roles -contains 'Security Reader') {
-            Add-Result 'Demo account privilege' 'PASS' 'Security Reader only - matches slide 20'
+            Add-Result 'Demo account privilege' 'PASS' 'Security Reader only - matches slide 25'
         }
         else {
             Add-Result 'Demo account privilege' 'WARN' "Roles: $($roles -join ', ')"

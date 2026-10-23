@@ -27,7 +27,7 @@ the MCP server is. Swap Claude for ChatGPT and the plumbing does not change.
 - Microsoft Sentinel **data lake enabled** — the hosted MCP server will not work without it
 - An Entra account with **Application Administrator** to run the registration
 - A **Privileged Role Administrator** to grant admin consent (the script prints the URL)
-- A demo analyst account holding **Security Reader and nothing else** (this is the point of slide 20 — check it)
+- A demo analyst account holding **Security Reader and nothing else** (this is the point of slide 25 — check it)
 - **Tenant-level administrative privileges** to add the connector, per the Learn article
 - For the **graph tools** in Mission 1 step 7: the data lake **onboarded to the
   Defender portal**, and at least **read-only access in Microsoft Security

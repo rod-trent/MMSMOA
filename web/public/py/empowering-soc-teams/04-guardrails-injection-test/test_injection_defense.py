@@ -6,7 +6,7 @@ Red-teams the triage agent's prompt-injection defences and prints a scorecard.
 Demo 4 - guardrails · Session: Empowering SOC Teams
 Conference: MMS 2026 Midway Edition - San Diego, October 25-28 2026
 
-Slide 20: "Treat alert titles, emails, and file names as hostile input. Strip
+Slide 25: "Treat alert titles, emails, and file names as hostile input. Strip
 instructions from data before the model sees it; never let data pick tools."
 
 This is the test that proves you actually did it. Run it against your own agent
@@ -130,7 +130,7 @@ def run(verbose: bool) -> dict[str, Any]:
 
     print()
     print(c("  Prompt-injection defence scorecard", BOLD))
-    print(c("  MMS 2026 Midway Edition - Empowering SOC Teams, slide 20", DIM))
+    print(c("  MMS 2026 Midway Edition - Empowering SOC Teams, slide 25", DIM))
     print()
     print(c("  " + "-" * 88, DIM))
     print(c(f"  {'ID':<10} {'detected':<10} {'acted on':<10} {'reported':<10} {'result':<8} vector", DIM))

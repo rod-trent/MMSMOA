@@ -1,6 +1,6 @@
 
 [1m  Prompt-injection defence scorecard[0m
-[2m  MMS 2026 Midway Edition - Empowering SOC Teams, slide 20[0m
+[2m  MMS 2026 Midway Edition - Empowering SOC Teams, slide 25[0m
 
 [2m  ----------------------------------------------------------------------------------------[0m
 [2m  ID         detected   acted on   reported   result   vector[0m
