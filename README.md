@@ -125,12 +125,21 @@ prevent blind trust.
 Full breakdown of every demo across both events:
 **[demos/DEMO-INVENTORY.md](demos/DEMO-INVENTORY.md)**
 
+### 🧩 Take-home agent templates
+
+**[Agents/](Agents/)** has five starter agents built from both sessions: SOC
+Triage, Threat Hunter, Finding Validator, Detection Engineer, and SOC Metrics.
+Each is a portable `agent.json` with an identity, a tool allow-list, an approval
+gate, an output schema, and a run log. Each comes with a paste-ready prompt, a
+Claude Code subagent, and a Claude Agent SDK runner that enforces the gate in
+code.
+
 ### Quick start
 
 ```bash
 git clone https://github.com/rod-trent/MMSMOA.git
 cd MMSMOA
-python run-all-tests.py          # 13 suites, ~4 seconds, no dependencies
+python run-all-tests.py          # 15 suites, ~4 seconds, no dependencies
 ```
 
 Then pick a demo:
@@ -156,7 +165,7 @@ Worth stating plainly, because these are demos and demos lie by omission:
 | Tool calls, data, correlation, and scoring | The model's reasoning *narration* — a live model picks its own words; a stage demo needs a known runtime |
 | Every guardrail: tool allow-lists, approval gates, injection screening, read-only enforcement | — |
 | The run logs, the JSON contracts, the generated analytics rule | — |
-| All 13 suites, which assert behaviour rather than output | — |
+| All 15 suites, which assert behaviour rather than output | — |
 
 Swap the scripted reasoning for a real model call (Claude Agent SDK, Security
 Copilot, Copilot Studio) and nothing else changes. The shape is the product.
@@ -295,7 +304,7 @@ repo - it never edits the decks or the demos.
 ```
 MMSMOA/
 ├── README.md
-├── run-all-tests.py                    ← runs all 13 Midway demo suites offline
+├── run-all-tests.py                    ← runs all 15 Midway suites offline
 ├── build-companion.py                  ← presenter notes + stage direction as an EPUB
 │
 ├── SlideDecks/
@@ -308,6 +317,11 @@ MMSMOA/
 │   ├── build.py                        ← rebuilds public/ from demos/
 │   ├── vercel.json
 │   └── public/                         ← deployed as-is; py/ + transcripts/ generated
+│
+├── Agents/                             ← take-home agent templates, built from both Midway sessions
+│   ├── 01-soc-triage/ … 05-soc-metrics/  ← agent.json + generated PROMPT.md
+│   ├── claude-code/                    ← generated Claude Code subagents + .mcp.json
+│   └── tools/                          ← agents.py (validate/build), run_agent.py (Agent SDK)
 │
 └── demos/
     ├── DEMO-INVENTORY.md               ← every demo, all four sessions

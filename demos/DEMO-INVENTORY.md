@@ -19,7 +19,7 @@ slide it belongs to and what it actually does.
 ## MMS 2026 Midway Edition — San Diego, 25–28 October 2026
 
 Everything in these two sessions runs **offline**: no tenant, no Azure, no
-network. `python run-all-tests.py` from the repo root exercises all 13 suites in
+network. `python run-all-tests.py` from the repo root exercises all 15 suites in
 about four seconds. They also run in a browser at
 **[mms-midway-demos.vercel.app](https://mms-midway-demos.vercel.app)**.
 

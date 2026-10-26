@@ -11,6 +11,7 @@ on:
     paths:
       - 'demos/empowering-soc-teams/**'
       - 'demos/modern-threat-detection/**'
+      - 'Agents/**'
       - 'run-all-tests.py'
       - 'web/**'
       - '.github/workflows/demo-tests.yml'

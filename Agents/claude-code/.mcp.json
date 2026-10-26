@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "sentinel-data-exploration": {
+      "type": "http",
+      "url": "https://sentinel.microsoft.com/mcp/data-exploration"
+    },
+    "sentinel-triage": {
+      "type": "http",
+      "url": "https://sentinel.microsoft.com/mcp/triage"
+    },
+    "sentinel-local-replay": {
+      "command": "python",
+      "args": [
+        "../../demos/empowering-soc-teams/02-natural-language-triage/replay_mcp_server.py"
+      ]
+    }
+  }
+}

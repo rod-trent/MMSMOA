@@ -38,7 +38,7 @@ def c(text: str, code: str) -> str:
     return f"{code}{text}{RESET}" if _color else text
 
 
-# (label, path relative to demos/, args, is_self_test)
+# (label, path relative to demos/ - or to the repo root for Agents/ - args, is_self_test)
 SUITES: list[tuple[str, str, list[str], bool]] = [
     # --- Empowering SOC Teams ------------------------------------------------
     ("SOC  01  MCP replay server",
@@ -82,11 +82,19 @@ SUITES: list[tuple[str, str, list[str], bool]] = [
     ("HUNT 05  Hunt red-team",
      "modern-threat-detection/05-injection-redteam/Invoke-HuntRedTeam.py",
      [], True),
+
+    # --- Take-home agent templates ------------------------------------------
+    ("AGNT     Templates valid and current",
+     "Agents/tools/agents.py",
+     ["check"], True),
+    ("AGNT     Validator self-test",
+     "Agents/tools/agents.py",
+     ["--self-test"], True),
 ]
 
 
 def run_one(label: str, script: str, args: list[str]) -> tuple[bool, str, float]:
-    path = DEMOS / script
+    path = (ROOT if script.startswith("Agents/") else DEMOS) / script
     if not path.exists():
         return False, f"missing: {script}", 0.0
 

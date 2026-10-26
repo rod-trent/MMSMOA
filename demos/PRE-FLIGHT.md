@@ -110,7 +110,7 @@ Say it once, move on.
 - Data lake enablement as a hard prerequisite
 - Every statistic in the hunt deck: Vectra's 2,992 alerts/day, and Prophet's
   49%/8% split, 38%, 72%, 57%, and 0%-full-autonomy figures
-- All 13 offline suites: **passing in ~4s**, and `web/build.py --check` reports
+- All 15 offline suites: **passing in ~4s**, and `web/build.py --check` reports
   the site matches the committed demo code
 
 **Pyodide stays pinned at 0.26.4.** 0.29.3 exists, but swapping the runtime out
@@ -276,7 +276,7 @@ Connect-MgGraph -Scopes Application.ReadWrite.All
 
 ```bash
 # 2. Offline path — the fallback that cannot fail
-python run-all-tests.py        # expect: all 13 suites passed
+python run-all-tests.py        # expect: all 15 suites passed
 python web/build.py --check    # expect: up to date
 ```
 
